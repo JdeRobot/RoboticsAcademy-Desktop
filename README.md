@@ -7,10 +7,9 @@ It Runs the Image of the robotics-academy within electron
 ## Table of Contents
 
 - [About](#about)
-- [Features](#features)
 - [Getting Started](#getting-started)
 - [Usage](#usage)
--
+
 ## About
 
 It uses the docker image to create the Electron desktop app
