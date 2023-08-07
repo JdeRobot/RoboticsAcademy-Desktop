@@ -9,13 +9,8 @@ It Runs the Image of the robotics-academy within electron
 - [About](#about)
 - [Features](#features)
 - [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-- [Acknowledgements](#acknowledgements)
-
+-
 ## About
 
 It uses the docker image to create the Electron desktop app
@@ -42,14 +37,14 @@ npm install
 
 ## Usage
 
-Run Electron 
+Run Electron
 
 ```bash
 npm run start
 ```
+
 Pack Electron App
 
 ```bash
 npm run make
 ```
-
