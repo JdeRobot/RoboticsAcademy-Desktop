@@ -14,7 +14,7 @@ const createWindow = () => {
       nodeIntegration: true,
     },
   });
-  mainWindow.loadURL('http://127.0.0.1:8000/');
+  mainWindow.loadFile('src/index.html');
   // mainWindow.webContents.openDevTools();
 };
 
