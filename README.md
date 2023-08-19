@@ -2,7 +2,6 @@
 
 # Project Template Name
 
-It Runs the Image of the robotics-academy within electron
 
 ## Table of Contents
 
@@ -12,38 +11,34 @@ It Runs the Image of the robotics-academy within electron
 
 ## About
 
-It uses the docker image to create the Electron desktop app
+TThe Robotics-Academy Desktop Application is an application used for accessing the Robotics-Academy exercises on any platform, This has been built using Electron.js.
 
 ## Getting Started
 
-Pull the docker image of jderobot/robotics-academy using
+TO BUILD AND USE THE APP USE THE FOLLOWING INSTRUCTIONS
 
-```bash
-docker pull jderobot/robotics-academy:latest
+Install the packages using :
+
+```console
+npm install 
 ```
 
-Run the docker container
+Build the electron App using :
 
-```bash
-docker run --rm -it -p 8000:8000 -p 2303:2303 -p 1905:1905 -p 8765:8765 -p 6080:6080 -p 1108:1108 -p 7163:7163 jderobot/robotics-academy
+```console
+npm run make
 ```
 
-Setup electron
+After building a **out** folder will be created. Copy the **run.sh** from the **Script** folder and paste it into **out/electron**
 
-```bash
-npm install
-```
+Download and Paste the [Robotics-Academy tar.xz]()  into **out/electron/roboticsacademy**
 
 ## Usage
 
-Run Electron
+To run the App do the following
 
-```bash
-npm run start
 ```
-
-Pack Electron App
-
-```bash
-npm run make
+cd out/electron...
+chmod +x run.sh
+./run.sh
 ```
