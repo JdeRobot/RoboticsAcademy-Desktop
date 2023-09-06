@@ -1,8 +1,5 @@
 # RoboticsAcademy-Desktop
 
-# Project Template Name
-
-
 ## Table of Contents
 
 - [About](#about)
