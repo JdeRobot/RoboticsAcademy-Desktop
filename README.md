@@ -28,7 +28,7 @@ npm run make
 
 After building a **out** folder will be created. Copy the **run.sh** from the **Script** folder and paste it into **out/electron**
 
-Download and Paste the [Robotics-Academy tar.xz]()  into **out/electron/roboticsacademy**
+Download and Paste the **Robotics-Academy tar.xz**  into **out/electron/roboticsacademy**
 
 ## Usage
 
@@ -36,6 +36,7 @@ To run the App do the following
 
 ```
 cd out/electron...
+cd script
 chmod +x run.sh
 ./run.sh
 ```
