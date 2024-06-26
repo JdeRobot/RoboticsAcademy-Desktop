@@ -1,30 +1,43 @@
 module.exports = {
-  packagerConfig: {
-    asar: true,
-  },
-  rebuildConfig: {},
-  makers: [
-    {
-      name: '@electron-forge/maker-squirrel',
-      config: {},
+    packagerConfig: {
+        asar: true,
     },
-    {
-      name: '@electron-forge/maker-zip',
-      platforms: ['darwin'],
+    rebuildConfig: {
+        icon: "./src/assets/logo.png",
     },
-    {
-      name: '@electron-forge/maker-deb',
-      config: {},
-    },
-    {
-      name: '@electron-forge/maker-rpm',
-      config: {},
-    },
-  ],
-  plugins: [
-    {
-      name: '@electron-forge/plugin-auto-unpack-natives',
-      config: {},
-    },
-  ],
+    makers: [
+        {
+            name: "@electron-forge/maker-squirrel",
+            config: {
+                iconUrl: "./src/assets/logo.ico",
+                setupIcon: "./src/assets/logo.ico",
+            },
+        },
+        {
+            name: "@electron-forge/maker-zip",
+            platforms: ["darwin"],
+        },
+        {
+            name: "@electron-forge/maker-deb",
+            config: {
+                options: {
+                    icon: "./src/assets/logo.png",
+                },
+            },
+        },
+        {
+            name: "@electron-forge/maker-rpm",
+            config: {
+                options: {
+                    icon: "./src/assets/logo.svg",
+                },
+            },
+        },
+    ],
+    plugins: [
+        {
+            name: "@electron-forge/plugin-auto-unpack-natives",
+            config: {},
+        },
+    ],
 };
