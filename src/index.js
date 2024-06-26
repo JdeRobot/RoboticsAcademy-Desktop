@@ -8,8 +8,8 @@ if (require("electron-squirrel-startup")) {
 // splash screen
 function createSplashWindow() {
     const win = new BrowserWindow({
-        width: 350,
-        height: 200,
+        width: 350 * 1.5,
+        height: 200 * 1.5,
         frame: false,
         transparent: true,
         alwaysOnTop: true,

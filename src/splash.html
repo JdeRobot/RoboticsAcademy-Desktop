@@ -47,17 +47,28 @@
                 align-items: center;
             }
             .loading-logo {
-                width: 100px;
+                width: 170px;
             }
             .loading-dots {
                 position: relative;
                 top: -5px;
                 width: 45px;
             }
+            .developer {
+                font-size: 12px;
+                margin: 4px;
+                padding: 0;
+                color: #a4a4a4;
+            }
+            .developer > span {
+                font-size: 15px;
+                font-weight: 500;
+                margin: 2px;
+            }
             .version {
                 position: absolute;
-                top: 80%;
-                left: 80%;
+                top: 88%;
+                left: 88%;
                 color: #f3f3f3;
                 font-size: 12px;
                 margin: 1rem;
@@ -68,7 +79,8 @@
         <div class="loading-container">
             <div class="loading-area">
                 <img src="./assets/logo.gif" class="loading-logo" />
-                <h3 style="margin: 0px">Robotics Academy</h3>
+                <h2 style="margin: 0px">Robotics Academy</h2>
+                <p class="developer">by <span>JdeRobot</span></p>
             </div>
             <img src="./assets/loading.svg" class="loading-dots" />
             <p class="version">v1.0.0</p>
