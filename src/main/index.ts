@@ -78,12 +78,12 @@ app.whenReady().then(() => {
             event: Electron.IpcMainInvokeEvent,
             msg: string
         ): Promise<string> => {
-            const { canceled, filePaths } = await dialog.showOpenDialog({});
+            // const { canceled, filePaths } = await dialog.showOpenDialog({});
             // if (!canceled) {
             //     return filePaths[0];
             // }
             console.log("====================================");
-            console.log("main file ", filePaths);
+            console.log("main file ", msg);
             console.log("====================================");
 
             return `Your Msg was : ${msg}`;

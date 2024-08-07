@@ -1,3 +1,4 @@
+import "./assets/index.css";
 import Versions from "./components/Versions";
 import electronLogo from "./assets/electron.svg";
 import { useState } from "react";
@@ -46,7 +47,11 @@ function App(): JSX.Element {
                     </a>
                 </div>
             </div>
-            <div>{msg}</div>
+            {msg.length > 0 && (
+                <div className='text-red-800 m-4 p-4 bg-slate-700 font-medium rounded-lg'>
+                    {msg}
+                </div>
+            )}
             <Versions></Versions>
         </>
     );
