@@ -3,7 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 
 // splash screen
-function createSplashWindow() {
+function createSplashWindow(): BrowserWindow {
   const win = new BrowserWindow({
     width: 350 * 1.5,
     height: 200 * 1.5,
@@ -15,7 +15,7 @@ function createSplashWindow() {
   console.log(process.resourcesPath)
 
   const splashScreenSrc = app.isPackaged
-    ? join(process.resourcesPath, '', 'splashscreen.html')
+    ? join(process.resourcesPath, 'splashscreen.html')
     : join(__dirname, './../../', 'splashscreen.html')
 
   win.loadFile(splashScreenSrc)
@@ -27,8 +27,8 @@ function createWindow(): BrowserWindow {
   const mainWindow = new BrowserWindow({
     width: 1280,
     height: 720,
-    minWidth: 500,
-    minHeight: 500,
+    minWidth: 1280,
+    minHeight: 720,
     show: false,
     icon: join(__dirname, './../../resources/icons/icon.png'),
     autoHideMenuBar: true,

@@ -1,8 +1,9 @@
+import { FC } from 'react'
 import './assets/index.css'
 // import { useState } from 'react'
 import StartScreen from './views/StartView'
 
-function App(): JSX.Element {
+const App: FC<null> = () => {
   return (
     <div className="absolute w-full h-full">
       <StartScreen />
