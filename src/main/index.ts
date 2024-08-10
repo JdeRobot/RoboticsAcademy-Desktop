@@ -1,6 +1,7 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import { checkDocker, checkDockerRADI } from './Command'
 
 // splash screen
 function createSplashWindow(): BrowserWindow {
@@ -74,7 +75,7 @@ app.whenReady().then(() => {
   ipcMain.on('ping', () => console.log('pong'))
   ipcMain.handle(
     'test:testFunc',
-    async (event: Electron.IpcMainInvokeEvent, msg: string): Promise<string> => {
+    async (event: IpcMainInvokeEvent, msg: string): Promise<string> => {
       // const { canceled, filePaths } = await dialog.showOpenDialog({});
       // if (!canceled) {
       //     return filePaths[0];
@@ -86,7 +87,28 @@ app.whenReady().then(() => {
       return `Your Msg was : ${msg}`
     }
   )
-
+  //* Docker check
+  ipcMain.handle('docker:check', async (event: IpcMainInvokeEvent) => {
+    event.defaultPrevented
+    try {
+      const res: { status: boolean; msg: string } = await checkDocker()
+      // console.log('docker ', res)
+      return res
+    } catch (error) {
+      return { status: false, msg: 'something went wrong!' }
+    }
+  })
+  //* Robotics Academy Docker Image
+  ipcMain.handle('docker:RADI', async (event: IpcMainInvokeEvent) => {
+    event.defaultPrevented
+    try {
+      const res: { status: boolean; msg: string } = await checkDockerRADI()
+      // console.log('docker ', res)
+      return res
+    } catch (error) {
+      return { status: false, msg: 'something went wrong!' }
+    }
+  })
   // Disappering splash screen and show main screen after 3 seconds.
   try {
     const splashScreen: BrowserWindow = createSplashWindow()

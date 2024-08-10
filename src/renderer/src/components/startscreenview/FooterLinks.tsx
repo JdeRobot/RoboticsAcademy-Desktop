@@ -11,7 +11,10 @@ const FooterLinks = (props: Props) => {
       {/* icons */}
       <div className="flex gap-1 ">
         {socialLinks.map((social, index) => (
-          <div className={`p-1 hover:bg-yellow-500 rounded-full`} key={index}>
+          <div
+            className={`w-[28px] h-[28px] flex justify-center items-center hover:bg-yellow-500 rounded-full`}
+            key={index}
+          >
             <img
               src={social.icon}
               alt={social.id}
@@ -22,8 +25,8 @@ const FooterLinks = (props: Props) => {
           </div>
         ))}
       </div>
-      <div className=" p-1 hover:bg-yellow-500 rounded-full cursor-pointer">
-        <img src={SettingsIcon} alt="settings" className="w-[24px]" />
+      <div className="w-[28px] h-[28px] flex justify-center items-center hover:bg-yellow-500 rounded-full cursor-pointer">
+        <img src={SettingsIcon} alt="settings" className="w-[20px]" />
       </div>
     </div>
   )
