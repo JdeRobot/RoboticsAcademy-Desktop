@@ -3,6 +3,7 @@ import Logo from './logo.svg'
 // Start Screen
 import RocketIcon from './icons/RocketIcon.svg'
 import WarningIcon from './icons/WarningIcon.svg'
+import ErrorIcon from './icons/ErrorIcon.svg'
 import DropDownIcon from './icons/DropDownIcon.svg'
 import RightArrowIcon from './icons/RightArrowIcon.svg'
 import BackIcon from './icons/BackIcon.svg'
@@ -18,6 +19,7 @@ export {
   // Start Screen
   RocketIcon,
   WarningIcon,
+  ErrorIcon,
   DropDownIcon,
   RightArrowIcon,
   BackIcon,

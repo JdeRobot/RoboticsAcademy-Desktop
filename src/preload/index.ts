@@ -4,9 +4,14 @@ import { electronAPI } from '@electron-toolkit/preload'
 // Custom APIs for renderer
 const api = {
   testFunc: (msg: string): Promise<string> => ipcRenderer.invoke('test:testFunc', msg),
-  dockerCheck: (): Promise<{ status: boolean; msg: string }> => ipcRenderer.invoke('docker:check'),
-  checkDockerRADI: (): Promise<{ status: boolean; msg: string }> =>
-    ipcRenderer.invoke('docker:RADI')
+  dockerCheck: (): Promise<{ status: boolean; msg: string[] }> =>
+    ipcRenderer.invoke('docker:check'),
+  checkDockerRADI: (): Promise<{ status: boolean; msg: string[] }> =>
+    ipcRenderer.invoke('docker:RADI'),
+  startRADIContainer: (): Promise<{ status: boolean; msg: string[] }> =>
+    ipcRenderer.invoke('docker:SART_RADI'),
+  checkDockerImageRunning: (): Promise<{ status: boolean; msg: string[] }> =>
+    ipcRenderer.invoke('docker:CHECK_RADI')
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

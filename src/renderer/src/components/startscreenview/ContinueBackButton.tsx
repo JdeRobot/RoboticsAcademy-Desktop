@@ -2,11 +2,11 @@ import { RightArrowIcon, BackIcon, RocketIcon } from '@renderer/assets'
 import { FC } from 'react'
 
 interface ContinueBackButtonInterface {
-  buttonType: string
+  buttonState: string
   dispatch: any
 }
 
-const ContinueBackButton: FC<ContinueBackButtonInterface> = ({ buttonType, dispatch }) => {
+const ContinueBackButton: FC<ContinueBackButtonInterface> = ({ buttonState, dispatch }) => {
   return (
     <>
       <div
@@ -14,7 +14,7 @@ const ContinueBackButton: FC<ContinueBackButtonInterface> = ({ buttonType, dispa
       >
         <div className={`w-full h-full  text-[#D9D9D9] text-lg font-semibold`}>
           {/* Start Button */}
-          {buttonType === 'start' && (
+          {buttonState === 'start' && (
             <div
               className={`w-full h-full flex items-center justify-center gap-2 `}
               onClick={() => {
@@ -24,14 +24,14 @@ const ContinueBackButton: FC<ContinueBackButtonInterface> = ({ buttonType, dispa
                 })
               }}
             >
-              <p className={`text-center font-extrabold text-lg uppercase text-[#d9d9d9]`}>Start</p>
+              <p className={`text-center font-bold text-md uppercase text-[#d9d9d9]`}>Start</p>
               <img src={RocketIcon} className={`w-[20px]`} />
             </div>
           )}
           {/* continue button */}
-          {buttonType === 'continue' && (
+          {buttonState === 'continue' && (
             <div
-              className={`w-full h-full flex items-center justify-center gap-2 `}
+              className={`w-full h-full flex items-center justify-center text-md uppercase gap-2 `}
               onClick={() => {
                 dispatch({
                   type: 'START',
@@ -46,13 +46,13 @@ const ContinueBackButton: FC<ContinueBackButtonInterface> = ({ buttonType, dispa
             </div>
           )}
           {/* back button */}
-          {buttonType === 'back' && (
+          {buttonState === 'back' && (
             <div
-              className={`w-full h-full flex items-center justify-center gap-2 `}
+              className={`w-full h-full flex items-center justify-center gap-2 text-md uppercase `}
               onClick={() => {
                 dispatch({
                   type: 'START',
-                  payload: { buttonType: 'continue', screenState: 'warning' }
+                  payload: { buttonState: 'continue', screenState: 'warning', process: 0 }
                 })
               }}
             >

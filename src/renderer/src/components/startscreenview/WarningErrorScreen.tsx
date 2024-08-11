@@ -1,12 +1,21 @@
-import { DropDownIcon, WarningIcon } from '@renderer/assets'
+import { DropDownIcon, WarningIcon, ErrorIcon } from '@renderer/assets'
 import { Dispatch, FC, SetStateAction } from 'react'
 
 interface WarningErrorScreenInterface {
   isExpand: boolean
   setIsExtend: Dispatch<SetStateAction<boolean>>
+  screenState: string
+  buttonState: string
+  errorWarningMsg: string[]
 }
 
-const WarningErrorScreen: FC<WarningErrorScreenInterface> = ({ isExpand, setIsExtend }) => {
+const WarningErrorScreen: FC<WarningErrorScreenInterface> = ({
+  isExpand,
+  setIsExtend,
+  screenState,
+  buttonState,
+  errorWarningMsg
+}) => {
   return (
     <div
       className={`w-full ${isExpand ? `pb-4 pt-2 px-2` : `h-[32px]`} px-1  bg-[#D9D9D9] text-[#454545] rounded-[30px] duration-300 `}
@@ -14,10 +23,17 @@ const WarningErrorScreen: FC<WarningErrorScreenInterface> = ({ isExpand, setIsEx
       {/* close mode */}
       <div className={`w-full h-[32px] flex items-center justify-between`}>
         <div className={`flex items-center justify-between gap-3`}>
-          <img src={WarningIcon} alt="" className={`w-[24px] h-[24px]`} />
+          <img
+            src={`${screenState === 'error' ? ErrorIcon : WarningIcon}`}
+            alt=""
+            className={`w-[24px] h-[24px]`}
+          />
 
           <p className={`text-sm `}>
-            <span className="font-semibold">Warning :</span> docker: Error response from daemon
+            <span className="font-semibold">
+              {screenState === 'error' ? `Error :` : `Warning :`}
+            </span>{' '}
+            {errorWarningMsg[0]}
           </p>
         </div>
 
@@ -38,27 +54,11 @@ const WarningErrorScreen: FC<WarningErrorScreenInterface> = ({ isExpand, setIsEx
           className={`w-full h-[240px] py-2 px-2 text-sm text-wrap break-words  duration-300 scrollbar overflow-x-hidden overflow-scroll`}
           id="scrollbar-style"
         >
-          <div>
-            <p>
-              docker: Error response from daemon: driver failed programming external connectivity on
-              endpoint boring_lederberg
-              (69fc4e8a9c6c9a0068546f113d109d36afe7bb6baf40288e49c3474c457cfe00): Bind for
-              0.0.0.0:7164 failed: port is already allocated. Docker process exited with code 125
-            </p>
-            <p>
-              docker: Error response from daemon: driver failed programming external connectivity on
-              endpoint boring_lederberg
-              (69fc4e8a9c6c9a0068546f113d109d36afe7bb6baf40288e49c3474c457cfe00): Bind for
-              0.0.0.0:7164 failed: port is already allocated. Docker process exited with code 125
-            </p>
-            <p>
-              docker: Error response from daemon: driver failed programming external connectivity on
-              endpoint boring_lederberg
-              (69fc4e8a9c6c9a0068546f113d109d36afe7bb6baf40288e49c3474c457cfe00): Bind for
-              0.0.0.0:7164 failed: port is already allocated. Docker process exited with code 125
-            </p>
+          <div className="select-text">
+            {errorWarningMsg.map((msg, index) => (
+              <p key={index}>{index !== 0 && msg}</p>
+            ))}
           </div>
-          {/* <div className="force-overflow"></div> */}
         </div>
       )}
     </div>

@@ -1,11 +1,13 @@
 import { SettingsIcon } from './../../assets/index'
 import { socialLinks } from '@renderer/constants'
 
-import React from 'react'
+import { FC } from 'react'
 
-type Props = {}
+interface FooterLinksInterface {
+  screenState: string
+}
 
-const FooterLinks = (props: Props) => {
+const FooterLinks: FC<FooterLinksInterface> = ({ screenState }) => {
   return (
     <div className="w-full px-4 flex justify-between items-center">
       {/* icons */}
@@ -25,9 +27,11 @@ const FooterLinks = (props: Props) => {
           </div>
         ))}
       </div>
-      <div className="w-[28px] h-[28px] flex justify-center items-center hover:bg-yellow-500 rounded-full cursor-pointer">
-        <img src={SettingsIcon} alt="settings" className="w-[20px]" />
-      </div>
+      {screenState !== 'loading' && (
+        <div className="w-[28px] h-[28px] flex justify-center items-center hover:bg-yellow-500 rounded-full cursor-pointer">
+          <img src={SettingsIcon} alt="settings" className="w-[20px]" />
+        </div>
+      )}
     </div>
   )
 }

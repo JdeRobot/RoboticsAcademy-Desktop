@@ -76,14 +76,7 @@ app.whenReady().then(() => {
   ipcMain.handle(
     'test:testFunc',
     async (event: IpcMainInvokeEvent, msg: string): Promise<string> => {
-      // const { canceled, filePaths } = await dialog.showOpenDialog({});
-      // if (!canceled) {
-      //     return filePaths[0];
-      // }
-      console.log('====================================')
       console.log('main file ', event.defaultPrevented)
-      console.log('====================================')
-
       return `Your Msg was : ${msg}`
     }
   )
@@ -91,22 +84,33 @@ app.whenReady().then(() => {
   ipcMain.handle('docker:check', async (event: IpcMainInvokeEvent) => {
     event.defaultPrevented
     try {
-      const res: { status: boolean; msg: string } = await checkDocker()
+      const res: { status: boolean; msg: string[] } = await checkDocker()
       // console.log('docker ', res)
       return res
     } catch (error) {
-      return { status: false, msg: 'something went wrong!' }
+      return { status: false, msg: ['something went wrong!', `${error}`] }
     }
   })
   //* Robotics Academy Docker Image
   ipcMain.handle('docker:RADI', async (event: IpcMainInvokeEvent) => {
     event.defaultPrevented
     try {
-      const res: { status: boolean; msg: string } = await checkDockerRADI()
+      const res: { status: boolean; msg: string[] } = await checkDockerRADI()
       // console.log('docker ', res)
       return res
     } catch (error) {
-      return { status: false, msg: 'something went wrong!' }
+      return { status: false, msg: ['something went wrong!'] }
+    }
+  })
+  //* Running RADI docker images
+  ipcMain.handle('docker:SART_RADI', async (event: IpcMainInvokeEvent) => {
+    event.defaultPrevented
+    try {
+      const res: { status: boolean; msg: string[] } = await checkDockerRADI()
+      // console.log('docker ', res)
+      return res
+    } catch (error) {
+      return { status: false, msg: ['something went wrong!'] }
     }
   })
   // Disappering splash screen and show main screen after 3 seconds.
