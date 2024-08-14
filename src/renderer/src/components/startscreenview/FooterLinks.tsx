@@ -6,7 +6,7 @@ import { FC } from 'react'
 interface FooterLinksInterface {
   screenState: string
 }
-
+//TODO:  UPDATE ALL LINKS
 const FooterLinks: FC<FooterLinksInterface> = ({ screenState }) => {
   return (
     <div className="w-full px-4 flex justify-between items-center">
@@ -27,7 +27,7 @@ const FooterLinks: FC<FooterLinksInterface> = ({ screenState }) => {
           </div>
         ))}
       </div>
-      {screenState !== 'loading' && (
+      {screenState === 'start' && (
         <div className="w-[28px] h-[28px] flex justify-center items-center hover:bg-yellow-500 rounded-full cursor-pointer">
           <img src={SettingsIcon} alt="settings" className="w-[20px]" />
         </div>

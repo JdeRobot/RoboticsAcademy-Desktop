@@ -1,12 +1,14 @@
 import Logo from './logo.svg'
 
 // Start Screen
-import RocketIcon from './icons/RocketIcon.svg'
+import PlayIcon from './icons/PlayIcon.svg'
 import WarningIcon from './icons/WarningIcon.svg'
 import ErrorIcon from './icons/ErrorIcon.svg'
 import DropDownIcon from './icons/DropDownIcon.svg'
 import RightArrowIcon from './icons/RightArrowIcon.svg'
 import BackIcon from './icons/BackIcon.svg'
+import PowerIcon from './icons/PowerIcon.svg'
+import GameConsoleIcon from './icons/GameConsoleIcon.svg'
 // Social Links
 import WebSiteIcon from './icons/WebIcon.svg'
 import YoutubeIcon from './icons/YoutubeIcon.svg'
@@ -17,12 +19,14 @@ import SettingsIcon from './icons/SettingsIcon.svg'
 export {
   Logo,
   // Start Screen
-  RocketIcon,
+  PlayIcon,
   WarningIcon,
   ErrorIcon,
   DropDownIcon,
   RightArrowIcon,
   BackIcon,
+  PowerIcon,
+  GameConsoleIcon,
   /* Social Links*/
   WebSiteIcon,
   YoutubeIcon,

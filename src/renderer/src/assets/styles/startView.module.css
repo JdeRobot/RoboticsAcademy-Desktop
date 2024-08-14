@@ -40,3 +40,27 @@
   /* Note: backdrop-filter has minimal browser support */
   border-radius: 40px;
 }
+
+/* Organization name */
+.orginzationText {
+  /* font-size: 150px; */
+  font-weight: 800;
+  outline: none;
+  background: linear-gradient(
+    135deg,
+    #5335cf 0%,
+    #de005e 25%,
+    #f66e48 50%,
+    #de005e 75%,
+    #5335cf 100%
+  );
+  background-size: 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textAnimate 20s linear infinite;
+}
+@keyframes textAnimate {
+  to {
+    background-position: 400%;
+  }
+}

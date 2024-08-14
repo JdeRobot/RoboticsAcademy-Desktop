@@ -1,8 +1,10 @@
+import { ResponeInterface, ResponseStatus } from './interfaces'
+
 const { spawn } = require('child_process')
 const RADI_IMAGE = 'jderobot/robotics-academy'
-const CONTAINER_NAME = 'roboticsacademy'
+const CONTAINER_NAME = 'robotics-academy'
 
-export const checkDocker = async (): Promise<{ status: boolean; msg: string[] }> => {
+export const checkDockerAvailability = async (): Promise<ResponeInterface> => {
   return new Promise((resolve, reject) => {
     const docker = spawn('docker', ['--version'])
 
@@ -19,10 +21,10 @@ export const checkDocker = async (): Promise<{ status: boolean; msg: string[] }>
 
     docker.on('close', (code) => {
       if (code === 0 && output.length > 0) {
-        resolve({ status: true, msg: [`Docker is installed: ${output}`] })
+        resolve({ status: ResponseStatus.SUCCESS, msg: [`Docker is installed: ${output}`] })
       } else {
         resolve({
-          status: false,
+          status: ResponseStatus.ERROR,
           msg: ['Docker is not installed', `${errorOutput}`]
         })
       }
@@ -30,14 +32,14 @@ export const checkDocker = async (): Promise<{ status: boolean; msg: string[] }>
 
     docker.on('error', (err) => {
       reject({
-        status: false,
+        status: ResponseStatus.ERROR,
         msg: ['Something went wrong!', `Failed to start process: ${err.message}`]
       })
     })
   })
 }
 
-export const checkDockerRADI = async (): Promise<{ status: boolean; msg: string[] }> => {
+export const checkDockerRADIAvailability = async (): Promise<ResponeInterface> => {
   return new Promise((resolve, reject) => {
     const docker = spawn('docker', ['images', '-q', `${RADI_IMAGE}`])
 
@@ -55,10 +57,10 @@ export const checkDockerRADI = async (): Promise<{ status: boolean; msg: string[
     docker.on('close', (code) => {
       console.log(typeof output)
       if (code === 0 && output.length > 0) {
-        resolve({ status: true, msg: [`RADI founded: ${output}`] })
+        resolve({ status: ResponseStatus.SUCCESS, msg: [`RADI founded: ${output}`] })
       } else if (code === 0 && output.length === 0) {
         resolve({
-          status: false,
+          status: ResponseStatus.ERROR,
           msg: [
             'RADI is not installed!',
             `Robotics Academy Docker Image (RADI) is not found on your system`
@@ -66,7 +68,7 @@ export const checkDockerRADI = async (): Promise<{ status: boolean; msg: string[
         })
       } else {
         resolve({
-          status: false,
+          status: ResponseStatus.ERROR,
           msg: ['Something Went wrong!', `RADI is not founded: ${errorOutput}`]
         })
       }
@@ -74,14 +76,14 @@ export const checkDockerRADI = async (): Promise<{ status: boolean; msg: string[
 
     docker.on('error', (err) => {
       reject({
-        status: false,
+        status: ResponseStatus.ERROR,
         msg: ['Something Went wrong!', `Failed to start process: ${err.message}`]
       })
     })
   })
 }
 
-export const startDockerRADI = async (): Promise<{ status: boolean; msg: string[] }> => {
+export const startDockerRADIContainer = async (): Promise<ResponeInterface> => {
   return new Promise((resolve, reject) => {
     const docker = spawn('docker', [
       'run',
@@ -113,32 +115,34 @@ export const startDockerRADI = async (): Promise<{ status: boolean; msg: string[
     })
 
     docker.on('close', (code) => {
-      console.log(typeof output)
-      if (code === 0 && output.length > 0) {
-        resolve({ status: true, msg: [`RADI Start Successfully: ${output}`] })
-      } else if (code === 0 && output.length === 0) {
-        resolve({
-          status: false,
-          msg: ['RADI is not running!', `Robotics Academy Docker Image (RADI) is not running`]
-        })
+      console.log(output)
+      if (code === 0) {
+        resolve({ status: ResponseStatus.SUCCESS, msg: [`RADI Start Successfully.`] })
       } else {
         resolve({
-          status: false,
-          msg: ['Something Went wrong!', `RADI is not founded: ${errorOutput}`]
+          status: ResponseStatus.ERROR,
+          msg: [
+            'RADI is not running!',
+            `Robotics Academy Docker Image (RADI) is not running`,
+            'Docker Code 125',
+            'Maybe Insufficient Permissions',
+            'Maybe Port Conflicts',
+            'Maybe File System Errors'
+          ]
         })
       }
     })
 
     docker.on('error', (err) => {
       reject({
-        status: false,
+        status: ResponseStatus.ERROR,
         msg: ['Something Went wrong!', `Failed to start process: ${err.message}`]
       })
     })
   })
 }
 
-export const checkRADIContainerRunning = async (): Promise<{ status: boolean; msg: string[] }> => {
+export const checkRADIContainerRunning = async (): Promise<ResponeInterface> => {
   return new Promise((resolve, reject) => {
     const docker = spawn('docker', ['inspect', '--format={{.State.Running}}', `${CONTAINER_NAME}`])
 
@@ -156,16 +160,60 @@ export const checkRADIContainerRunning = async (): Promise<{ status: boolean; ms
     docker.on('close', (code) => {
       if (code === 0) {
         resolve({
-          status: true,
+          status: ResponseStatus.SUCCESS,
           msg: output === 'true' ? ['Container is running'] : ['Container is not running']
         })
       } else {
-        reject({ status: false, msg: `Error occurred: ${errorOutput}` })
+        reject({
+          status: ResponseStatus.ERROR,
+          msg: ['Something Went wrong!', `Error occurred: ${errorOutput}`]
+        })
       }
     })
 
     docker.on('error', (err) => {
-      reject({ status: false, msg: `Failed to start process: ${err.message}` })
+      reject({
+        status: ResponseStatus.ERROR,
+        msg: ['Something Went wrong!', `Failed to start process: ${err.message}`]
+      })
+    })
+  })
+}
+
+export const stopDockerRADIContainer = async (): Promise<ResponeInterface> => {
+  return new Promise((resolve, reject) => {
+    const docker = spawn('docker', ['stop', `${CONTAINER_NAME}`])
+
+    let output = ''
+    let errorOutput = ''
+
+    docker.stdout.on('data', (data) => {
+      output += data.toString().trim()
+    })
+
+    docker.stderr.on('data', (data) => {
+      errorOutput += data.toString()
+    })
+
+    docker.on('close', (code) => {
+      if (code === 0) {
+        resolve({
+          status: ResponseStatus.SUCCESS,
+          msg: output === 'true' ? ['Container is running'] : ['Container is not running']
+        })
+      } else {
+        reject({
+          status: ResponseStatus.ERROR,
+          msg: ['Something Went wrong!', `Error occurred: ${errorOutput}`]
+        })
+      }
+    })
+
+    docker.on('error', (err) => {
+      reject({
+        status: ResponseStatus.ERROR,
+        msg: ['Something Went wrong!', `Failed to start process: ${err.message}`]
+      })
     })
   })
 }

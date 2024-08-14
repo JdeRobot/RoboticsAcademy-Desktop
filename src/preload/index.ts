@@ -1,17 +1,19 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+import { ResponeInterface } from '../main/interfaces'
 
 // Custom APIs for renderer
 const api = {
-  testFunc: (msg: string): Promise<string> => ipcRenderer.invoke('test:testFunc', msg),
-  dockerCheck: (): Promise<{ status: boolean; msg: string[] }> =>
-    ipcRenderer.invoke('docker:check'),
-  checkDockerRADI: (): Promise<{ status: boolean; msg: string[] }> =>
-    ipcRenderer.invoke('docker:RADI'),
-  startRADIContainer: (): Promise<{ status: boolean; msg: string[] }> =>
-    ipcRenderer.invoke('docker:SART_RADI'),
-  checkDockerImageRunning: (): Promise<{ status: boolean; msg: string[] }> =>
-    ipcRenderer.invoke('docker:CHECK_RADI')
+  checkDockerAvailability: (): Promise<ResponeInterface> =>
+    ipcRenderer.invoke('docker:CHECK_AVAILABILITY'),
+  checkDockerRADIAvailability: (): Promise<ResponeInterface> =>
+    ipcRenderer.invoke('docker:CHECK_RADI_AVAILABILITY'),
+  startDockerRADIContainer: (): Promise<ResponeInterface> =>
+    ipcRenderer.invoke('docker:START_RADI_CONTAINER'),
+  stopDockerRADIContainer: (): Promise<ResponeInterface> =>
+    ipcRenderer.invoke('docker:STOP_RADI_CONTAINER'),
+  checkRADIContainerRunning: (): Promise<ResponeInterface> =>
+    ipcRenderer.invoke('docker:CHECK_RADI_RUNNING')
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

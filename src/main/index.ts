@@ -1,7 +1,14 @@
+import { ResponeInterface } from './interfaces'
 import { app, shell, BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import { checkDocker, checkDockerRADI } from './Command'
+import {
+  checkDockerAvailability,
+  checkDockerRADIAvailability,
+  checkRADIContainerRunning,
+  startDockerRADIContainer,
+  stopDockerRADIContainer
+} from './Command'
 
 // splash screen
 function createSplashWindow(): BrowserWindow {
@@ -71,31 +78,33 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
-  ipcMain.handle(
-    'test:testFunc',
-    async (event: IpcMainInvokeEvent, msg: string): Promise<string> => {
-      console.log('main file ', event.defaultPrevented)
-      return `Your Msg was : ${msg}`
-    }
-  )
+  //* IPC COMMUNICATION
   //* Docker check
-  ipcMain.handle('docker:check', async (event: IpcMainInvokeEvent) => {
+  ipcMain.handle('docker:CHECK_AVAILABILITY', async (event: IpcMainInvokeEvent) => {
     event.defaultPrevented
     try {
-      const res: { status: boolean; msg: string[] } = await checkDocker()
-      // console.log('docker ', res)
+      const res: ResponeInterface = await checkDockerAvailability()
       return res
     } catch (error) {
       return { status: false, msg: ['something went wrong!', `${error}`] }
     }
   })
-  //* Robotics Academy Docker Image
-  ipcMain.handle('docker:RADI', async (event: IpcMainInvokeEvent) => {
+  //* Stopping Docker RADI
+  ipcMain.handle('docker:CHECK_RADI_RUNNING', async (event: IpcMainInvokeEvent) => {
     event.defaultPrevented
     try {
-      const res: { status: boolean; msg: string[] } = await checkDockerRADI()
+      const res: ResponeInterface = await checkRADIContainerRunning()
+      // console.log('docker ', res)
+      return res
+    } catch (error) {
+      return { status: false, msg: ['something went wrong!'] }
+    }
+  })
+  //* Robotics Academy Docker Image
+  ipcMain.handle('docker:CHECK_RADI_AVAILABILITY', async (event: IpcMainInvokeEvent) => {
+    event.defaultPrevented
+    try {
+      const res: ResponeInterface = await checkDockerRADIAvailability()
       // console.log('docker ', res)
       return res
     } catch (error) {
@@ -103,17 +112,29 @@ app.whenReady().then(() => {
     }
   })
   //* Running RADI docker images
-  ipcMain.handle('docker:SART_RADI', async (event: IpcMainInvokeEvent) => {
+  ipcMain.handle('docker:START_RADI_CONTAINER', async (event: IpcMainInvokeEvent) => {
     event.defaultPrevented
     try {
-      const res: { status: boolean; msg: string[] } = await checkDockerRADI()
+      const res: ResponeInterface = await startDockerRADIContainer()
       // console.log('docker ', res)
       return res
     } catch (error) {
       return { status: false, msg: ['something went wrong!'] }
     }
   })
-  // Disappering splash screen and show main screen after 3 seconds.
+  //* Stopping Docker RADI
+  ipcMain.handle('docker:STOP_RADI_CONTAINER', async (event: IpcMainInvokeEvent) => {
+    event.defaultPrevented
+    try {
+      const res: ResponeInterface = await stopDockerRADIContainer()
+      // console.log('docker ', res)
+      return res
+    } catch (error) {
+      return { status: false, msg: ['something went wrong!'] }
+    }
+  })
+
+  //* checkRADIContainerRunning Disappering splash screen and show main screen after 3 seconds.
   try {
     const splashScreen: BrowserWindow = createSplashWindow()
     const mainScreen: BrowserWindow = createWindow()
@@ -140,6 +161,7 @@ app.whenReady().then(() => {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
+    //TODO: STOP DOCKER RADI IMAGE IF IT'S RUNNING
     app.quit()
   }
 })

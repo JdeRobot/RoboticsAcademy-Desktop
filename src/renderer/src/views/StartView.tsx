@@ -1,26 +1,23 @@
-import { Dispatch, FC, Reducer, ReducerWithoutAction, useEffect, useReducer, useState } from 'react'
+import { FC, useEffect, useReducer, useState } from 'react'
 import styles from './../assets/styles/startView.module.css'
 import {
   LogoTitle,
-  StartButton,
   ProgressMessage,
   WarningErrorScreen,
-  FooterLinks
+  FooterLinks,
+  Loader
 } from './../components/index'
-import ContinueBackButton from '@renderer/components/startscreenview/ContinueBackButton'
+import StartScrrenButtons from '@renderer/components/startscreenview/StartScreenButtons'
+import {
+  initialStateInterface,
+  ReducerActionInterface,
+  ResponeInterface
+} from '@renderer/utils/interfaces'
+import { ResponseStatus } from '@renderer/utils/types'
 type Props = {}
 
-type buttonTypes = 'start' | 'continue' | 'back'
-type screenStateTypes = 'start' | 'loading' | 'ready' | 'error' | 'warning'
-type actionTypes = 'START' | 'CHANGE_SCREEN' | 'UPDATE_PROGRESS'
 // type actionType = 'START'
-interface initialStateInterface {
-  screenState: screenStateTypes
-  buttonState: buttonTypes
-  errorWarningMsg: string[]
-  progress: number
-  totalProgressSteps: number
-}
+
 const initialState: initialStateInterface = {
   screenState: 'start',
   buttonState: 'start',
@@ -29,15 +26,10 @@ const initialState: initialStateInterface = {
   totalProgressSteps: 3
 }
 
-interface ReducerActionInterface {
-  type: actionTypes
-  payload?: any
-}
 const reducer = (state: initialStateInterface, action: ReducerActionInterface) => {
   console.log('reducer ', state)
   switch (action.type) {
     case 'START':
-      // console.log(action)
       return {
         ...state,
         screenState: action.payload.screenState
@@ -66,12 +58,59 @@ const StartScreen: FC<Props> = (props: Props) => {
     useReducer(reducer, initialState)
   const [isExpand, setIsExpand] = useState<boolean>(false)
   const [msg, setMsg] = useState<string>('')
+  const [isLoading, setIsloading] = useState<boolean>(false)
 
+  //* UseEffect
   useEffect(() => {
-    const startRADIContainer = async (): Promise<void> => {
+    const checkRADIContainerRunningFunc = async (): Promise<void> => {
+      setIsloading(true)
       try {
-        const res: { status: boolean; msg: string[] } = await window.api.startRADIContainer()
-        if (res.status) {
+        const res: ResponeInterface = await window.api.checkRADIContainerRunning()
+        console.log('res ', res)
+        if (res.status === ResponseStatus.SUCCESS) {
+          setMsg(res.msg[0])
+          dispatch({
+            type: 'CHANGE_SCREEN',
+            payload: {
+              screenState: 'running',
+              buttonState: 'stop',
+              errorWarningMsg: '',
+              progress: 0
+            }
+          })
+
+          // setTimeout(() => {
+          //   window.location.href = 'http://0.0.0.0:7164/exercises/'
+          // }, TIMER * 5)
+        } else {
+          // dispatch({
+          //   type: 'CHANGE_SCREEN',
+          //   payload: {
+          //     buttonState: 'back',
+          //     screenState: 'error',
+          //     errorWarningMsg: res.msg,
+          //     progress: 0
+          //   }
+          // })
+        }
+        console.log(res)
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setIsloading(false)
+      }
+    }
+
+    checkRADIContainerRunningFunc()
+  }, [])
+
+  //
+  useEffect(() => {
+    const startDockerRADIContainerFunc = async (): Promise<void> => {
+      try {
+        const res: ResponeInterface = await window.api.startDockerRADIContainer()
+        console.log('res ', res)
+        if (res.status === ResponseStatus.SUCCESS) {
           setTimeout(() => {
             setMsg(res.msg[0])
             dispatch({
@@ -83,8 +122,17 @@ const StartScreen: FC<Props> = (props: Props) => {
           }, TIMER)
 
           setTimeout(() => {
-            window.location.href = 'http://0.0.0.0:7164/exercises/'
-          }, TIMER * 5)
+            // window.location.href = 'http://0.0.0.0:7164/exercises/'
+            dispatch({
+              type: 'CHANGE_SCREEN',
+              payload: {
+                screenState: 'running',
+                buttonState: 'stop',
+                errorWarningMsg: '',
+                progress: 0
+              }
+            })
+          }, TIMER * 3)
         } else {
           dispatch({
             type: 'CHANGE_SCREEN',
@@ -101,11 +149,11 @@ const StartScreen: FC<Props> = (props: Props) => {
         console.error(error)
       }
     }
-    const checkDockerRADIFunc = async (): Promise<void> => {
+    const checkDockerRADIAvailabilityFunc = async (): Promise<void> => {
       try {
         // setMsg('Checking docker on your system.')
-        const res: { status: boolean; msg: string[] } = await window.api.checkDockerRADI()
-        if (res.status) {
+        const res: ResponeInterface = await window.api.checkDockerRADIAvailability()
+        if (res.status === ResponseStatus.SUCCESS) {
           setTimeout(() => {
             setMsg(res.msg[0])
             dispatch({
@@ -118,7 +166,7 @@ const StartScreen: FC<Props> = (props: Props) => {
 
           setTimeout(() => {
             setMsg(`Running jderoboto/robotics-academy image contianer.`)
-            startRADIContainer()
+            startDockerRADIContainerFunc()
           }, TIMER * 2)
         } else {
           dispatch({
@@ -136,11 +184,11 @@ const StartScreen: FC<Props> = (props: Props) => {
         console.error(error)
       }
     }
-    const checkDockerFunc = async (): Promise<void> => {
+    const checkDockerAvailabilityFunc = async (): Promise<void> => {
       try {
         setMsg('Checking docker on your system.')
-        const res: { status: boolean; msg: string[] } = await window.api.dockerCheck()
-        if (res.status) {
+        const res: ResponeInterface = await window.api.checkDockerAvailability()
+        if (res.status === ResponseStatus.SUCCESS) {
           setTimeout(() => {
             setMsg(res.msg[0])
             dispatch({
@@ -157,7 +205,7 @@ const StartScreen: FC<Props> = (props: Props) => {
           }, TIMER)
           setTimeout(() => {
             setMsg('Checking Robotics Academy Docker Image (RADI)')
-            checkDockerRADIFunc()
+            checkDockerRADIAvailabilityFunc()
           }, TIMER * 2)
         } else {
           dispatch({
@@ -176,7 +224,7 @@ const StartScreen: FC<Props> = (props: Props) => {
       }
     }
     if (screenState === 'loading') {
-      checkDockerFunc()
+      checkDockerAvailabilityFunc()
     }
   }, [screenState])
 
@@ -202,7 +250,13 @@ const StartScreen: FC<Props> = (props: Props) => {
                 />
               ))}
             {screenState !== 'loading' && (
-              <ContinueBackButton buttonState={buttonState} dispatch={dispatch} />
+              <>
+                {isLoading ? (
+                  <Loader>fetching...</Loader>
+                ) : (
+                  <StartScrrenButtons buttonState={buttonState} dispatch={dispatch} />
+                )}
+              </>
             )}
             {screenState === 'loading' && (
               <ProgressMessage

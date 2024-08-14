@@ -9,7 +9,8 @@ interface ProgressMessageInterface {
 const ProgressMessage: FC<ProgressMessageInterface> = ({ msg, progress, totalProgressSteps }) => {
   const calcProgress = (): string => {
     const percentage = Math.ceil((progress / totalProgressSteps) * 100)
-    return `${percentage}%`
+
+    return percentage > 100 ? `100%` : `${percentage}%`
   }
   return (
     <div className={`w-full flex flex-col items-start gap-4`}>

@@ -1,15 +1,19 @@
 // start screen view
 import LogoTitle from './startscreenview/LogoTitle'
-import StartButton from './startscreenview/StartButton'
 import ProgressMessage from './startscreenview/ProgressMessage'
 import WarningErrorScreen from './startscreenview/WarningErrorScreen'
+import ButtonWrapper from './buttons/ButtonWrapper'
 import FooterLinks from './startscreenview/FooterLinks'
 
+//* utils
+import Loader from './Loader'
 export {
   // start screen view
   LogoTitle,
-  StartButton,
   ProgressMessage,
   WarningErrorScreen,
-  FooterLinks
+  ButtonWrapper,
+  FooterLinks,
+  // utils
+  Loader
 }
