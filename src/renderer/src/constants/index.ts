@@ -10,26 +10,26 @@ export const socialLinks: socialLinksInterface[] = [
   {
     id: 'website',
     icon: WebSiteIcon,
-    link: 'https://github.com/pizzusoft/pdify/'
+    link: 'https://jderobot.github.io/'
   },
   {
     id: 'forum',
     icon: ForumIcon,
-    link: 'https://github.com/pizzusoft/pdify/'
+    link: 'https://unibotics.org/'
   },
   {
     id: 'x',
     icon: XIcon,
-    link: 'https://github.com/pizzusoft/pdify/'
+    link: 'https://twitter.com/jderobot'
   },
   {
     id: 'github',
     icon: GithubIcon,
-    link: 'https://github.com/pizzusoft/pdify/'
+    link: 'https://github.com/JdeRobot'
   },
   {
-    id: 'website',
+    id: 'youtube',
     icon: YoutubeIcon,
-    link: 'https://github.com/pizzusoft/pdify/'
+    link: 'https://www.youtube.com/channel/UCgmUgpircYAv_QhLQziHJOQ/videos'
   }
 ]
