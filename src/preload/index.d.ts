@@ -5,6 +5,8 @@ interface ApiInterface {
   startDockerRADIContainer: () => Promise<ResponeInterface>
   stopDockerRADIContainer: () => Promise<ResponeInterface>
   checkRADIContainerRunning: () => Promise<ResponeInterface>
+  onClosingApp: (callBack: any) => any
+  sendClosingApp: (msg: any) => any
 }
 declare global {
   interface Window {

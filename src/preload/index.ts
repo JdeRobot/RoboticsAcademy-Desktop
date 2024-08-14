@@ -13,7 +13,9 @@ const api = {
   stopDockerRADIContainer: (): Promise<ResponeInterface> =>
     ipcRenderer.invoke('docker:STOP_RADI_CONTAINER'),
   checkRADIContainerRunning: (): Promise<ResponeInterface> =>
-    ipcRenderer.invoke('docker:CHECK_RADI_RUNNING')
+    ipcRenderer.invoke('docker:CHECK_RADI_RUNNING'),
+  sendClosingApp: (msg) => ipcRenderer.send('app:CLOSING', msg),
+  onClosingApp: (callBack): any => ipcRenderer.on('app:DOCKER_CLOSING', callBack)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

@@ -1,5 +1,5 @@
-import { ResponeInterface } from './interfaces'
-import { app, shell, BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron'
+import { ResponeInterface, ResponseStatus } from './interfaces'
+import { app, shell, BrowserWindow, ipcMain, IpcMainInvokeEvent, IpcMainEvent } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import {
@@ -10,17 +10,18 @@ import {
   stopDockerRADIContainer
 } from './Command'
 
+// const mainScreen: BrowserWindow | null = ''
 // splash screen
 function createSplashWindow(): BrowserWindow {
   const win = new BrowserWindow({
-    width: 350 * 1.5,
-    height: 200 * 1.5,
+    width: 525,
+    height: 300,
     frame: false,
     transparent: true,
     alwaysOnTop: true
   })
 
-  console.log(process.resourcesPath)
+  // console.log(process.resourcesPath)
 
   const splashScreenSrc = app.isPackaged
     ? join(process.resourcesPath, 'splashscreen.html')
@@ -29,15 +30,18 @@ function createSplashWindow(): BrowserWindow {
   win.loadFile(splashScreenSrc)
   return win
 }
-
-function createWindow(): BrowserWindow {
+let mainWindow: BrowserWindow | null = null
+const createWindow = (): BrowserWindow => {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1280,
     height: 720,
     minWidth: 1280,
     minHeight: 720,
     show: false,
+    frame: false,
+    alwaysOnTop: false,
+    focusable: true,
     icon: join(__dirname, './../../resources/icons/icon.png'),
     autoHideMenuBar: true,
     webPreferences: {
@@ -61,6 +65,13 @@ function createWindow(): BrowserWindow {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
+  mainWindow.on('closed', (e) => {
+    console.log('main window closed')
+    e.preventDefault()
+    // Optionally quit the application when the main window is closed
+    // app.quit()
+  })
+
   return mainWindow
 }
 
@@ -80,15 +91,19 @@ app.whenReady().then(() => {
 
   //* IPC COMMUNICATION
   //* Docker check
-  ipcMain.handle('docker:CHECK_AVAILABILITY', async (event: IpcMainInvokeEvent) => {
-    event.defaultPrevented
-    try {
-      const res: ResponeInterface = await checkDockerAvailability()
-      return res
-    } catch (error) {
-      return { status: false, msg: ['something went wrong!', `${error}`] }
-    }
-  })
+  // ipcMain.handle('docker:CHECK_AVAILABILITY', async (event: IpcMainInvokeEvent) => {
+  //   const win: BrowserWindow = createWindow()
+  //   win.isMinimized() ? win.restore() : win.minimize()
+
+  //   return { status: ResponseStatus.ERROR, msg: [''] }
+  //   event.defaultPrevented
+  //   try {
+  //     const res: ResponeInterface = await checkDockerAvailability()
+  //     return res
+  //   } catch (error) {
+  //     return { status: false, msg: ['something went wrong!', `${error}`] }
+  //   }
+  // })
   //* Stopping Docker RADI
   ipcMain.handle('docker:CHECK_RADI_RUNNING', async (event: IpcMainInvokeEvent) => {
     event.defaultPrevented
@@ -145,6 +160,20 @@ app.whenReady().then(() => {
         splashScreen.destroy()
       }, 3000)
     })
+
+    //* minimize screen
+    ipcMain.handle('docker:CHECK_AVAILABILITY', async (event: IpcMainInvokeEvent) => {
+      mainScreen.isMinimized() ? mainScreen.restore() : mainScreen.minimize()
+
+      return { status: ResponseStatus.ERROR, msg: [''] }
+      event.defaultPrevented
+      try {
+        const res: ResponeInterface = await checkDockerAvailability()
+        return res
+      } catch (error) {
+        return { status: false, msg: ['something went wrong!', `${error}`] }
+      }
+    })
   } catch (error) {
     console.error(error)
   }
@@ -159,10 +188,18 @@ app.whenReady().then(() => {
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
+app.on('window-all-closed', (e) => {
+  console.log('###############')
+  e.preventDefault()
+  //* Closing App
+  // ipcMain.on('app:CLOSING', async (event: IpcMainEvent, msg: string) => {
+  //   console.log('your msg is ', msg)
+  //   event.defaultPrevented
+  //   event.reply('app:DOCKER_CLOSING', 'Please stop docker image')
+  // })
   if (process.platform !== 'darwin') {
     //TODO: STOP DOCKER RADI IMAGE IF IT'S RUNNING
-    app.quit()
+    // app.quit()
   }
 })
 
