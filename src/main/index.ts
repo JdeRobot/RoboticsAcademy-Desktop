@@ -1,5 +1,13 @@
 import { ResponeInterface, ResponseStatus } from './interfaces'
-import { app, shell, BrowserWindow, ipcMain, IpcMainInvokeEvent, IpcMainEvent } from 'electron'
+import {
+  app,
+  shell,
+  BrowserWindow,
+  ipcMain,
+  IpcMainInvokeEvent,
+  IpcMainEvent,
+  Menu
+} from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import {
@@ -10,7 +18,9 @@ import {
   stopDockerRADIContainer
 } from './Command'
 
-// const mainScreen: BrowserWindow | null = ''
+const isMac = process.platform === 'darwin'
+let mainWindow: BrowserWindow | null = null
+
 // splash screen
 function createSplashWindow(): BrowserWindow {
   const win = new BrowserWindow({
@@ -30,7 +40,7 @@ function createSplashWindow(): BrowserWindow {
   win.loadFile(splashScreenSrc)
   return win
 }
-let mainWindow: BrowserWindow | null = null
+
 const createWindow = (): BrowserWindow => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -41,6 +51,7 @@ const createWindow = (): BrowserWindow => {
     show: false,
     frame: false,
     alwaysOnTop: false,
+    transparent: true,
     focusable: true,
     icon: join(__dirname, './../../resources/icons/icon.png'),
     autoHideMenuBar: true,
@@ -66,10 +77,25 @@ const createWindow = (): BrowserWindow => {
   }
 
   mainWindow.on('closed', (e) => {
+    mainWindow = null
     console.log('main window closed')
-    e.preventDefault()
+    // e.preventDefault()
     // Optionally quit the application when the main window is closed
     // app.quit()
+  })
+
+  mainWindow.on('maximize', () => {
+    console.log('Window is maximized')
+    // Call your custom function here
+    // onWindowMaximized()
+  })
+  mainWindow.on('unmaximize', () => {
+    console.log('Window restored from maximized')
+  })
+
+  // Event listener for when the window is restored from minimized state
+  mainWindow.on('restore', () => {
+    console.log('Window restored from minimized')
   })
 
   return mainWindow
@@ -128,10 +154,9 @@ app.whenReady().then(() => {
   })
   //* Running RADI docker images
   ipcMain.handle('docker:START_RADI_CONTAINER', async (event: IpcMainInvokeEvent) => {
-    event.defaultPrevented
+    // event.defaultPrevented
     try {
       const res: ResponeInterface = await startDockerRADIContainer()
-      // console.log('docker ', res)
       return res
     } catch (error) {
       return { status: false, msg: ['something went wrong!'] }
@@ -148,25 +173,52 @@ app.whenReady().then(() => {
       return { status: false, msg: ['something went wrong!'] }
     }
   })
+  //* App Window Resize
+  // minimize the window
+  ipcMain.on('app_window:MINIMIZE', (event) => {
+    // event.preventDefault()
+    if (!mainWindow?.isMinimized()) {
+      mainWindow?.minimize()
+    }
+  })
 
+  // maximize
+  ipcMain.on('app_window:MAXIMIZE', (event) => {
+    // event.preventDefault()
+    if (!mainWindow?.isMinimized()) {
+      mainWindow?.maximize()
+    }
+  })
+  // unmaximize
+  ipcMain.on('app_window:UNMAXIMIZE', (event) => {
+    // event.preventDefault()
+    if (mainWindow?.isMaximized()) {
+      mainWindow?.restore()
+    }
+  })
+  // close
+  ipcMain.on('app_window:CLOSE', (event) => {
+    // event.preventDefault()
+    mainWindow?.close()
+    !isMac && app.quit()
+  })
   //* checkRADIContainerRunning Disappering splash screen and show main screen after 3 seconds.
   try {
     const splashScreen: BrowserWindow = createSplashWindow()
     const mainScreen: BrowserWindow = createWindow()
 
     mainScreen.once('ready-to-show', () => {
-      setTimeout(() => {
-        mainScreen.show()
-        splashScreen.destroy()
-      }, 3000)
+      setTimeout(
+        () => {
+          mainScreen.show()
+          splashScreen.destroy()
+        },
+        app.isPackaged ? 3000 : 0
+      )
     })
 
     //* minimize screen
     ipcMain.handle('docker:CHECK_AVAILABILITY', async (event: IpcMainInvokeEvent) => {
-      mainScreen.isMinimized() ? mainScreen.restore() : mainScreen.minimize()
-
-      return { status: ResponseStatus.ERROR, msg: [''] }
-      event.defaultPrevented
       try {
         const res: ResponeInterface = await checkDockerAvailability()
         return res
@@ -189,17 +241,8 @@ app.whenReady().then(() => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', (e) => {
-  console.log('###############')
-  e.preventDefault()
-  //* Closing App
-  // ipcMain.on('app:CLOSING', async (event: IpcMainEvent, msg: string) => {
-  //   console.log('your msg is ', msg)
-  //   event.defaultPrevented
-  //   event.reply('app:DOCKER_CLOSING', 'Please stop docker image')
-  // })
-  if (process.platform !== 'darwin') {
-    //TODO: STOP DOCKER RADI IMAGE IF IT'S RUNNING
-    // app.quit()
+  if (!isMac) {
+    app.quit()
   }
 })
 

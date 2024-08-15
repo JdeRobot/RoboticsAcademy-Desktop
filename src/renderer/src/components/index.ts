@@ -6,7 +6,8 @@ import ButtonWrapper from './buttons/ButtonWrapper'
 import FooterLinks from './startscreenview/FooterLinks'
 
 //* utils
-import Loader from './Loader'
+import TopBar from './utlits/TopBar'
+import Loader from './utlits/Loader'
 export {
   // start screen view
   LogoTitle,
@@ -15,5 +16,6 @@ export {
   ButtonWrapper,
   FooterLinks,
   // utils
+  TopBar,
   Loader
 }

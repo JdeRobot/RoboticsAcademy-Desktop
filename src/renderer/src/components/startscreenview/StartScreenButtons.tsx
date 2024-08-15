@@ -1,6 +1,6 @@
 import { RightArrowIcon, BackIcon, PowerIcon, GameConsoleIcon, PlayIcon } from '@renderer/assets'
 import { FC, useState } from 'react'
-import Loader from '../Loader'
+import Loader from '../utlits/Loader'
 import ButtonWrapper from '../buttons/ButtonWrapper'
 
 interface StartScrrenButtonsInterface {

@@ -7,6 +7,7 @@ interface ApiInterface {
   checkRADIContainerRunning: () => Promise<ResponeInterface>
   onClosingApp: (callBack: any) => any
   sendClosingApp: (msg: any) => any
+  sendWindowResize: (chanel: string) => void
 }
 declare global {
   interface Window {
