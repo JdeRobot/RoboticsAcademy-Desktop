@@ -110,17 +110,19 @@ const StartScrrenButtons: FC<StartScrrenButtonsInterface> = ({ buttonState, disp
           </ButtonWrapper>
 
           {/* exercise */}
-          <ButtonWrapper
-            onClick={() => (window.location.href = 'http://0.0.0.0:7164/exercises')}
-            cssClass="bg-green-600 text-[#D9D9D9] text-lg font-semibold"
-          >
-            <>
-              <span>
-                <img src={GameConsoleIcon} alt="" className="w-[24px]" />
-              </span>{' '}
-              Exercise
-            </>
-          </ButtonWrapper>
+          {!isStopping && (
+            <ButtonWrapper
+              onClick={() => (window.location.href = 'http://0.0.0.0:7164/exercises')}
+              cssClass="bg-green-600 text-[#D9D9D9] text-lg font-semibold"
+            >
+              <>
+                <span>
+                  <img src={GameConsoleIcon} alt="" className="w-[24px]" />
+                </span>{' '}
+                Exercise
+              </>
+            </ButtonWrapper>
+          )}
         </div>
       )}
     </>

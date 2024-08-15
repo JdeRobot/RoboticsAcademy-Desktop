@@ -197,10 +197,12 @@ app.whenReady().then(() => {
     }
   })
   // close
-  ipcMain.on('app_window:CLOSE', (event) => {
-    // event.preventDefault()
-    mainWindow?.close()
-    !isMac && app.quit()
+  ipcMain.once('app_window:CLOSE', (event) => {
+    event.preventDefault()
+    // mainWindow?.close()
+    // mainWindow = null
+    // !isMac &&
+    app.quit()
   })
   //* checkRADIContainerRunning Disappering splash screen and show main screen after 3 seconds.
   try {
