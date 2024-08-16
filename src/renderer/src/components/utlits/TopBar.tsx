@@ -27,6 +27,9 @@ const TopBar: FC<TopBarInterface> = ({ setIsAppclosing }) => {
   }
 
   const handlewindowClose = () => {
+    const closeAlart = confirm('Are you Sure?')
+    if (!closeAlart) return
+
     setIsClosingProcess(true)
 
     if (isClosingProcess) return

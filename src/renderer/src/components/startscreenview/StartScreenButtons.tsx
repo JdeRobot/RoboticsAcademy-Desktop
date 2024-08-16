@@ -2,7 +2,7 @@ import { RightArrowIcon, BackIcon, PowerIcon, GameConsoleIcon, PlayIcon } from '
 import { FC, useState } from 'react'
 import Loader from '../utlits/Loader'
 import ButtonWrapper from '../buttons/ButtonWrapper'
-
+import styles from './../../styles'
 interface StartScrrenButtonsInterface {
   buttonState: string
   dispatch: any
@@ -11,6 +11,9 @@ interface StartScrrenButtonsInterface {
 const StartScrrenButtons: FC<StartScrrenButtonsInterface> = ({ buttonState, dispatch }) => {
   const [isStopping, setIsStopping] = useState<boolean>(false)
   const stopDockerFunc = async () => {
+    const stopAlert = confirm('Are you Sure?')
+    if (!stopAlert) return
+
     setIsStopping(true)
     try {
       const res: { status: boolean; msg: string[] } = await window.api.stopDockerRADIContainer()
@@ -42,7 +45,7 @@ const StartScrrenButtons: FC<StartScrrenButtonsInterface> = ({ buttonState, disp
               payload: { screenState: 'loading' }
             })
           }
-          cssClass="bg-yellow-600 text-[#D9D9D9] text-lg "
+          cssClass={`bg-yellow-600 ${styles.startButtonSvg}`}
         >
           <>
             Start
@@ -59,7 +62,7 @@ const StartScrrenButtons: FC<StartScrrenButtonsInterface> = ({ buttonState, disp
               payload: { screenState: 'loading' }
             })
           }
-          cssClass="bg-yellow-600 text-[#D9D9D9] text-lg font-semibold"
+          cssClass={`bg-yellow-600 ${styles.startButtonSvg}`}
         >
           <>
             Continue{' '}
@@ -73,11 +76,10 @@ const StartScrrenButtons: FC<StartScrrenButtonsInterface> = ({ buttonState, disp
         <ButtonWrapper
           onClick={() =>
             dispatch({
-              type: 'START',
-              payload: { buttonState: 'continue', screenState: 'warning', process: 0 }
+              type: 'RESET'
             })
           }
-          cssClass="bg-blue-600 text-[#D9D9D9] text-lg font-semibold"
+          cssClass={`"bg-blue-600 ${styles.startButtonSvg}`}
         >
           <>
             <span>
@@ -95,7 +97,7 @@ const StartScrrenButtons: FC<StartScrrenButtonsInterface> = ({ buttonState, disp
 
           <ButtonWrapper
             onClick={() => stopDockerFunc()}
-            cssClass="bg-red-600 text-[#D9D9D9] text-lg font-semibold"
+            cssClass={`bg-red-600 ${styles.startButtonSvg}`}
           >
             {isStopping ? (
               <Loader>Stopping...</Loader>
@@ -113,7 +115,7 @@ const StartScrrenButtons: FC<StartScrrenButtonsInterface> = ({ buttonState, disp
           {!isStopping && (
             <ButtonWrapper
               onClick={() => (window.location.href = 'http://0.0.0.0:7164/exercises')}
-              cssClass="bg-green-600 text-[#D9D9D9] text-lg font-semibold"
+              cssClass={`bg-green-600 ${styles.startButtonSvg}`}
             >
               <>
                 <span>

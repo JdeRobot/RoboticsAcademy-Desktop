@@ -15,7 +15,7 @@ const AppClosingWarning = (props: Props) => {
         <Loader>
           <p className="text-lg font-medium ">Please Wait...</p>
         </Loader>
-        <p className="text-base font-normal ">Stoping Background Process</p>
+        <p className="text-base font-normal ">Stopping Background Process</p>
       </div>
     </div>
   )

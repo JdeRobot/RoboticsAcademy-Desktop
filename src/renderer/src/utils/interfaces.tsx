@@ -14,6 +14,7 @@ export interface initialStateInterface {
   errorWarningMsg: string[]
   progress: number
   totalProgressSteps: number
+  isExpand: boolean
 }
 export interface ReducerActionInterface {
   type: ActionTypes

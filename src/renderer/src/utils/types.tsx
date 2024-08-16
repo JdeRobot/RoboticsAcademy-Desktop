@@ -8,7 +8,7 @@ export type screenStateTypes =
   | 'error'
   | 'warning'
 export type buttonTypes = 'start' | 'continue' | 'back' | 'stop'
-export type ActionTypes = 'START' | 'CHANGE_SCREEN' | 'UPDATE_PROGRESS'
+export type ActionTypes = 'START' | 'CHANGE_SCREEN' | 'UPDATE_PROGRESS' | 'EXPAND_DIV' | 'RESET'
 
 // Response Status Type
 export enum ResponseStatus {

@@ -2,7 +2,7 @@ import { ResponeInterface, ResponseStatus } from './interfaces'
 
 const { spawn } = require('child_process')
 const RADI_IMAGE = 'jderobot/robotics-academy'
-const CONTAINER_NAME = 'robotics-academy'
+const CONTAINER_NAME = 'xrobotics-academy'
 
 export const checkDockerAvailability = async (): Promise<ResponeInterface> => {
   return new Promise((resolve, reject) => {
@@ -55,7 +55,6 @@ export const checkDockerRADIAvailability = async (): Promise<ResponeInterface> =
     })
 
     docker.on('close', (code) => {
-      console.log(typeof output)
       if (code === 0 && output.length > 0) {
         resolve({ status: ResponseStatus.SUCCESS, msg: [`RADI founded: ${output}`] })
       } else if (code === 0 && output.length === 0) {

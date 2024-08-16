@@ -3,7 +3,7 @@ import { Dispatch, FC, SetStateAction } from 'react'
 
 interface WarningErrorScreenInterface {
   isExpand: boolean
-  setIsExtend: Dispatch<SetStateAction<boolean>>
+  dispatch: any
   screenState: string
   buttonState: string
   errorWarningMsg: string[]
@@ -11,10 +11,10 @@ interface WarningErrorScreenInterface {
 
 const WarningErrorScreen: FC<WarningErrorScreenInterface> = ({
   isExpand,
-  setIsExtend,
   screenState,
   buttonState,
-  errorWarningMsg
+  errorWarningMsg,
+  dispatch
 }) => {
   return (
     <div
@@ -44,7 +44,7 @@ const WarningErrorScreen: FC<WarningErrorScreenInterface> = ({
             src={DropDownIcon}
             alt=""
             className={`w-[24px] h-[24px`}
-            onClick={() => setIsExtend((prev) => !prev)}
+            onClick={() => dispatch({ type: 'EXPAND_DIV' })}
           />
         </div>
       </div>

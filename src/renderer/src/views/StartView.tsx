@@ -23,7 +23,8 @@ const initialState: initialStateInterface = {
   buttonState: 'start',
   errorWarningMsg: [],
   progress: 0,
-  totalProgressSteps: 3
+  totalProgressSteps: 3,
+  isExpand: false
 }
 
 const reducer = (state: initialStateInterface, action: ReducerActionInterface) => {
@@ -47,6 +48,15 @@ const reducer = (state: initialStateInterface, action: ReducerActionInterface) =
         ...state,
         progress: state.progress + action.payload.progress
       }
+    case 'EXPAND_DIV':
+      return {
+        ...state,
+        isExpand: !state.isExpand
+      }
+    case 'RESET':
+      return {
+        ...initialState
+      }
     default:
       throw new Error('Unknown Action')
   }
@@ -54,9 +64,11 @@ const reducer = (state: initialStateInterface, action: ReducerActionInterface) =
 
 const TIMER = 1000
 const StartScreen: FC<Props> = (props: Props) => {
-  const [{ screenState, buttonState, errorWarningMsg, progress, totalProgressSteps }, dispatch] =
-    useReducer(reducer, initialState)
-  const [isExpand, setIsExpand] = useState<boolean>(false)
+  const [
+    { screenState, buttonState, errorWarningMsg, progress, totalProgressSteps, isExpand },
+    dispatch
+  ] = useReducer(reducer, initialState)
+  // const [isExpand, setIsExpand] = useState<boolean>(false)
   const [msg, setMsg] = useState<string>('')
   const [isLoading, setIsloading] = useState<boolean>(false)
 
@@ -244,9 +256,9 @@ const StartScreen: FC<Props> = (props: Props) => {
                 <WarningErrorScreen
                   isExpand={isExpand}
                   screenState={screenState}
-                  setIsExtend={setIsExpand}
                   buttonState={buttonState}
                   errorWarningMsg={errorWarningMsg}
+                  dispatch={dispatch}
                 />
               ))}
             {screenState !== 'loading' && (
