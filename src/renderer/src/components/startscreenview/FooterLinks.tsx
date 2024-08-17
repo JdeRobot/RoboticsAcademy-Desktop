@@ -25,7 +25,7 @@ const FooterLinks: FC<FooterLinksInterface> = ({ screenState, dispatch }) => {
               src={social.icon}
               alt={social.id}
               key={social.id}
-              className={`w-[16px] h-[16px] `}
+              className={`w-[18px] xh-[16px] `}
               onClick={() => window.open(social.link)}
             />
           </div>

@@ -5,6 +5,7 @@ import WarningErrorScreen from './startscreenview/WarningErrorScreen'
 import ButtonWrapper from './buttons/ButtonWrapper'
 import FooterLinks from './startscreenview/FooterLinks'
 import CommandSettings from './startscreenview/CommandSettings'
+import CommandSettingsSidebar from './startscreenview/CommandSettingsSidebar'
 //* utils
 import TopBar from './utlits/TopBar'
 import Loader from './utlits/Loader'
@@ -16,6 +17,7 @@ export {
   ButtonWrapper,
   FooterLinks,
   CommandSettings,
+  CommandSettingsSidebar,
   // utils
   TopBar,
   Loader
