@@ -6,7 +6,7 @@ import {
 } from '@renderer/assets/icons/Icons'
 import { Dispatch, FC, SetStateAction, useState } from 'react'
 import PropTypes from 'prop-types'
-import { ResponseStatus } from '@renderer/utils/types'
+import { ResponseStatus } from '@renderer/utils/enums'
 
 interface TopBarInterface {
   setIsAppclosing: Dispatch<SetStateAction<boolean>>

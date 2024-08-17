@@ -33,7 +33,7 @@ export const checkDockerAvailability = async (): Promise<ResponeInterface> => {
     docker.on('error', (err) => {
       reject({
         status: ResponseStatus.ERROR,
-        msg: ['Something went wrong!', `Failed to start process: ${err.message}`]
+        msg: [`Failed to start process: ${err.message}`]
       })
     })
   })
@@ -68,7 +68,7 @@ export const checkDockerRADIAvailability = async (): Promise<ResponeInterface> =
       } else {
         resolve({
           status: ResponseStatus.ERROR,
-          msg: ['Something Went wrong!', `RADI is not founded: ${errorOutput}`]
+          msg: [`RADI is not founded: ${errorOutput}`]
         })
       }
     })
@@ -76,7 +76,7 @@ export const checkDockerRADIAvailability = async (): Promise<ResponeInterface> =
     docker.on('error', (err) => {
       reject({
         status: ResponseStatus.ERROR,
-        msg: ['Something Went wrong!', `Failed to start process: ${err.message}`]
+        msg: [`Failed to start process: ${err.message}`]
       })
     })
   })
@@ -135,7 +135,7 @@ export const startDockerRADIContainer = async (): Promise<ResponeInterface> => {
     docker.on('error', (err) => {
       reject({
         status: ResponseStatus.ERROR,
-        msg: ['Something Went wrong!', `Failed to start process: ${err.message}`]
+        msg: [`Failed to start process: ${err.message}`]
       })
     })
   })
@@ -165,7 +165,7 @@ export const checkRADIContainerRunning = async (): Promise<ResponeInterface> => 
       } else {
         reject({
           status: ResponseStatus.ERROR,
-          msg: ['Something Went wrong!', `Error occurred: ${errorOutput}`]
+          msg: [`Error occurred: ${errorOutput}`]
         })
       }
     })
@@ -173,7 +173,7 @@ export const checkRADIContainerRunning = async (): Promise<ResponeInterface> => 
     docker.on('error', (err) => {
       reject({
         status: ResponseStatus.ERROR,
-        msg: ['Something Went wrong!', `Failed to start process: ${err.message}`]
+        msg: [`Failed to start process: ${err.message}`]
       })
     })
   })
@@ -203,7 +203,7 @@ export const stopDockerRADIContainer = async (): Promise<ResponeInterface> => {
       } else {
         reject({
           status: ResponseStatus.ERROR,
-          msg: ['Something Went wrong!', `Error occurred: ${errorOutput}`]
+          msg: [`Error occurred: ${errorOutput}`]
         })
       }
     })
@@ -211,7 +211,7 @@ export const stopDockerRADIContainer = async (): Promise<ResponeInterface> => {
     docker.on('error', (err) => {
       reject({
         status: ResponseStatus.ERROR,
-        msg: ['Something Went wrong!', `Failed to start process: ${err.message}`]
+        msg: [`Failed to start process: ${err.message}`]
       })
     })
   })

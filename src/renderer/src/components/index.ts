@@ -4,7 +4,7 @@ import ProgressMessage from './startscreenview/ProgressMessage'
 import WarningErrorScreen from './startscreenview/WarningErrorScreen'
 import ButtonWrapper from './buttons/ButtonWrapper'
 import FooterLinks from './startscreenview/FooterLinks'
-
+import CommandSettings from './startscreenview/CommandSettings'
 //* utils
 import TopBar from './utlits/TopBar'
 import Loader from './utlits/Loader'
@@ -15,6 +15,7 @@ export {
   WarningErrorScreen,
   ButtonWrapper,
   FooterLinks,
+  CommandSettings,
   // utils
   TopBar,
   Loader

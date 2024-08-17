@@ -1,18 +1,27 @@
-//* Start Screen
-export type screenStateTypes =
-  | 'checking'
-  | 'start'
-  | 'loading'
-  | 'ready'
-  | 'running'
-  | 'error'
-  | 'warning'
-export type buttonTypes = 'start' | 'continue' | 'back' | 'stop'
-export type ActionTypes = 'START' | 'CHANGE_SCREEN' | 'UPDATE_PROGRESS' | 'EXPAND_DIV' | 'RESET'
+import { ActionEnums, ButtonEnums, ScreenStateEnums } from './enums'
 
-// Response Status Type
-export enum ResponseStatus {
-  SUCCESS = 'SUCCESS',
-  WARNING = 'WARNING',
-  ERROR = 'ERROR'
-}
+//* Start Screen
+export type ReducerActionTypes =
+  | {
+      type: ActionEnums.START
+      payload: { screenState: ScreenStateEnums }
+    }
+  | {
+      type: ActionEnums.CHANGE_SCREEN
+      payload: {
+        screenState: ScreenStateEnums
+        buttonState: ButtonEnums
+        errorWarningMsg: string[]
+        progress: number
+      }
+    }
+  | {
+      type: ActionEnums.UPDATE_PROGRESS
+      payload: {
+        progress: number
+      }
+    }
+  | {
+      type: ActionEnums.EXPAND_DIV
+    }
+  | { type: ActionEnums.RESET }

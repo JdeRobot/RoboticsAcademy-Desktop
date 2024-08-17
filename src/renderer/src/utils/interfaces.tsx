@@ -1,6 +1,6 @@
 // import { FC } from 'react'
 
-import { ActionTypes, buttonTypes, ResponseStatus, screenStateTypes } from './types'
+import { ButtonEnums, ResponseStatus, ScreenStateEnums } from './enums'
 
 // Start Screen
 export interface CssClassProps {
@@ -9,16 +9,12 @@ export interface CssClassProps {
 
 //* START SCREEN
 export interface initialStateInterface {
-  screenState: screenStateTypes
-  buttonState: buttonTypes
+  screenState: ScreenStateEnums
+  buttonState: ButtonEnums
   errorWarningMsg: string[]
   progress: number
   totalProgressSteps: number
   isExpand: boolean
-}
-export interface ReducerActionInterface {
-  type: ActionTypes
-  payload?: any
 }
 
 // response interfaec

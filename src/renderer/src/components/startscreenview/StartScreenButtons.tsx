@@ -1,11 +1,13 @@
 import { RightArrowIcon, BackIcon, PowerIcon, GameConsoleIcon, PlayIcon } from '@renderer/assets'
-import { FC, useState } from 'react'
+import { Dispatch, FC, useState } from 'react'
 import Loader from '../utlits/Loader'
 import ButtonWrapper from '../buttons/ButtonWrapper'
-import styles from './../../styles'
+import styles from '../../assets/styles/styles'
+import { ActionEnums, ButtonEnums, ScreenStateEnums } from '@renderer/utils/enums'
+import { ReducerActionTypes } from '@renderer/utils/types'
 interface StartScrrenButtonsInterface {
   buttonState: string
-  dispatch: any
+  dispatch: Dispatch<ReducerActionTypes>
 }
 
 const StartScrrenButtons: FC<StartScrrenButtonsInterface> = ({ buttonState, dispatch }) => {
@@ -20,11 +22,11 @@ const StartScrrenButtons: FC<StartScrrenButtonsInterface> = ({ buttonState, disp
 
       if (res.status) {
         dispatch({
-          type: 'CHANGE_SCREEN',
+          type: ActionEnums.CHANGE_SCREEN,
           payload: {
-            screenState: 'start',
-            buttonState: 'start',
-            errorWarningMsg: '',
+            screenState: ScreenStateEnums.START,
+            buttonState: ButtonEnums.START,
+            errorWarningMsg: [],
             progress: 0
           }
         })
@@ -37,12 +39,12 @@ const StartScrrenButtons: FC<StartScrrenButtonsInterface> = ({ buttonState, disp
   }
   return (
     <>
-      {buttonState === 'start' && (
+      {buttonState === ButtonEnums.START && (
         <ButtonWrapper
           onClick={() =>
             dispatch({
-              type: 'START',
-              payload: { screenState: 'loading' }
+              type: ActionEnums.START,
+              payload: { screenState: ScreenStateEnums.LOADING }
             })
           }
           cssClass={`bg-yellow-600 ${styles.startButtonSvg}`}
@@ -54,12 +56,12 @@ const StartScrrenButtons: FC<StartScrrenButtonsInterface> = ({ buttonState, disp
         </ButtonWrapper>
       )}
       {/* //TODO: NEED TO WORK */}
-      {buttonState === 'continue' && (
+      {buttonState === ButtonEnums.CONTINUE && (
         <ButtonWrapper
           onClick={() =>
             dispatch({
-              type: 'START',
-              payload: { screenState: 'loading' }
+              type: ActionEnums.START,
+              payload: { screenState: ScreenStateEnums.LOADING }
             })
           }
           cssClass={`bg-yellow-600 ${styles.startButtonSvg}`}
@@ -72,11 +74,11 @@ const StartScrrenButtons: FC<StartScrrenButtonsInterface> = ({ buttonState, disp
           </>
         </ButtonWrapper>
       )}
-      {buttonState === 'back' && (
+      {buttonState === ButtonEnums.BACK && (
         <ButtonWrapper
           onClick={() =>
             dispatch({
-              type: 'RESET'
+              type: ActionEnums.RESET
             })
           }
           cssClass={`"bg-blue-600 ${styles.startButtonSvg}`}
@@ -91,7 +93,7 @@ const StartScrrenButtons: FC<StartScrrenButtonsInterface> = ({ buttonState, disp
       )}
 
       {/* stop or exercise button */}
-      {buttonState === 'stop' && (
+      {buttonState === ButtonEnums.STOP && (
         <div className={`flex items-center gap-2`}>
           {/* stop */}
 
