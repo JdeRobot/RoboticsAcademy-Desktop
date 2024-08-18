@@ -61,6 +61,18 @@ export const ConnectIcon: FC<CssClassProps> = ({ cssClass }) => (
   </svg>
 )
 
+export const ConfigureIcon: FC<CssClassProps> = ({ cssClass }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24">
+    <path
+      fill="none"
+      stroke="#d9d9d9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.75"
+      d="M21 5h-3m-4.25-2v4M13 5H3m4 7H3m7.75-2v4M21 12H11m10 7h-3m-4.25-2v4M13 19H3"
+    />
+  </svg>
+)
 export const CmdIcon: FC<CssClassProps> = ({ cssClass }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"

@@ -6,9 +6,9 @@ import {
   WarningErrorScreen,
   FooterLinks,
   Loader,
-  CommandSettings
+  StartScreenButtons,
+  StartScreenSettings
 } from './../components/index'
-import StartScrrenButtons from '@renderer/components/startscreenview/StartScreenButtons'
 import { initialState, reducer } from '@renderer/hooks/reducers/useStartScrrenReducer'
 import { useStartScreenEffect } from '@renderer/hooks/effects/useStartScreenEffect'
 import { ScreenStateEnums } from '@renderer/utils/enums'
@@ -35,7 +35,7 @@ const StartScreen: FC<StartScreenInterface> = ({}) => {
       >
         <div className={`w-full h-full flex flex-col justify-between items-center py-2`}>
           {screenState === ScreenStateEnums.SETTINGS ? (
-            <CommandSettings />
+            <StartScreenSettings />
           ) : (
             <>
               <LogoTitle />
@@ -57,7 +57,7 @@ const StartScreen: FC<StartScreenInterface> = ({}) => {
                     {isLoading ? (
                       <Loader>fetching...</Loader>
                     ) : (
-                      <StartScrrenButtons buttonState={buttonState} dispatch={dispatch} />
+                      <StartScreenButtons buttonState={buttonState} dispatch={dispatch} />
                     )}
                   </>
                 )}

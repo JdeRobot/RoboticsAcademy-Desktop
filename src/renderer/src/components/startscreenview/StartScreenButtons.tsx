@@ -10,7 +10,7 @@ interface StartScrrenButtonsInterface {
   dispatch: Dispatch<ReducerActionTypes>
 }
 
-const StartScrrenButtons: FC<StartScrrenButtonsInterface> = ({ buttonState, dispatch }) => {
+const StartScreenButtons: FC<StartScrrenButtonsInterface> = ({ buttonState, dispatch }) => {
   const [isStopping, setIsStopping] = useState<boolean>(false)
   const stopDockerFunc = async () => {
     const stopAlert = confirm('Are you Sure?')
@@ -133,4 +133,4 @@ const StartScrrenButtons: FC<StartScrrenButtonsInterface> = ({ buttonState, disp
   )
 }
 
-export default StartScrrenButtons
+export default StartScreenButtons

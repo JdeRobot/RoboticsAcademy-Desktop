@@ -66,7 +66,7 @@ const TopBar: FC<TopBarInterface> = ({ setIsAppclosing }) => {
     isRADIContainerRunning()
   }
   return (
-    <div className={`absolute w-full h-[24px] bg-slate-800 z-[100] hover:cursor-pointer`}>
+    <div className={`absolute w-full h-[24px] bg-gray-600 z-[100] hover:cursor-pointer`}>
       <div className={`w-full h-full flex justify-between items-center`}>
         {/* dragable bar area */}
         <div className={`w-[calc(100%-90px)] h-full draggable`}></div>

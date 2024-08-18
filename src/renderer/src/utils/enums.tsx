@@ -23,6 +23,18 @@ export enum ActionEnums {
   RESET = 'RESET'
 }
 
+//* Start Screen Settings
+export enum SettingsScreenStateEnums {
+  COMMAND = 'COMMAND',
+  CONFIGURE = 'CONFIGURE',
+  ADVANCE = 'ADVANCE'
+}
+
+export enum SettingsActionEnums {
+  UPDATE_SCREEN = 'UPDATE_SCREEN',
+  RESET = 'RESET'
+}
+
 // * response
 export enum ResponseStatus {
   SUCCESS = 'SUCCESS',

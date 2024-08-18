@@ -3,9 +3,14 @@ import LogoTitle from './startscreenview/LogoTitle'
 import ProgressMessage from './startscreenview/ProgressMessage'
 import WarningErrorScreen from './startscreenview/WarningErrorScreen'
 import ButtonWrapper from './buttons/ButtonWrapper'
+import StartScreenButtons from './startscreenview/StartScreenButtons'
 import FooterLinks from './startscreenview/FooterLinks'
-import CommandSettings from './startscreenview/CommandSettings'
-import CommandSettingsSidebar from './startscreenview/CommandSettingsSidebar'
+// start screen settings
+import StartScreenSettings from './startscreenview/settings/StartScreenSettings'
+import StartScreenSettingsSidebar from './startscreenview/settings/StartScreenSettingsSidebar'
+import StartScreenSettingsCommand from './startscreenview/settings/StartScreenSettinsCommand'
+import StartScreenSettingsConfigure from './startscreenview/settings/StartScreenSettingsConfigure'
+import StartScreenSettinsAdvance from './startscreenview/settings/StartScreenSettinsAdvance'
 //* utils
 import TopBar from './utlits/TopBar'
 import Loader from './utlits/Loader'
@@ -16,8 +21,13 @@ export {
   WarningErrorScreen,
   ButtonWrapper,
   FooterLinks,
-  CommandSettings,
-  CommandSettingsSidebar,
+  StartScreenButtons,
+  // Start Screen Settings
+  StartScreenSettings,
+  StartScreenSettingsSidebar,
+  StartScreenSettingsCommand,
+  StartScreenSettingsConfigure,
+  StartScreenSettinsAdvance,
   // utils
   TopBar,
   Loader

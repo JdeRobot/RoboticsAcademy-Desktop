@@ -6,9 +6,9 @@ import StartScreen from './views/StartView'
 
 const App = () => {
   const [isAppClosing, setIsAppclosing] = useState<boolean>(false)
-  window.api.onClosingApp((_event, msg) => {
-    console.log('msg ', msg)
-  })
+  // window.api.onClosingApp((_event, msg) => {
+  //   console.log('msg ', msg)
+  // })
 
   return (
     <div className="absolute w-screen h-screen rounded-lg">

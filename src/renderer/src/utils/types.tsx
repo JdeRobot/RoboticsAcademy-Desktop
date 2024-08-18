@@ -1,4 +1,10 @@
-import { ActionEnums, ButtonEnums, ScreenStateEnums } from './enums'
+import {
+  ActionEnums,
+  ButtonEnums,
+  ScreenStateEnums,
+  SettingsActionEnums,
+  SettingsScreenStateEnums
+} from './enums'
 
 //* Start Screen
 export type ReducerActionTypes =
@@ -25,3 +31,15 @@ export type ReducerActionTypes =
       type: ActionEnums.EXPAND_DIV
     }
   | { type: ActionEnums.RESET }
+
+//* Start Screen Settings
+export type SettingsReducerActionTypes =
+  | {
+      type: SettingsActionEnums.UPDATE_SCREEN
+      payload: {
+        settingsScreenState: SettingsScreenStateEnums
+      }
+    }
+  | {
+      type: SettingsActionEnums.RESET
+    }
