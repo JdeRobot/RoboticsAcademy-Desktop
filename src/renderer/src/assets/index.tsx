@@ -9,6 +9,8 @@ import RightArrowIcon from './icons/RightArrowIcon.svg'
 import BackIcon from './icons/BackIcon.svg'
 import PowerIcon from './icons/PowerIcon.svg'
 import GameConsoleIcon from './icons/GameConsoleIcon.svg'
+import CopyIcon from './icons/CopyIcon.svg'
+import CommandIcon from './icons/CommandIcon.svg'
 // Social Links
 import WebSiteIcon from './icons/WebIcon.svg'
 import YoutubeIcon from './icons/YoutubeIcon.svg'
@@ -27,6 +29,9 @@ export {
   BackIcon,
   PowerIcon,
   GameConsoleIcon,
+  //Start Screen Settings
+  CopyIcon,
+  CommandIcon,
   /* Social Links*/
   WebSiteIcon,
   YoutubeIcon,

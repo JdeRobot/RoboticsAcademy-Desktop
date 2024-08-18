@@ -6,8 +6,9 @@ import { SettingsReducerActionTypes } from '@renderer/utils/types'
 import StartScreenSettinsCommand from './StartScreenSettinsCommand'
 import StartScreenSettingsConfigure from './StartScreenSettingsConfigure'
 import StartScreenSettinsAdvance from './StartScreenSettinsAdvance'
+import { layout } from '@renderer/assets/styles/styles'
 
-interface CommandSettingsInterface {}
+interface StartScreenSettingsInterface {}
 
 export const settingsInitialState: SettingsInitialStateInterface = {
   settingsScreenState: SettingsScreenStateEnums.COMMAND
@@ -30,14 +31,16 @@ export const reducer = (
   }
 }
 
-const StartScreenSettings: FC<CommandSettingsInterface> = ({}) => {
+const StartScreenSettings: FC<StartScreenSettingsInterface> = ({}) => {
   const [{ settingsScreenState }, dispatch] = useReducer(reducer, settingsInitialState)
   return (
-    <div className={`w-full h-full flex `}>
+    <div className={`w-full h-full flex`}>
       {/* sidebar */}
       <CommandSettingsSidebar settingsScreenState={settingsScreenState} dispatch={dispatch} />
       {/* main input section */}
-      <div className={`w-[calc(100%-142px)] h-full`}>
+      <div
+        className={`w-[calc(100%-142px)]  h-[508px] xxbg-red-600  mt-[68px] flex justify-center`}
+      >
         {settingsScreenState === SettingsScreenStateEnums.COMMAND && (
           <StartScreenSettinsCommand
             settingsScreenState={settingsScreenState}
