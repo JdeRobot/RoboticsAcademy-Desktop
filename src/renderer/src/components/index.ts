@@ -2,7 +2,6 @@
 import LogoTitle from './startscreenview/LogoTitle'
 import ProgressMessage from './startscreenview/ProgressMessage'
 import WarningErrorScreen from './startscreenview/WarningErrorScreen'
-import ButtonWrapper from './buttons/ButtonWrapper'
 import StartScreenButtons from './startscreenview/StartScreenButtons'
 import FooterLinks from './startscreenview/FooterLinks'
 // start screen settings
@@ -14,12 +13,12 @@ import StartScreenSettinsAdvance from './startscreenview/settings/StartScreenSet
 //* utils
 import TopBar from './utlits/TopBar'
 import Loader from './utlits/Loader'
+import ButtonWrapper from './buttons/ButtonWrapper'
 export {
   // start screen view
   LogoTitle,
   ProgressMessage,
   WarningErrorScreen,
-  ButtonWrapper,
   FooterLinks,
   StartScreenButtons,
   // Start Screen Settings
@@ -30,5 +29,6 @@ export {
   StartScreenSettinsAdvance,
   // utils
   TopBar,
-  Loader
+  Loader,
+  ButtonWrapper
 }

@@ -11,6 +11,8 @@ import PowerIcon from './icons/PowerIcon.svg'
 import GameConsoleIcon from './icons/GameConsoleIcon.svg'
 import CopyIcon from './icons/CopyIcon.svg'
 import CommandIcon from './icons/CommandIcon.svg'
+import DeleteIcon from './icons/DeleteIcon.svg'
+import TaskIcon from './icons/TaskIcon.svg'
 // Social Links
 import WebSiteIcon from './icons/WebIcon.svg'
 import YoutubeIcon from './icons/YoutubeIcon.svg'
@@ -32,6 +34,8 @@ export {
   //Start Screen Settings
   CopyIcon,
   CommandIcon,
+  DeleteIcon,
+  TaskIcon,
   /* Social Links*/
   WebSiteIcon,
   YoutubeIcon,
