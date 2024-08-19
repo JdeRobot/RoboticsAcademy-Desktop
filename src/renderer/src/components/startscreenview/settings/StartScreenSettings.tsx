@@ -41,24 +41,26 @@ const StartScreenSettings: FC<StartScreenSettingsInterface> = ({}) => {
       <div
         className={`w-[calc(100%-142px)]  h-[508px] xxbg-red-600  mt-[68px] flex justify-center`}
       >
-        {settingsScreenState === SettingsScreenStateEnums.COMMAND && (
-          <StartScreenSettinsCommand
-            settingsScreenState={settingsScreenState}
-            dispatch={dispatch}
-          />
-        )}
-        {settingsScreenState === SettingsScreenStateEnums.CONFIGURE && (
-          <StartScreenSettingsConfigure
-            settingsScreenState={settingsScreenState}
-            dispatch={dispatch}
-          />
-        )}
-        {settingsScreenState === SettingsScreenStateEnums.ADVANCE && (
-          <StartScreenSettinsAdvance
-            settingsScreenState={settingsScreenState}
-            dispatch={dispatch}
-          />
-        )}
+        <div className={`h-full w-[400px]`}>
+          {settingsScreenState === SettingsScreenStateEnums.COMMAND && (
+            <StartScreenSettinsCommand
+              settingsScreenState={settingsScreenState}
+              dispatch={dispatch}
+            />
+          )}
+          {settingsScreenState === SettingsScreenStateEnums.CONFIGURE && (
+            <StartScreenSettingsConfigure
+              settingsScreenState={settingsScreenState}
+              dispatch={dispatch}
+            />
+          )}
+          {settingsScreenState === SettingsScreenStateEnums.ADVANCE && (
+            <StartScreenSettinsAdvance
+              settingsScreenState={settingsScreenState}
+              dispatch={dispatch}
+            />
+          )}
+        </div>
       </div>
     </div>
   )
