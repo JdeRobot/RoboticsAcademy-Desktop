@@ -13,6 +13,7 @@ import CopyIcon from './icons/CopyIcon.svg'
 import CommandIcon from './icons/CommandIcon.svg'
 import DeleteIcon from './icons/DeleteIcon.svg'
 import TaskIcon from './icons/TaskIcon.svg'
+import LinkChainIcon from './icons/LinkChainIcon.svg'
 // Social Links
 import WebSiteIcon from './icons/WebIcon.svg'
 import YoutubeIcon from './icons/YoutubeIcon.svg'
@@ -36,6 +37,7 @@ export {
   CommandIcon,
   DeleteIcon,
   TaskIcon,
+  LinkChainIcon,
   /* Social Links*/
   WebSiteIcon,
   YoutubeIcon,

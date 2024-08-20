@@ -29,7 +29,7 @@ const StartScreenSettingsSidebar: FC<StartScreenSettingsSidebarrInterface> = ({
             }
           >
             <ConnectIcon cssClass="" />
-            <span className={`border-[#d9d9d9] text-base font-medium`}>Command</span>
+            <span className={` text-base font-medium text-white`}>Command</span>
           </div>
           {/* Configure */}
 
@@ -43,7 +43,7 @@ const StartScreenSettingsSidebar: FC<StartScreenSettingsSidebarrInterface> = ({
             }
           >
             <ConfigureIcon cssClass="" />
-            <span className={`border-[#d9d9d9] text-base font-medium`}>Configure</span>
+            <span className={`text-white text-base font-medium`}>Configure</span>
           </div>
           {/* advance */}
 
@@ -57,7 +57,7 @@ const StartScreenSettingsSidebar: FC<StartScreenSettingsSidebarrInterface> = ({
             }
           >
             <CmdIcon cssClass="" />
-            <span className={`border-[#d9d9d9] text-base font-medium`}>Advance</span>
+            <span className={`text-white text-base font-medium`}>Advance</span>
           </div>
         </div>
       </div>

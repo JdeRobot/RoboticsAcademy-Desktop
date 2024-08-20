@@ -5,100 +5,11 @@ import { SettingsScreenStateEnums } from '@renderer/utils/enums'
 import { SettingsReducerActionTypes } from '@renderer/utils/types'
 import styles from '@renderer/assets/styles/startView.module.css'
 
-export const AllDockersImages = {
-  noDockerImage: 'Run Without Docker Image',
-  jderobotRoboticsAcademy: 'jderobot/robotics-academy',
-  jderobotRoboticsBackend: 'jderobot/robotics-backend'
-}
-
-export interface AllCommandConfigureInterface {
-  id: number
-  default: boolean
-  name: string
-  command: string[]
-  port1: number
-  port1_1: number
-  port2: number
-  port2_2: number
-  port3: number
-  port3_3: number
-  port4: number
-  port4_4: number
-  image: string
-}
-export const AllCommandConfigure: AllCommandConfigureInterface[] = [
-  {
-    id: 1,
-    default: true,
-    name: 'Basic Command',
-    command: [`docker`, `run`, `--rm`, `-it`],
-    port1: 7164,
-    port1_1: 7164,
-    port2: 6080,
-    port2_2: 6080,
-    port3: 1108,
-    port3_3: 1108,
-    port4: 7163,
-    port4_4: 7163,
-    image: `jderobot/robotics-backend`
-  },
-  {
-    id: 2,
-    default: true,
-    name: 'GPU Acceleration Intel',
-    command: [`docker`, `run`, `--rm`, `-it`, `--device`, `/dev/dri`],
-    port1: 7164,
-    port1_1: 7164,
-    port2: 6080,
-    port2_2: 6080,
-    port3: 1108,
-    port3_3: 1108,
-    port4: 7163,
-    port4_4: 7163,
-    image: `jderobot/robotics-backend`
-  },
-  {
-    id: 3,
-    default: true,
-    name: 'GPU Acceleration Nvidia',
-    command: [`docker`, `run`, `--rm`, `-it`, `--gpus`, `all`, `--device`, `/dev/dri`],
-    port1: 7164,
-    port1_1: 7164,
-    port2: 6080,
-    port2_2: 6080,
-    port3: 1108,
-    port3_3: 1108,
-    port4: 7163,
-    port4_4: 7163,
-    image: `jderobot/robotics-backend`
-  },
-  {
-    id: 4,
-    default: true,
-    name: 'Multiple Gpus',
-    command: [
-      `docker`,
-      `run`,
-      `--rm`,
-      `-it`,
-      `--gpus`,
-      `all`,
-      `--device`,
-      `/dev/dri`,
-      `-e`,
-      `DRI_NA  ME=card1`
-    ],
-    port1: 7164,
-    port1_1: 7164,
-    port2: 6080,
-    port2_2: 6080,
-    port3: 1108,
-    port3_3: 1108,
-    port4: 7163,
-    port4_4: 7163,
-    image: `jderobot/robotics-backend`
-  }
-]
+import {
+  AllCommandConfigure,
+  AllDockersImages,
+  AllCommandConfigureInterface
+} from '@renderer/constants'
 
 interface StartScreenSettinsCommandInterface {
   settingsScreenState: SettingsScreenStateEnums
@@ -109,7 +20,7 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
   dispatch
 }) => {
   const [dockerCommand, setDockerCommand] = useState<string>('')
-  const [dockerImage, setDockerImage] = useState<string>(`noDockerImage`)
+  const [dockerImage, setDockerImage] = useState<string>(`jderobotRoboticsAcademy`)
   const [commandConfig, setCommandConfig] = useState<number>(1)
   const [copied, setCopied] = useState(false)
   // on change func
@@ -132,10 +43,9 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
 
       const { command, port1, port1_1, port2, port2_2, port3, port3_3, port4, port4_4 } = cmdConfig
 
-      let commands = command.join(' ')
-      let ports = `-p ${port1}:${port1_1} -p ${port2}:${port2_2} -p ${port3}:${port3_3} -p ${port4}:${port4_4}`
+      const ports = `-p ${port1}:${port1_1} -p ${port2}:${port2_2} -p ${port3}:${port3_3} -p ${port4}:${port4_4}`
 
-      setDockerCommand([commands, ports, AllDockersImages[dockerImage]].join(' '))
+      setDockerCommand([command.join(' '), ports, AllDockersImages[dockerImage]].join(' '))
     }
 
     buildCommand()
@@ -153,9 +63,9 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
       .writeText(dockerCommand)
       .then(() => {
         setCopied(true)
-        // setTimeout(() => {
-        //   setCopied(false)
-        // }, 3000)
+        setTimeout(() => {
+          setCopied(false)
+        }, 2000)
       })
       .catch((err) => {
         console.error('Failed to copy text: ', err)
@@ -223,13 +133,12 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
             className="absolute top-[105px] right-[4px] p-1.5 rounded-full cursor-pointer"
             onClick={() => copyToClipboard()}
           />
-          {copied && (
-            <div
-              className={`absolute top-[60px]  right-[-20px] z-[100] text-sm text-white bg-blue-600  px-4 py-2 rounded-full  cursor-pointer ${styles.tooltips} shadow-md shadow-gray-500`}
-            >
-              copied
-            </div>
-          )}
+
+          <div
+            className={`block ${copied ? `opacity-100` : 'opacity-0'} duration-500 absolute top-[60px]  right-[-20px] z-[100] text-sm text-white bg-blue-600  px-4 py-2 rounded-full  cursor-pointer ${styles.tooltips} shadow-md shadow-gray-500`}
+          >
+            copied
+          </div>
         </div>
       )}
 

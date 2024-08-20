@@ -7,7 +7,7 @@ import FooterLinks from './startscreenview/FooterLinks'
 // start screen settings
 import StartScreenSettings from './startscreenview/settings/StartScreenSettings'
 import StartScreenSettingsSidebar from './startscreenview/settings/StartScreenSettingsSidebar'
-import StartScreenSettingsCommand from './startscreenview/settings/StartScreenSettinsCommand'
+import StartScreenSettinsCommand from './startscreenview/settings/StartScreenSettinsCommand'
 import StartScreenSettingsConfigure from './startscreenview/settings/StartScreenSettingsConfigure'
 import StartScreenSettinsAdvance from './startscreenview/settings/StartScreenSettinsAdvance'
 //* utils
@@ -24,7 +24,7 @@ export {
   // Start Screen Settings
   StartScreenSettings,
   StartScreenSettingsSidebar,
-  StartScreenSettingsCommand,
+  StartScreenSettinsCommand,
   StartScreenSettingsConfigure,
   StartScreenSettinsAdvance,
   // utils
