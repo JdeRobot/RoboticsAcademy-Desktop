@@ -20,6 +20,10 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
   const [configId, setConfigId] = useState(AllCommandConfigure[1].id)
   // const [config, setConfig] = useState(AllCommandConfigure[1])
 
+  // const check = (port: number) => {
+  //   if(port === 0 )
+  // }
+
   const handleChangeConfigure = (e: ChangeEvent<HTMLSelectElement>) => {
     const id = Number(e.target.value)
     const configure = AllCommandConfigure.find((config) => config.id === id)
@@ -31,25 +35,46 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
   }
 
   const handlePortIncrement = (id) => {
-    console.log('id ', config)
-    let [name, portIndex] = id.split('_')
-    portIndex = Number(portIndex)
+    const [name, index] = id.split('_')
+    const portIndex = Number(index)
+
+    console.log(name, ' ', typeof portIndex)
+
+    // let tmpConfig = AllCommandConfigure.find((config) => config.id === configId)
+    // if (tmpConfig === undefined) return
+
+    setConfig((prev) => ({
+      ...prev,
+      [name]: {
+        ...prev[name],
+        ports: [
+          portIndex === 0 ? prev[name].ports[0] + 1 : prev[name].ports[0],
+          portIndex === 1 ? prev[name].ports[1] + 1 : prev[name].ports[1]
+        ]
+      }
+    }))
+  }
+  const handlePortDecrement = (id: string) => {
+    let [name, index] = id.split('_')
+    const portIndex = Number(index)
 
     let tmpConfig = AllCommandConfigure.find((config) => config.id === configId)
     if (tmpConfig === undefined) return
 
-    tmpConfig.django.ports[0] = 1111
-    console.log(name, ' ', config.id, ' ', tmpConfig)
     setConfig((prev) => ({
       ...prev,
-      django: {
-        ...prev.django,
-        ports: [1111, prev.django.ports[1]]
+      [name]: {
+        ...prev[name],
+        ports: [
+          portIndex === 0 ? prev[name].ports[0] - 1 : prev[name].ports[0],
+          portIndex === 1 ? prev[name].ports[1] - 1 : prev[name].ports[1]
+        ]
       }
     }))
   }
-  const handlePortDecrement = (id) => {
-    console.log(id)
+
+  const handleInputchange = (e) => {
+    console.log(e)
   }
 
   return (
