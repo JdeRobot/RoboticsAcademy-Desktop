@@ -13,9 +13,11 @@ import { initialState, reducer } from '@renderer/hooks/reducers/useStartScrrenRe
 import { useStartScreenEffect } from '@renderer/hooks/effects/useStartScreenEffect'
 import { ScreenStateEnums } from '@renderer/utils/enums'
 
-type StartScreenInterface = {}
+type StartScreenInterface = {
+  setContent: any
+}
 
-const StartScreen: FC<StartScreenInterface> = ({}) => {
+const StartScreen: FC<StartScreenInterface> = ({ setContent }) => {
   //* Use State
   const [isLoading, setIsloading] = useState<boolean>(false)
 
@@ -57,7 +59,11 @@ const StartScreen: FC<StartScreenInterface> = ({}) => {
                     {isLoading ? (
                       <Loader>fetching...</Loader>
                     ) : (
-                      <StartScreenButtons buttonState={buttonState} dispatch={dispatch} />
+                      <StartScreenButtons
+                        buttonState={buttonState}
+                        dispatch={dispatch}
+                        setContent={setContent}
+                      />
                     )}
                   </>
                 )}

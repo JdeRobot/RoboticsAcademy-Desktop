@@ -8,9 +8,14 @@ import { ReducerActionTypes } from '@renderer/utils/types'
 interface StartScrrenButtonsInterface {
   buttonState: string
   dispatch: Dispatch<ReducerActionTypes>
+  setContent: any
 }
 
-const StartScreenButtons: FC<StartScrrenButtonsInterface> = ({ buttonState, dispatch }) => {
+const StartScreenButtons: FC<StartScrrenButtonsInterface> = ({
+  buttonState,
+  dispatch,
+  setContent
+}) => {
   const [isStopping, setIsStopping] = useState<boolean>(false)
   const stopDockerFunc = async () => {
     const stopAlert = confirm('Are you Sure?')
@@ -116,7 +121,7 @@ const StartScreenButtons: FC<StartScrrenButtonsInterface> = ({ buttonState, disp
           {/* exercise */}
           {!isStopping && (
             <ButtonWrapper
-              onClick={() => (window.location.href = 'http://0.0.0.0:7164/exercises')}
+              onClick={() => setContent(true)}
               cssClass={`bg-green-600 ${styles.startButtonSvg}`}
             >
               <>

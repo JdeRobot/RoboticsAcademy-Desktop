@@ -108,14 +108,14 @@ export const AddIcon: FC<CssClassProps> = ({ cssClass }) => (
     aria-hidden="true"
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
-    viewBox="0 0 18 2"
+    viewBox="0 0 18 18"
   >
     <path
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth="2"
-      d="M1 1h16"
+      d="M9 1v16M1 9h16"
     />
   </svg>
 )
@@ -126,14 +126,14 @@ export const MinusIcon: FC<CssClassProps> = ({ cssClass }) => (
     aria-hidden="true"
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
-    viewBox="0 0 18 18"
+    viewBox="0 0 18 2"
   >
     <path
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth="2"
-      d="M9 1v16M1 9h16"
+      d="M1 1h16"
     />
   </svg>
 )

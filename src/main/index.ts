@@ -1,13 +1,5 @@
-import { ResponeInterface, ResponseStatus } from './interfaces'
-import {
-  app,
-  shell,
-  BrowserWindow,
-  ipcMain,
-  IpcMainInvokeEvent,
-  IpcMainEvent,
-  Menu
-} from 'electron'
+import { ResponeInterface } from './interfaces'
+import { app, shell, BrowserWindow, ipcMain, IpcMainInvokeEvent, session } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import {
@@ -57,16 +49,27 @@ const createWindow = (): BrowserWindow => {
     autoHideMenuBar: true,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
+      nodeIntegration: true, //false
+      webSecurity: true,
       sandbox: false,
-      nodeIntegration: false
+      contextIsolation: true
     }
   })
   // ...(process.platform === 'linux' ? { icon } : {}),
-
-  mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
-    return { action: 'deny' }
+  mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    if (details.responseHeaders === undefined) return
+    callback({
+      responseHeaders: Object.fromEntries(
+        Object.entries(details.responseHeaders).filter(
+          (header) => !/x-frame-options/i.test(header[0])
+        )
+      )
+    })
   })
+  // mainWindow.webContents.setWindowOpenHandler((details) => {
+  //   shell.openExternal(details.url)
+  //   return { action: 'deny' }
+  // })
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
@@ -74,6 +77,7 @@ const createWindow = (): BrowserWindow => {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    // mainWindow.loadURL('http://localhost:7164/exercises/')
   }
 
   mainWindow.on('closed', (e) => {
@@ -105,6 +109,24 @@ const createWindow = (): BrowserWindow => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  // Modify the origin for all requests to the following urls.
+  const filter = {
+    urls: ['http://localhost:5173/*', 'http://localhost:7164/*']
+  }
+
+  // session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
+  //   // console.log(details)
+  //   details.requestHeaders['Origin'] = 'http://localhost:7164/' //'http://localhost:5173/'
+  //   callback({ requestHeaders: details.requestHeaders })
+  // })
+
+  // session.defaultSession.webRequest.onHeadersReceived(filter, (details, callback) => {
+  //   // console.log(details)
+  //   //@ts-ignore
+  //   details.responseHeaders['Access-Control-Allow-Origin'] = ['capacitor-electron://-']
+  //   callback({ responseHeaders: details.responseHeaders })
+  // })
+
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
@@ -250,3 +272,12 @@ app.on('window-all-closed', (e) => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
+// const filter = {
+//   urls: ['*://*.google.com/*']
+// }
+// const session = electron.remote.session
+// session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
+//   details.requestHeaders['Origin'] = null
+//   details.headers['Origin'] = null
+//   callback({ requestHeaders: details.requestHeaders })
+// })
