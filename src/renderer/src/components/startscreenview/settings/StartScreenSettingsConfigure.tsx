@@ -1,10 +1,72 @@
-import { ChangeEvent, Dispatch, FC, useState } from 'react'
+import { ChangeEvent, Dispatch, FC, useEffect, useReducer, useState } from 'react'
 import { SettingsScreenStateEnums } from '@renderer/utils/enums'
 import { SettingsReducerActionTypes } from '@renderer/utils/types'
 import { layout } from '@renderer/assets/styles/styles'
 import { AddIcon, MinusIcon, NextArrowIcon } from '@renderer/assets/icons/Icons'
 import { LinkChainIcon } from '@renderer/assets'
 import { AllCommandConfigure } from '@renderer/constants'
+
+export enum SettingsConfigureActionEnums {
+  UPDATE_SCREEN = 'UPDATE_SCREEN',
+  CHANGE_CONFIG = 'CHANGE_CONFIG',
+  UPDATE_PORT = 'UPDATE_PORT',
+  RESET = 'RESET'
+}
+export interface SettingsConfigureInitializeInterface {
+  configureScreenState: number
+  configName: string
+  configId: number
+  django: {
+    name: string
+    ports: number[]
+  }
+  gazebo: {
+    name: string
+    ports: number[]
+  }
+  consoles: {
+    name: string
+    ports: number[]
+  }
+  other: {
+    name: string
+    ports: number[]
+  }
+}
+const SetttingsConfigureInitialize: SettingsConfigureInitializeInterface = {
+  configureScreenState: 0,
+  configName: '',
+  configId: -1,
+  django: {
+    name: 'django',
+    ports: []
+  },
+  gazebo: {
+    name: 'gazebo',
+    ports: []
+  },
+  consoles: {
+    name: 'console',
+    ports: []
+  },
+  other: {
+    name: 'other',
+    ports: []
+  }
+}
+const reducer = (state: SettingsConfigureInitializeInterface, action) => {
+  switch (action.type) {
+    case SettingsConfigureActionEnums.UPDATE_SCREEN:
+      return { ...state, configureScreenState: action.payload.configureScreenState }
+    case SettingsConfigureActionEnums.CHANGE_CONFIG:
+      return { ...state, ...action.payload }
+    case SettingsConfigureActionEnums.UPDATE_PORT:
+      state[action.payload.name] = action.payload
+      return { ...state }
+    default:
+      throw new Error('Unknown Action!')
+  }
+}
 
 interface StartScreenSettingsConfigureInterface {
   settingsScreenState: SettingsScreenStateEnums
@@ -15,187 +77,266 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
   settingsScreenState,
   dispatch
 }) => {
-  const [configureName, setConfigureName] = useState<string>(AllCommandConfigure[0].name)
-  const [config, setConfig] = useState(AllCommandConfigure[1])
-  const [configId, setConfigId] = useState(AllCommandConfigure[1].id)
-  // const [config, setConfig] = useState(AllCommandConfigure[1])
+  // state
+  const [errorMsg, setErrorMsg] = useState<string>('')
+  const [configureId, setConfigureId] = useState<number>(AllCommandConfigure[0].id)
+  // REDUCER
+  const [
+    { configureScreenState, configName, configId, django, gazebo, consoles, other },
+    configDispatch
+  ] = useReducer(reducer, SetttingsConfigureInitialize)
+  useEffect(() => {
+    const configures = AllCommandConfigure.find((config) => config.id === configureId)
+    if (configures === undefined) return
 
-  // const check = (port: number) => {
-  //   if(port === 0 )
-  // }
+    const { name, django, consoles, other, gazebo, id } = configures
+    configDispatch({
+      type: SettingsConfigureActionEnums.CHANGE_CONFIG,
+      payload: {
+        configName: name,
+        configId: id,
+        django,
+        gazebo,
+        consoles,
+        other
+      }
+    })
+  }, [configureId])
 
   const handleChangeConfigure = (e: ChangeEvent<HTMLSelectElement>) => {
-    const id = Number(e.target.value)
-    const configure = AllCommandConfigure.find((config) => config.id === id)
-
-    if (configure === undefined) return
-
-    setConfig(configure)
-    setConfigId(id)
+    setConfigureId(Number(e.target.value))
   }
 
-  const handlePortIncrement = (id) => {
-    const [name, index] = id.split('_')
+  const handleUpdatePort = (id: string) => {
+    const [name, index, step] = id.split('_')
     const portIndex = Number(index)
+    const steps = Number(step)
 
-    console.log(name, ' ', typeof portIndex)
+    let port1 = 0,
+      port2 = 0
 
-    // let tmpConfig = AllCommandConfigure.find((config) => config.id === configId)
-    // if (tmpConfig === undefined) return
+    switch (name) {
+      case 'django':
+        port1 = django.ports[0]
+        port2 = django.ports[1]
+        break
+      case 'gazebo':
+        port1 = gazebo.ports[0]
+        port2 = gazebo.ports[1]
+        break
+      case 'consoles':
+        port1 = consoles.ports[0]
+        port2 = consoles.ports[1]
+        break
+      case 'other':
+        port1 = other.ports[0]
+        port2 = other.ports[1]
+        break
+      default:
+        throw new Error('Unknown Action!')
+    }
+    if (portIndex === 0) port1 += steps
+    else if (portIndex === 1) port2 += steps
 
-    setConfig((prev) => ({
-      ...prev,
-      [name]: {
-        ...prev[name],
-        ports: [
-          portIndex === 0 ? prev[name].ports[0] + 1 : prev[name].ports[0],
-          portIndex === 1 ? prev[name].ports[1] + 1 : prev[name].ports[1]
-        ]
-      }
-    }))
+    console.log('====================================')
+    console.log('+- ', port1, port2)
+    console.log('====================================')
+    configDispatch({
+      type: SettingsConfigureActionEnums.UPDATE_PORT,
+      payload: { name, ports: [port1, port2] }
+    })
   }
-  const handlePortDecrement = (id: string) => {
-    let [name, index] = id.split('_')
-    const portIndex = Number(index)
 
-    let tmpConfig = AllCommandConfigure.find((config) => config.id === configId)
-    if (tmpConfig === undefined) return
+  const handleInputChangeAndBlur = (e: ChangeEvent<HTMLInputElement>, blur = false) => {
+    const value = e.target.value
+    const [name, idx] = e.target.id.split('_')
+    const portIndex = Number(idx)
 
-    setConfig((prev) => ({
-      ...prev,
-      [name]: {
-        ...prev[name],
-        ports: [
-          portIndex === 0 ? prev[name].ports[0] - 1 : prev[name].ports[0],
-          portIndex === 1 ? prev[name].ports[1] - 1 : prev[name].ports[1]
-        ]
+    if (blur) {
+      setErrorMsg(``)
+
+      if (Number(value) === 0) {
+        setErrorMsg(`Invalid Input`)
+        return
       }
-    }))
-  }
+    }
 
-  const handleInputchange = (e) => {
-    console.log(e)
+    let port1 = 0,
+      port2 = 0
+
+    switch (name) {
+      case 'django':
+        port1 = django.ports[0]
+        port2 = django.ports[1]
+        break
+      case 'gazebo':
+        port1 = gazebo.ports[0]
+        port2 = gazebo.ports[1]
+        break
+      case 'consoles':
+        port1 = consoles.ports[0]
+        port2 = consoles.ports[1]
+        break
+      case 'other':
+        port1 = other.ports[0]
+        port2 = other.ports[1]
+        break
+      default:
+        throw new Error('Unknown Action!')
+    }
+
+    if (portIndex === 0) {
+      port1 = Number(value)
+    } else if (portIndex === 1) {
+      port2 = Number(value)
+    }
+
+    configDispatch({
+      type: SettingsConfigureActionEnums.UPDATE_PORT,
+      payload: {
+        name,
+        ports: [port1, port2]
+      }
+    })
   }
 
   return (
     <div className="w-full h-full flex flex-col xjustify-start items-center gap-4">
-      {/* configure name */}
-      <div className="w-full">
-        <label htmlFor="configure_name" className="block mb-2 text-base font-medium text-[#d9d9d9]">
-          Select RADI Docker Command
-        </label>
-        <select
-          id="configure_name"
-          className="bg-[#fff] border border-gray-300 text-[#454545]  h-[40px] text-base font-medium rounded-lg focus:ring-red-500 focus:border-red-500 block w-full "
-          defaultValue={config.name}
-          onChange={(e) => handleChangeConfigure(e)}
-        >
-          {AllCommandConfigure.map((config) => (
-            <option
-              defaultValue={config.id}
-              className="text-[#454545] text-base font-medium"
-              key={config.id}
+      {configureScreenState === 0 && (
+        <div className="w-full">
+          {/* configure name */}
+
+          <div className="w-full">
+            <label
+              htmlFor="configure_name"
+              className="block mb-2 text-base font-medium text-[#d9d9d9]"
             >
-              {config.name}
-            </option>
-          ))}
-        </select>
-      </div>
-      {/* All Ports */}
-      <div className={`relative w-full ${layout.flexColCenter}  gap-4`}>
-        {/* Port Pairs */}
-        <div className="w-[400px] flex flex-col items-center justify-between gap-4">
-          {[config.django, config.gazebo, config.console, config.other].map((server, index) => (
-            <div className="w-full flex items-center justify-between" key={index}>
-              <div className="w-[182px]">
-                <label
-                  htmlFor="bedrooms-input"
-                  className="flex items-center justify-start gap-2 mb-2 "
+              Select RADI Docker Command
+            </label>
+            <select
+              id="configure_name"
+              className="bg-[#fff] border border-gray-300 text-[#454545]  h-[40px] text-base font-medium rounded-lg focus:ring-red-500 focus:border-red-500 block w-full "
+              onChange={(e) => handleChangeConfigure(e)}
+            >
+              {AllCommandConfigure.map((config) => (
+                <option
+                  value={config.id}
+                  className="text-[#454545] text-base font-medium"
+                  key={config.id}
                 >
-                  <img src={LinkChainIcon} alt="link" className={`w-[16px] h-[16px]`} />
-                  <span className="text-base font-medium text-[#d9d9d9] ">
-                    {server.name[0].toLocaleUpperCase() + server.name.substring(1)} Port:
-                  </span>
-                </label>
-                <div className="relative w-[182px] h-[40px] flex items-center ">
-                  <input
-                    type="text"
-                    id={server.ports[0].toString()}
-                    className="bg-white rounded-l-lg w-[94px] h-[40px] font-medium text-center text-[#454545] text-base block  focus:border-none "
-                    style={{ boxShadow: '0px 0px 0px white', border: 'none' }}
-                    placeholder="port"
-                    value={server.ports[0]}
-                    required
-                  />
+                  {config.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          {/* All Ports */}
+          <div className={`relative w-full ${layout.flexColCenter}  gap-4`}>
+            {/* Port Pairs */}
+            <div className="w-[400px] flex flex-col items-center justify-between gap-4">
+              {[django, gazebo, consoles, other].map((server, index) => (
+                <div className="w-full flex items-center justify-between" key={index}>
+                  <div className="w-[182px]">
+                    <label
+                      htmlFor="bedrooms-input"
+                      className="flex items-center justify-start gap-2 mb-2 "
+                    >
+                      <img src={LinkChainIcon} alt="link" className={`w-[16px] h-[16px]`} />
+                      <span className="text-base font-medium text-[#d9d9d9] ">
+                        {server.name[0].toLocaleUpperCase() + server.name.substring(1)} Port:
+                      </span>
+                    </label>
+                    <div className="relative w-[182px] h-[40px] flex items-center ">
+                      <input
+                        type="number"
+                        id={`${server.name}_0`}
+                        className=" bg-white rounded-l-lg w-[94px] h-[40px] font-medium text-center text-[#454545] text-base block  focus:border-none "
+                        style={{ boxShadow: '0px 0px 0px white', border: 'none' }}
+                        placeholder="port"
+                        value={server.ports[0]}
+                        onChange={(e) => handleInputChangeAndBlur(e)}
+                        onBlur={(e) => handleInputChangeAndBlur(e, true)}
+                      />
 
-                  <button
-                    className={`bg-gray-100 hover:bg-gray-200 w-[44px] h-full border-l-[1px] border-[#B3B3B3] ${layout.flexCenter}`}
-                    onClick={() => handlePortIncrement(`${server.name}_0`)}
-                  >
-                    <AddIcon cssClass="w-3 h-3 text-[#454545]" />
-                  </button>
-                  <button
-                    type="button"
-                    className={`bg-gray-100 hover:bg-gray-200 w-[44px] h-full border-l-[1px] border-[#B3B3B3] rounded-r-lg ${layout.flexCenter}`}
-                    onClick={() => handlePortDecrement(`${server.name}_0`)}
-                  >
-                    <MinusIcon cssClass="w-3 h-3 text-[#454545]" />
-                  </button>
-                </div>
-              </div>
-              <div className="text-4xl text-white font-extrabold mt-5">:</div>
-              <div className="w-[182px]">
-                <label
-                  htmlFor="bedrooms-input"
-                  className="flex items-center justify-start gap-2 mb-2 "
-                >
-                  <img src={LinkChainIcon} alt="link" className={`w-[16px] h-[16px]`} />
-                  <span className="text-base font-medium text-[#d9d9d9] ">
-                    {server.name[0].toLocaleUpperCase() + server.name.substring(1)} Port:
-                  </span>
-                </label>
-                <div className="relative w-[182px] h-[40px] flex items-center ">
-                  <input
-                    type="text"
-                    id={server.ports[1].toString()}
-                    className="bg-white rounded-l-lg w-[94px] h-[40px] font-medium text-center text-[#454545] text-base block  focus:border-none "
-                    style={{ boxShadow: '0px 0px 0px white', border: 'none' }}
-                    placeholder="port"
-                    value={server.ports[1]}
-                    required
-                  />
+                      <button
+                        className={`bg-gray-100 hover:bg-gray-200 w-[44px] h-full border-l-[1px] border-[#B3B3B3] ${layout.flexCenter}`}
+                        onClick={() => handleUpdatePort(`${server.name}_0_1`)}
+                      >
+                        <AddIcon cssClass="w-3 h-3 text-[#454545]" />
+                      </button>
+                      <button
+                        type="button"
+                        className={`bg-gray-100 hover:bg-gray-200 w-[44px] h-full border-l-[1px] border-[#B3B3B3] rounded-r-lg ${layout.flexCenter}`}
+                        onClick={() => handleUpdatePort(`${server.name}_0_-1`)}
+                      >
+                        <MinusIcon cssClass="w-3 h-3 text-[#454545]" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="text-4xl text-white font-extrabold mt-5">:</div>
+                  <div className="w-[182px]">
+                    <label
+                      htmlFor="bedrooms-input"
+                      className="flex items-center justify-start gap-2 mb-2 "
+                    >
+                      <img src={LinkChainIcon} alt="link" className={`w-[16px] h-[16px]`} />
+                      <span className="text-base font-medium text-[#d9d9d9] ">
+                        {server.name[0].toLocaleUpperCase() + server.name.substring(1)} Port:
+                      </span>
+                    </label>
+                    <div className="relative w-[182px] h-[40px] flex items-center ">
+                      <input
+                        type="text"
+                        id={`${server.name}_1`}
+                        className="bg-white rounded-l-lg w-[94px] h-[40px] font-medium text-center text-[#454545] text-base block  focus:border-none "
+                        style={{ boxShadow: '0px 0px 0px white', border: 'none' }}
+                        placeholder="port"
+                        value={server.ports[1]}
+                        onChange={(e) => handleInputChangeAndBlur(e)}
+                        onBlur={(e) => handleInputChangeAndBlur(e, true)}
+                      />
 
-                  <button
-                    type="button"
-                    className={`bg-gray-100 hover:bg-gray-200 w-[44px] h-full border-l-[1px] border-[#B3B3B3] ${layout.flexCenter}`}
-                    onClick={() => handlePortIncrement(`${server.name}_1`)}
-                  >
-                    <AddIcon cssClass="w-3 h-3 text-[#454545]" />
-                  </button>
-                  <button
-                    type="button"
-                    id={server.name.toString() + '_' + 1}
-                    className={`bg-gray-100 hover:bg-gray-200 w-[44px] h-full border-l-[1px] border-[#B3B3B3] rounded-r-lg ${layout.flexCenter}`}
-                    onClick={() => handlePortDecrement(`${server.name}_1`)}
-                  >
-                    <MinusIcon cssClass="w-3 h-3 text-[#454545]" />
-                  </button>
+                      <button
+                        type="button"
+                        className={`bg-gray-100 hover:bg-gray-200 w-[44px] h-full border-l-[1px] border-[#B3B3B3] ${layout.flexCenter}`}
+                        onClick={() => handleUpdatePort(`${server.name}_1_1`)}
+                      >
+                        <AddIcon cssClass="w-3 h-3 text-[#454545]" />
+                      </button>
+                      <button
+                        type="button"
+                        id={server.name.toString() + '_' + 1}
+                        className={`bg-gray-100 hover:bg-gray-200 w-[44px] h-full border-l-[1px] border-[#B3B3B3] rounded-r-lg ${layout.flexCenter}`}
+                        onClick={() => handleUpdatePort(`${server.name}_1_-1`)}
+                      >
+                        <MinusIcon cssClass="w-3 h-3 text-[#454545]" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-        <span className="absolute -bottom-8 left-[50%] text-sm font-extralight text-red-800 -translate-x-[50%]">
-          Something went wrong!
-        </span>
-      </div>
+            <span className="absolute w-[400px] -bottom-8 left-[50%] text-sm font-extralight text-red-800 -translate-x-[50%]">
+              {errorMsg}
+            </span>
+          </div>
 
-      {/* next or previous */}
-      <div className={`w-full flex justify-end mt-4 cursor-pointer group`}>
-        <NextArrowIcon
-          cssClass={`w-[36px] h-[36px] rotate-[90deg] fill-[#ffffff] group-hover:fill-[#d9d9d9]`}
-        />
-      </div>
+          {/* next or previous */}
+          <div
+            className={`w-full flex justify-end mt-4 cursor-pointer group`}
+            onClick={() =>
+              configDispatch({
+                type: SettingsConfigureActionEnums.UPDATE_SCREEN,
+                payload: { configureScreenState: 1 }
+              })
+            }
+          >
+            <NextArrowIcon
+              cssClass={`w-[36px] h-[36px] rotate-[90deg] fill-[#ffffff] group-hover:fill-[#d9d9d9]`}
+            />
+          </div>
+        </div>
+      )}
+      {configureScreenState === 1 && <div className="w-full">Step tWo</div>}
     </div>
   )
 }

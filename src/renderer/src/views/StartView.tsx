@@ -33,7 +33,7 @@ const StartScreen: FC<StartScreenInterface> = ({ setContent }) => {
     <div className={styles.backgroundVideo}>
       <div className={styles.blurLayer}></div>
       <div
-        className={`${styles.startScreen} z-[3] w-[640px] duration-300 ${isExpand ? `h-[639px]` : `h-[426px]`} overflow-hidden`}
+        className={`${styles.startScreen} z-[3] w-[640px] duration-300 ${isExpand || screenState === ScreenStateEnums.SETTINGS || screenState === ScreenStateEnums.WARNING || screenState === ScreenStateEnums.ERROR ? `h-[639px]` : `h-[426px]`} overflow-hidden`}
       >
         <div className={`w-full h-full flex flex-col justify-between items-center py-2`}>
           {screenState === ScreenStateEnums.SETTINGS ? (

@@ -20,7 +20,7 @@ export interface AllCommandConfigureInterface {
     name: string
     ports: number[]
   }
-  console: {
+  consoles: {
     name: string
     ports: number[]
   }
@@ -43,8 +43,8 @@ export const AllCommandConfigure: AllCommandConfigureInterface[] = [
       name: 'gazebo',
       ports: [6080, 6080]
     },
-    console: {
-      name: 'console',
+    consoles: {
+      name: 'consoles',
       ports: [1108, 1108]
     },
     other: {
@@ -65,8 +65,8 @@ export const AllCommandConfigure: AllCommandConfigureInterface[] = [
       name: 'gazebo',
       ports: [6080, 6080]
     },
-    console: {
-      name: 'console',
+    consoles: {
+      name: 'consoles',
       ports: [1108, 1108]
     },
     other: {
@@ -87,8 +87,8 @@ export const AllCommandConfigure: AllCommandConfigureInterface[] = [
       name: 'gazebo',
       ports: [6080, 6080]
     },
-    console: {
-      name: 'console',
+    consoles: {
+      name: 'consoles',
       ports: [1108, 1108]
     },
     other: {
@@ -120,8 +120,8 @@ export const AllCommandConfigure: AllCommandConfigureInterface[] = [
       name: 'gazebo',
       ports: [6080, 6080]
     },
-    console: {
-      name: 'console',
+    consoles: {
+      name: 'consoles',
       ports: [1108, 1108]
     },
     other: {
@@ -142,13 +142,13 @@ export const AllCommandConfigure: AllCommandConfigureInterface[] = [
       name: 'gazebo',
       ports: [6080, 6080]
     },
-    console: {
-      name: 'console',
+    consoles: {
+      name: 'consoles',
       ports: [1108, 1108]
     },
     other: {
       name: 'other',
-      ports: [7163, 7163]
+      ports: [71632, 7163]
     }
   }
 ]
