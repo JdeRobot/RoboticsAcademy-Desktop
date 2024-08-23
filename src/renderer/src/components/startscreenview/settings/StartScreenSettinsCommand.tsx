@@ -10,6 +10,7 @@ import {
   AllDockersImages,
   AllCommandConfigureInterface
 } from '@renderer/constants'
+import SettingsCommandTerminal from './SettingsCommandTerminal'
 
 interface StartScreenSettinsCommandInterface {
   settingsScreenState: SettingsScreenStateEnums
@@ -22,7 +23,6 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
   const [dockerCommand, setDockerCommand] = useState<string>('')
   const [dockerImage, setDockerImage] = useState<string>(`jderobotRoboticsAcademy`)
   const [commandConfig, setCommandConfig] = useState<number>(1)
-  const [copied, setCopied] = useState(false)
   // on change func
   const handleChangeDockerImage = (e: ChangeEvent<HTMLSelectElement>) => {
     setDockerImage(e.target.value)
@@ -41,9 +41,9 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
         return
       }
 
-      const { command, port1, port1_1, port2, port2_2, port3, port3_3, port4, port4_4 } = cmdConfig
+      const { command, django, consoles, gazebo, other } = cmdConfig
 
-      const ports = `-p ${port1}:${port1_1} -p ${port2}:${port2_2} -p ${port3}:${port3_3} -p ${port4}:${port4_4}`
+      const ports = `-p ${django.ports[0]}:${django.ports[1]} -p ${gazebo.ports[0]}:${gazebo.ports[1]} -p ${consoles.ports[0]}:${consoles.ports[1]} -p ${other.ports[0]}:${other.ports[1]}`
 
       setDockerCommand([command.join(' '), ports, AllDockersImages[dockerImage]].join(' '))
     }
@@ -58,19 +58,6 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
     console.log('handle use!')
   }
 
-  const copyToClipboard = () => {
-    navigator.clipboard
-      .writeText(dockerCommand)
-      .then(() => {
-        setCopied(true)
-        setTimeout(() => {
-          setCopied(false)
-        }, 2000)
-      })
-      .catch((err) => {
-        console.error('Failed to copy text: ', err)
-      })
-  }
   return (
     <div className=" w-full flex flex-col justify-start items-center gap-4">
       {/* select docker */}
@@ -83,7 +70,7 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
           id="default"
           className="w-[400px] h-[40px] bg-white border-gray-300 text-[#454545] text-base rounded-lg focus:ring-red-500 focus:border-red-500 block px-4"
           onChange={(e) => handleChangeDockerImage(e)}
-          defaultValue={dockerImage}
+          value={dockerImage}
         >
           {Object.keys(AllDockersImages).map((key, index) => (
             <option value={key} key={index}>
@@ -103,7 +90,7 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
             id="default"
             className="w-[400px] h-[40px]  bg-white border-gray-300 text-[#454545] text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 px-4 block"
             onChange={(e) => handleChangeCommandConfig(e)}
-            defaultValue={commandConfig}
+            value={commandConfig}
           >
             {AllCommandConfigure.map((command, index) => (
               <option key={index} value={command.id}>
@@ -116,30 +103,35 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
 
       {/* Commands */}
       {dockerCommand.length > 0 && dockerImage !== `noDockerImage` && (
-        <div className={`relative w-[400px]`}>
-          <div className={`flex justify-start items-center gap-3 mb-2`}>
-            <img src={CommandIcon} alt="command icon" className={`h-[16px] w-[16px]`} />
-            <span className="text-base font-medium text-[#d9d9d9]">Current Docker Command:</span>
-          </div>
-          <div
-            className={`w-full h-[100px] text-[#454545] bg-white px-2 py-4 rounded-lg overflow-y-auto overflow-x-hidden select-text`}
-            id="scrollbar-style"
-          >
-            {dockerCommand}
-          </div>
-          <img
-            src={CopyIcon}
-            alt="copy icon"
-            className="absolute top-[105px] right-[4px] p-1.5 rounded-full cursor-pointer"
-            onClick={() => copyToClipboard()}
-          />
+        // <div className={`relative w-[400px]`}>
+        //   <div className={`flex justify-start items-center gap-3 mb-2`}>
+        //     <img src={CommandIcon} alt="command icon" className={`h-[16px] w-[16px]`} />
+        //     <span className="text-base font-medium text-[#d9d9d9]">Current Docker Command:</span>
+        //   </div>
+        //   <div
+        //     className={`w-full h-[100px] text-[#454545] bg-white px-2 py-4 rounded-lg overflow-y-auto overflow-x-hidden select-text`}
+        //     id="scrollbar-style"
+        //   >
+        //     {dockerCommand}
+        //   </div>
+        //   <img
+        //     src={CopyIcon}
+        //     alt="copy icon"
+        //     className="absolute top-[105px] right-[4px] p-1.5 rounded-full cursor-pointer"
+        //     onClick={() => copyToClipboard()}
+        //   />
 
-          <div
-            className={`block ${copied ? `opacity-100` : 'opacity-0'} duration-500 absolute top-[60px]  right-[-20px] z-[100] text-sm text-white bg-blue-600  px-4 py-2 rounded-full  cursor-pointer ${styles.tooltips} shadow-md shadow-gray-500`}
-          >
-            copied
-          </div>
-        </div>
+        //   <div
+        //     className={`block ${copied ? `opacity-100` : 'opacity-0'} duration-500 absolute top-[60px]  right-[-20px] z-[100] text-sm text-white bg-blue-600  px-4 py-2 rounded-full  cursor-pointer ${styles.tooltips} shadow-md shadow-gray-500`}
+        //   >
+        //     copied
+        //   </div>
+        // </div>
+        <SettingsCommandTerminal
+          CommandIcon={CommandIcon}
+          CopyIcon={CopyIcon}
+          dockerCommand={dockerCommand}
+        />
       )}
 
       {/* Delete or Use */}

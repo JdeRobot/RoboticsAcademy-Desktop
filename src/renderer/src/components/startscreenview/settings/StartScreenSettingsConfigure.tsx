@@ -3,8 +3,10 @@ import { SettingsScreenStateEnums } from '@renderer/utils/enums'
 import { SettingsReducerActionTypes } from '@renderer/utils/types'
 import { layout } from '@renderer/assets/styles/styles'
 import { AddIcon, MinusIcon, NextArrowIcon } from '@renderer/assets/icons/Icons'
-import { LinkChainIcon } from '@renderer/assets'
+import { BackIcon, CommandIcon, CopyIcon, LinkChainIcon } from '@renderer/assets'
 import { AllCommandConfigure } from '@renderer/constants'
+import SettingsCommandTerminal from './SettingsCommandTerminal'
+import ButtonWrapper from '@renderer/components/buttons/ButtonWrapper'
 
 export enum SettingsConfigureActionEnums {
   UPDATE_SCREEN = 'UPDATE_SCREEN',
@@ -203,7 +205,7 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
   return (
     <div className="w-full h-full flex flex-col xjustify-start items-center gap-4">
       {configureScreenState === 0 && (
-        <div className="w-full">
+        <div className={`w-full `}>
           {/* configure name */}
 
           <div className="w-full">
@@ -322,7 +324,7 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
 
           {/* next or previous */}
           <div
-            className={`w-full flex justify-end mt-4 cursor-pointer group`}
+            className={`w-full flex justify-end mt-8 cursor-pointer group`}
             onClick={() =>
               configDispatch({
                 type: SettingsConfigureActionEnums.UPDATE_SCREEN,
@@ -336,7 +338,39 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
           </div>
         </div>
       )}
-      {configureScreenState === 1 && <div className="w-full">Step tWo</div>}
+      {configureScreenState === 1 && (
+        <div className="w-full">
+          <SettingsCommandTerminal
+            CommandIcon={CommandIcon}
+            CopyIcon={CopyIcon}
+            dockerCommand={'hello world'}
+          />
+
+          <div className={`w-full flex items-center`}>
+            <div
+              className={`w-full cursor-pointer group`}
+              onClick={() =>
+                configDispatch({
+                  type: SettingsConfigureActionEnums.UPDATE_SCREEN,
+                  payload: { configureScreenState: 0 }
+                })
+              }
+            >
+              <NextArrowIcon
+                cssClass={`w-[36px] h-[36px] -rotate-[90deg] fill-[#ffffff] group-hover:fill-[#d9d9d9]`}
+              />
+            </div>
+            <div className={`w-full flex justify-center items-center`}>
+              <ButtonWrapper
+                cssClass="bg-green-600 hover:bg-green-700"
+                onClick={() => console.log('clied')}
+              >
+                Done
+              </ButtonWrapper>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
