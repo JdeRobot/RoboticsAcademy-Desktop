@@ -3,7 +3,7 @@ import { SettingsScreenStateEnums } from '@renderer/utils/enums'
 import { SettingsReducerActionTypes } from '@renderer/utils/types'
 import { layout } from '@renderer/assets/styles/styles'
 import { AddIcon, MinusIcon, NextArrowIcon } from '@renderer/assets/icons/Icons'
-import { BackIcon, CommandIcon, CopyIcon, LinkChainIcon } from '@renderer/assets'
+import { CommandIcon, CopyIcon, LinkChainIcon, SaveIcon } from '@renderer/assets'
 import { AllCommandConfigure } from '@renderer/constants'
 import SettingsCommandTerminal from './SettingsCommandTerminal'
 import ButtonWrapper from '@renderer/components/buttons/ButtonWrapper'
@@ -12,12 +12,15 @@ export enum SettingsConfigureActionEnums {
   UPDATE_SCREEN = 'UPDATE_SCREEN',
   CHANGE_CONFIG = 'CHANGE_CONFIG',
   UPDATE_PORT = 'UPDATE_PORT',
+  UPDATE_DOCKER_COMMAND = 'UPDATE_DOCKER_COMMAND',
   RESET = 'RESET'
 }
 export interface SettingsConfigureInitializeInterface {
   configureScreenState: number
+  selectedConfig: string
   configName: string
   configId: number
+  dockerCommand: string
   django: {
     name: string
     ports: number[]
@@ -37,8 +40,10 @@ export interface SettingsConfigureInitializeInterface {
 }
 const SetttingsConfigureInitialize: SettingsConfigureInitializeInterface = {
   configureScreenState: 0,
+  selectedConfig: '',
   configName: '',
   configId: -1,
+  dockerCommand: '',
   django: {
     name: 'django',
     ports: []
@@ -65,26 +70,28 @@ const reducer = (state: SettingsConfigureInitializeInterface, action) => {
     case SettingsConfigureActionEnums.UPDATE_PORT:
       state[action.payload.name] = action.payload
       return { ...state }
+    case SettingsConfigureActionEnums.UPDATE_DOCKER_COMMAND:
+      const config = AllCommandConfigure.find((conf) => conf.id === state.configId)
+      if (config === undefined) return { ...state }
+
+      let dockerCommand = config.command.join(' ')
+      dockerCommand = `${dockerCommand}  -p ${state.django.ports[0]}:${state.django.ports[1]}  -p ${state.gazebo.ports[0]}:${state.gazebo.ports[1]}  -p ${state.consoles.ports[0]}:${state.consoles.ports[1]}  -p ${state.other.ports[0]}:${state.other.ports[1]}`
+
+      return { ...state, dockerCommand }
     default:
       throw new Error('Unknown Action!')
   }
 }
 
-interface StartScreenSettingsConfigureInterface {
-  settingsScreenState: SettingsScreenStateEnums
-  dispatch: Dispatch<SettingsReducerActionTypes>
-}
+interface StartScreenSettingsConfigureInterface {}
 
-const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = ({
-  settingsScreenState,
-  dispatch
-}) => {
+const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = ({}) => {
   // state
   const [errorMsg, setErrorMsg] = useState<string>('')
   const [configureId, setConfigureId] = useState<number>(AllCommandConfigure[0].id)
   // REDUCER
   const [
-    { configureScreenState, configName, configId, django, gazebo, consoles, other },
+    { configureScreenState, configName, configId, django, gazebo, consoles, other, dockerCommand },
     configDispatch
   ] = useReducer(reducer, SetttingsConfigureInitialize)
   useEffect(() => {
@@ -100,7 +107,8 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
         django,
         gazebo,
         consoles,
-        other
+        other,
+        dockerCommand
       }
     })
   }, [configureId])
@@ -219,6 +227,7 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
               id="configure_name"
               className="bg-[#fff] border border-gray-300 text-[#454545]  h-[40px] text-base font-medium rounded-lg focus:ring-red-500 focus:border-red-500 block w-full "
               onChange={(e) => handleChangeConfigure(e)}
+              value={configId}
             >
               {AllCommandConfigure.map((config) => (
                 <option
@@ -322,15 +331,18 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
             </span>
           </div>
 
-          {/* next or previous */}
+          {/* next */}
           <div
             className={`w-full flex justify-end mt-8 cursor-pointer group`}
-            onClick={() =>
+            onClick={() => {
+              configDispatch({
+                type: SettingsConfigureActionEnums.UPDATE_DOCKER_COMMAND
+              })
               configDispatch({
                 type: SettingsConfigureActionEnums.UPDATE_SCREEN,
                 payload: { configureScreenState: 1 }
               })
-            }
+            }}
           >
             <NextArrowIcon
               cssClass={`w-[36px] h-[36px] rotate-[90deg] fill-[#ffffff] group-hover:fill-[#d9d9d9]`}
@@ -343,12 +355,12 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
           <SettingsCommandTerminal
             CommandIcon={CommandIcon}
             CopyIcon={CopyIcon}
-            dockerCommand={'hello world'}
+            dockerCommand={dockerCommand}
           />
 
-          <div className={`w-full flex items-center`}>
+          <div className={`w-full flex justify-start items-center`}>
             <div
-              className={`w-full cursor-pointer group`}
+              className={`w-[32px] mt-6 cursor-pointer group`}
               onClick={() =>
                 configDispatch({
                   type: SettingsConfigureActionEnums.UPDATE_SCREEN,
@@ -360,12 +372,13 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
                 cssClass={`w-[36px] h-[36px] -rotate-[90deg] fill-[#ffffff] group-hover:fill-[#d9d9d9]`}
               />
             </div>
-            <div className={`w-full flex justify-center items-center`}>
+            <div className={`ml-[76px]`}>
               <ButtonWrapper
                 cssClass="bg-green-600 hover:bg-green-700"
                 onClick={() => console.log('clied')}
               >
-                Done
+                <img src={SaveIcon} alt="save" className="w-[24px] h-[24px]" />
+                <span className="text-white font-semibold text-base">Save</span>
               </ButtonWrapper>
             </div>
           </div>

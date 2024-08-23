@@ -1,19 +1,22 @@
 import Logo from './logo.svg'
 
 // Start Screen
-import PlayIcon from './icons/PlayIcon.svg'
-import WarningIcon from './icons/WarningIcon.svg'
-import ErrorIcon from './icons/ErrorIcon.svg'
-import DropDownIcon from './icons/DropDownIcon.svg'
-import RightArrowIcon from './icons/RightArrowIcon.svg'
+import AddIcon from './icons/AddIcon.svg'
 import BackIcon from './icons/BackIcon.svg'
-import PowerIcon from './icons/PowerIcon.svg'
-import GameConsoleIcon from './icons/GameConsoleIcon.svg'
-import CopyIcon from './icons/CopyIcon.svg'
 import CommandIcon from './icons/CommandIcon.svg'
+import CopyIcon from './icons/CopyIcon.svg'
 import DeleteIcon from './icons/DeleteIcon.svg'
-import TaskIcon from './icons/TaskIcon.svg'
+import DropDownIcon from './icons/DropDownIcon.svg'
+import ErrorIcon from './icons/ErrorIcon.svg'
+import GameConsoleIcon from './icons/GameConsoleIcon.svg'
 import LinkChainIcon from './icons/LinkChainIcon.svg'
+import PlayIcon from './icons/PlayIcon.svg'
+import PowerIcon from './icons/PowerIcon.svg'
+import RightArrowIcon from './icons/RightArrowIcon.svg'
+import SaveIcon from './icons/SaveIcon.svg'
+import TaskIcon from './icons/TaskIcon.svg'
+import WarningIcon from './icons/WarningIcon.svg'
+
 // Social Links
 import WebSiteIcon from './icons/WebIcon.svg'
 import YoutubeIcon from './icons/YoutubeIcon.svg'
@@ -33,11 +36,13 @@ export {
   PowerIcon,
   GameConsoleIcon,
   //Start Screen Settings
+  AddIcon,
   CopyIcon,
   CommandIcon,
   DeleteIcon,
   TaskIcon,
   LinkChainIcon,
+  SaveIcon,
   /* Social Links*/
   WebSiteIcon,
   YoutubeIcon,

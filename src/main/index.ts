@@ -1,7 +1,7 @@
-import { ResponeInterface } from './interfaces'
-import { app, shell, BrowserWindow, ipcMain, IpcMainInvokeEvent, session } from 'electron'
+import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import { ResponeInterface } from './interfaces'
 import {
   checkDockerAvailability,
   checkDockerRADIAvailability,
@@ -108,27 +108,13 @@ const createWindow = (): BrowserWindow => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
+
 app.whenReady().then(() => {
+  //* Store data
+
   // Modify the origin for all requests to the following urls.
-  const filter = {
-    urls: ['http://localhost:5173/*', 'http://localhost:7164/*']
-  }
-
-  // session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
-  //   // console.log(details)
-  //   details.requestHeaders['Origin'] = 'http://localhost:7164/' //'http://localhost:5173/'
-  //   callback({ requestHeaders: details.requestHeaders })
-  // })
-
-  // session.defaultSession.webRequest.onHeadersReceived(filter, (details, callback) => {
-  //   // console.log(details)
-  //   //@ts-ignore
-  //   details.responseHeaders['Access-Control-Allow-Origin'] = ['capacitor-electron://-']
-  //   callback({ responseHeaders: details.responseHeaders })
-  // })
-
   // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron')
+  electronApp.setAppUserModelId('com.roboticsacademy')
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
