@@ -204,22 +204,26 @@ const validParams = [
 export const ValidDockerLists = [
   {
     id: 1,
-    command: ['--device'],
-    extraInput: true
+    name: 'all',
+    command: ['all'],
+    extraInput: false
   },
   {
     id: 2,
-    command: ['DRI_NAME='],
-    extraInput: true
-  },
-  {
-    id: 3,
+    name: '--gpus',
     command: ['--gpus'],
     extraInput: false
   },
   {
+    id: 3,
+    name: '--device',
+    command: ['--device'],
+    extraInput: true
+  },
+  {
     id: 4,
-    command: ['all'],
-    extraInput: false
+    name: 'DRI_NAME=',
+    command: ['DRI_NAME='],
+    extraInput: true
   }
 ]
