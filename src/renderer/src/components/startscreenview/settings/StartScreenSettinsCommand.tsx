@@ -1,9 +1,8 @@
 import { ChangeEvent, Dispatch, FC, useEffect, useState } from 'react'
-import { CommandIcon, CopyIcon, DeleteIcon, TaskIcon } from '@renderer/assets'
+import { DeleteIcon, TaskIcon } from '@renderer/assets'
 import ButtonWrapper from '@renderer/components/buttons/ButtonWrapper'
 import { SettingsScreenStateEnums } from '@renderer/utils/enums'
 import { SettingsReducerActionTypes } from '@renderer/utils/types'
-import styles from '@renderer/assets/styles/startView.module.css'
 
 import {
   AllCommandConfigure,
@@ -100,11 +99,7 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({}) =
 
       {/* Commands */}
       {dockerCommand.length > 0 && dockerImage !== `noDockerImage` && (
-        <SettingsCommandTerminal
-          CommandIcon={CommandIcon}
-          CopyIcon={CopyIcon}
-          dockerCommand={dockerCommand}
-        />
+        <SettingsCommandTerminal dockerCommand={dockerCommand} />
       )}
 
       {/* Delete or Use */}

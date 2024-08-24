@@ -1,17 +1,12 @@
+import { CommandIcon, CopyIcon } from '@renderer/assets'
 import styles from '@renderer/assets/styles/startView.module.css'
 import { FC, useState } from 'react'
 
 interface SettingsCommandTerminalInterface {
   dockerCommand: string
-  CommandIcon: string
-  CopyIcon: string
 }
 
-const SettingsCommandTerminal: FC<SettingsCommandTerminalInterface> = ({
-  dockerCommand,
-  CommandIcon,
-  CopyIcon
-}) => {
+const SettingsCommandTerminal: FC<SettingsCommandTerminalInterface> = ({ dockerCommand }) => {
   const [copied, setCopied] = useState(false)
 
   const copyToClipboard = () => {
@@ -34,7 +29,7 @@ const SettingsCommandTerminal: FC<SettingsCommandTerminalInterface> = ({
       >
         <div className="flex items-center gap-3">
           <img src={CommandIcon} alt="command icon" className={`h-[16px] w-[16px]`} />
-          <span className="text-base font-medium text-[#d9d9d9]">Current Docker Command:</span>
+          <span className="text-sm font-medium text-[#d9d9d9]">Current Docker Command</span>
         </div>
 
         <div>

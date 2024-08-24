@@ -1,9 +1,7 @@
-import { ChangeEvent, Dispatch, FC, useEffect, useReducer, useState } from 'react'
-import { SettingsScreenStateEnums } from '@renderer/utils/enums'
-import { SettingsReducerActionTypes } from '@renderer/utils/types'
+import { ChangeEvent, FC, useEffect, useReducer, useState } from 'react'
 import { layout } from '@renderer/assets/styles/styles'
 import { AddIcon, MinusIcon, NextArrowIcon } from '@renderer/assets/icons/Icons'
-import { CommandIcon, CopyIcon, LinkChainIcon, SaveIcon } from '@renderer/assets'
+import { LinkChainIcon, SaveIcon } from '@renderer/assets'
 import { AllCommandConfigure } from '@renderer/constants'
 import SettingsCommandTerminal from './SettingsCommandTerminal'
 import ButtonWrapper from '@renderer/components/buttons/ButtonWrapper'
@@ -352,11 +350,7 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
       )}
       {configureScreenState === 1 && (
         <div className="w-full">
-          <SettingsCommandTerminal
-            CommandIcon={CommandIcon}
-            CopyIcon={CopyIcon}
-            dockerCommand={dockerCommand}
-          />
+          <SettingsCommandTerminal dockerCommand={dockerCommand} />
 
           <div className={`w-full flex justify-start items-center`}>
             <div

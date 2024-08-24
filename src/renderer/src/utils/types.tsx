@@ -29,6 +29,9 @@ export type ReducerActionTypes =
     }
   | {
       type: ActionEnums.EXPAND_DIV
+      payload: {
+        isExpand: boolean
+      }
     }
   | { type: ActionEnums.RESET }
 

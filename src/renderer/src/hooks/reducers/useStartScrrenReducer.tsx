@@ -34,7 +34,7 @@ export const reducer = (state: initialStateInterface, action: ReducerActionTypes
     case ActionEnums.EXPAND_DIV:
       return {
         ...state,
-        isExpand: !state.isExpand
+        isExpand: action.payload.isExpand
       }
     case ActionEnums.RESET:
       return {

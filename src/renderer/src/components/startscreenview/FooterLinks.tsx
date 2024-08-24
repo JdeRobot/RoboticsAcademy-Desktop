@@ -36,7 +36,8 @@ const FooterLinks: FC<FooterLinksInterface> = ({ screenState, dispatch }) => {
           className="w-[28px] h-[28px] flex justify-center items-center hover:bg-yellow-500 rounded-full cursor-pointer"
           onClick={() => {
             dispatch({
-              type: ActionEnums.EXPAND_DIV
+              type: ActionEnums.EXPAND_DIV,
+              payload: { isExpand: false }
             })
             dispatch({
               type: ActionEnums.CHANGE_SCREEN,
@@ -58,7 +59,10 @@ const FooterLinks: FC<FooterLinksInterface> = ({ screenState, dispatch }) => {
           className="w-[28px] h-[28px] flex justify-center items-center hover:bg-yellow-500 rounded-full cursor-pointer"
           onClick={() => {
             dispatch({
-              type: ActionEnums.EXPAND_DIV
+              type: ActionEnums.EXPAND_DIV,
+              payload: {
+                isExpand: false
+              }
             })
             dispatch({
               type: ActionEnums.CHANGE_SCREEN,

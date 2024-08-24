@@ -186,3 +186,40 @@ export const socialLinks: socialLinksInterface[] = [
     link: 'https://www.youtube.com/channel/UCgmUgpircYAv_QhLQziHJOQ/videos'
   }
 ]
+
+const validParams = [
+  'docker',
+  'run',
+  '--rm',
+  '-it',
+  '--device',
+  '/dev/dri',
+  '-e',
+  'DRI_NAME',
+  '-p',
+  '--gpus',
+  'all'
+]
+
+export const ValidDockerLists = [
+  {
+    id: 1,
+    command: ['--device'],
+    extraInput: true
+  },
+  {
+    id: 2,
+    command: ['DRI_NAME='],
+    extraInput: true
+  },
+  {
+    id: 3,
+    command: ['--gpus'],
+    extraInput: false
+  },
+  {
+    id: 4,
+    command: ['all'],
+    extraInput: false
+  }
+]
