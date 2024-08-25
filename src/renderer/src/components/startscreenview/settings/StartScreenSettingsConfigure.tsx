@@ -5,6 +5,7 @@ import { LinkChainIcon, SaveIcon } from '@renderer/assets'
 import { AllCommandConfigure } from '@renderer/constants'
 import SettingsCommandTerminal from './SettingsCommandTerminal'
 import ButtonWrapper from '@renderer/components/buttons/ButtonWrapper'
+import Ports from './Ports'
 
 export enum SettingsConfigureActionEnums {
   UPDATE_SCREEN = 'UPDATE_SCREEN',
@@ -239,8 +240,16 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
             </select>
           </div>
           {/* All Ports */}
-          <div className={`relative w-full ${layout.flexColCenter}  gap-4`}>
-            {/* Port Pairs */}
+          <Ports
+            django={django}
+            gazebo={gazebo}
+            consoles={consoles}
+            other={other}
+            errorMsg={errorMsg}
+            handleInputChangeAndBlur={handleInputChangeAndBlur}
+            handleUpdatePort={handleUpdatePort}
+          />
+          {/* <div className={`relative w-full ${layout.flexColCenter}  gap-4`}>
             <div className="w-[400px] flex flex-col items-center justify-between gap-4">
               {[django, gazebo, consoles, other].map((server, index) => (
                 <div className="w-full flex items-center justify-between" key={index}>
@@ -327,7 +336,7 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
             <span className="absolute w-[400px] -bottom-8 left-[50%] text-sm font-extralight text-red-800 -translate-x-[50%]">
               {errorMsg}
             </span>
-          </div>
+          </div> */}
 
           {/* next */}
           <div

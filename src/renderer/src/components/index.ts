@@ -11,6 +11,7 @@ import StartScreenSettinsCommand from './startscreenview/settings/StartScreenSet
 import StartScreenSettingsConfigure from './startscreenview/settings/StartScreenSettingsConfigure'
 import StartScreenSettinsAdvance from './startscreenview/settings/StartScreenSettinsAdvance'
 import SettingsCommandTerminal from './startscreenview/settings/SettingsCommandTerminal'
+import Ports from './startscreenview/settings/Ports'
 //* utils
 import TopBar from './utlits/TopBar'
 import Loader from './utlits/Loader'
@@ -29,6 +30,7 @@ export {
   StartScreenSettingsConfigure,
   StartScreenSettinsAdvance,
   SettingsCommandTerminal,
+  Ports,
   // utils
   TopBar,
   Loader,

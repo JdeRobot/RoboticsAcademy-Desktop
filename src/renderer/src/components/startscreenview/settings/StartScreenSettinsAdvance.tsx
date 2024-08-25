@@ -1,4 +1,4 @@
-import { FC, Dispatch, useReducer, ChangeEvent, FocusEvent, useState } from 'react'
+import { FC, Dispatch, useReducer, ChangeEvent, FocusEvent, useState, useEffect } from 'react'
 import { AddIcon } from '@renderer/assets'
 import { SettingsScreenStateEnums } from '@renderer/utils/enums'
 import { SettingsReducerActionTypes } from '@renderer/utils/types'
@@ -16,7 +16,7 @@ interface SettingsAdvanceInitializeInterface {
 const SettingsAdvanceInitialize: SettingsAdvanceInitializeInterface = {
   advanceScreenState: 1,
   profileName: 'profile',
-  dockerCommands: ['docker', 'run']
+  dockerCommands: [`docker`, `run`, `--rm`, `-it`]
 }
 enum SettingsAdvanceActionEnums {
   CHANGE_SCREEN = 'CHANGE_SCREEN',
@@ -51,11 +51,16 @@ const StartScreenSettinsAdvance: FC<StartScreenSettinsAdvanceInterface> = ({}) =
   const [isInputRequired, setIsInputRequired] = useState<boolean>(false)
   const [selectedParam, setSelectedParam] = useState<string>(ValidDockerLists[0].command[0])
   const [userParams, setUserParams] = useState<string>('')
-  const [dockerCommand, setDockerCommand] = useState<string>('docker run')
+  const [dockerCommand, setDockerCommand] = useState<string>('')
   const [{ advanceScreenState, profileName, dockerCommands }, advanceDispatch] = useReducer(
     reducer,
     SettingsAdvanceInitialize
   )
+
+  //* useEffect
+  useEffect(() => {
+    dockerCommandBuilder()
+  }, [selectedParam])
 
   //* handle profile name change and blur
   const handleInputChangeAndBlur = (
@@ -117,12 +122,6 @@ const StartScreenSettinsAdvance: FC<StartScreenSettinsAdvanceInterface> = ({}) =
 
   const dockerCommandBuilder = () => {
     const dockerCommand = dockerCommands.join(' ')
-    // advanceDispatch({
-    //   type: SettingsAdvanceActionEnums.UPDATE_DOCKER_COMMAND,
-    //   payload: {
-    //     dockerCommand: ''
-    //   }
-    // })
 
     setDockerCommand(dockerCommand)
   }
