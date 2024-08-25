@@ -146,10 +146,6 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
     }
     if (portIndex === 0) port1 += steps
     else if (portIndex === 1) port2 += steps
-
-    console.log('====================================')
-    console.log('+- ', port1, port2)
-    console.log('====================================')
     configDispatch({
       type: SettingsConfigureActionEnums.UPDATE_PORT,
       payload: { name, ports: [port1, port2] }

@@ -47,17 +47,11 @@ const SettingsCommandTerminal: FC<SettingsCommandTerminalInterface> = ({ dockerC
         </div>
       </div>
       <div
-        className={`w-full h-[100px] text-[#454545] bg-white px-2 py-4 rounded-bl-lg rounded-br-lg overflow-y-auto overflow-x-hidden select-text`}
+        className={`w-full h-[80px] text-[#454545] bg-white px-1 py-2 rounded-bl-lg rounded-br-lg overflow-y-auto overflow-x-hidden select-text`}
         id="scrollbar-style"
       >
         {dockerCommand}
       </div>
-      <img
-        src={CopyIcon}
-        alt="copy icon"
-        className="absolute top-[105px] right-[4px] p-1.5 rounded-full cursor-pointer"
-        onClick={() => copyToClipboard()}
-      />
     </div>
   )
 }

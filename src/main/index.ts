@@ -13,6 +13,8 @@ import {
 const isMac = process.platform === 'darwin'
 let mainWindow: BrowserWindow | null = null
 
+console.log('paths ', app.getAppPath())
+
 // splash screen
 function createSplashWindow(): BrowserWindow {
   const win = new BrowserWindow({

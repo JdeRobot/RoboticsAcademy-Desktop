@@ -148,7 +148,7 @@ export const AllCommandConfigure: AllCommandConfigureInterface[] = [
     },
     other: {
       name: 'other',
-      ports: [71632, 7163]
+      ports: [7163, 7163]
     }
   }
 ]
