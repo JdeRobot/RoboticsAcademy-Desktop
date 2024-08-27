@@ -24,6 +24,8 @@ import ForumIcon from './icons/ForumIcon.svg'
 import XIcon from './icons/XIcon.svg'
 import GithubIcon from './icons/GithubIcon.svg'
 import SettingsIcon from './icons/SettingsIcon.svg'
+//
+import HomeIcon from './icons/HomeIcon.svg'
 export {
   Logo,
   // Start Screen
@@ -49,5 +51,7 @@ export {
   ForumIcon,
   XIcon,
   GithubIcon,
-  SettingsIcon
+  SettingsIcon,
+  //
+  HomeIcon
 }

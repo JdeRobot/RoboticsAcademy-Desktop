@@ -12,7 +12,7 @@ import {
 interface StartScreenSettingsInterface {}
 
 const settingsInitialState: SettingsInitialStateInterface = {
-  settingsScreenState: SettingsScreenStateEnums.ADVANCE //SettingsScreenStateEnums.COMMAND
+  settingsScreenState: SettingsScreenStateEnums.COMMAND
 }
 
 const reducer = (state: SettingsInitialStateInterface, action: SettingsReducerActionTypes) => {

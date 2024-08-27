@@ -16,6 +16,8 @@ import Ports from './startscreenview/settings/Ports'
 import TopBar from './utlits/TopBar'
 import Loader from './utlits/Loader'
 import ButtonWrapper from './buttons/ButtonWrapper'
+import SpeedDialUtils from './utlits/SpeedDialUtils'
+
 export {
   // start screen view
   LogoTitle,
@@ -34,5 +36,6 @@ export {
   // utils
   TopBar,
   Loader,
-  ButtonWrapper
+  ButtonWrapper,
+  SpeedDialUtils
 }
