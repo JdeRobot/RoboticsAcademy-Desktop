@@ -9,13 +9,18 @@ interface StartScrrenButtonsInterface {
   buttonState: string
   dispatch: Dispatch<ReducerActionTypes>
   setContent: any
+  dockerImage: any
+  commandConfigure: any
 }
 
 const StartScreenButtons: FC<StartScrrenButtonsInterface> = ({
   buttonState,
   dispatch,
-  setContent
+  setContent,
+  dockerImage,
+  commandConfigure
 }) => {
+  // state
   const [isStopping, setIsStopping] = useState<boolean>(false)
   const stopDockerFunc = async () => {
     const stopAlert = confirm('Are you Sure?')

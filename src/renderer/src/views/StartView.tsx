@@ -15,9 +15,11 @@ import { ScreenStateEnums } from '@renderer/utils/enums'
 
 type StartScreenInterface = {
   setContent: any
+  dockerImage: any
+  commandConfigure: any
 }
 
-const StartScreen: FC<StartScreenInterface> = ({ setContent }) => {
+const StartScreen: FC<StartScreenInterface> = ({ setContent, dockerImage, commandConfigure }) => {
   //* Use State
   const [isLoading, setIsloading] = useState<boolean>(false)
 
@@ -27,7 +29,14 @@ const StartScreen: FC<StartScreenInterface> = ({ setContent }) => {
     dispatch
   ] = useReducer(reducer, initialState)
   const [msg, setMsg] = useState<string>('')
-  useStartScreenEffect({ setIsloading, setMsg, dispatch, screenState })
+  useStartScreenEffect({
+    setIsloading,
+    setMsg,
+    dispatch,
+    screenState,
+    dockerImage,
+    commandConfigure
+  })
 
   return (
     <div className={styles.backgroundVideo}>
@@ -63,6 +72,8 @@ const StartScreen: FC<StartScreenInterface> = ({ setContent }) => {
                         buttonState={buttonState}
                         dispatch={dispatch}
                         setContent={setContent}
+                        dockerImage={dockerImage}
+                        commandConfigure={commandConfigure}
                       />
                     )}
                   </>

@@ -7,31 +7,23 @@ export const AllDockersImages = {
   jderobotRoboticsBackend: 'jderobot/robotics-backend'
 }
 
+interface PortInterface {
+  name: string
+  ports: number[]
+}
 export interface AllCommandConfigureInterface {
-  id: number
+  id: string
   default: boolean
   name: string
   command: string[]
-  django: {
-    name: string
-    ports: number[]
-  }
-  gazebo: {
-    name: string
-    ports: number[]
-  }
-  consoles: {
-    name: string
-    ports: number[]
-  }
-  other: {
-    name: string
-    ports: number[]
-  }
+  django: PortInterface
+  gazebo: PortInterface
+  consoles: PortInterface
+  other: PortInterface
 }
 export const AllCommandConfigure: AllCommandConfigureInterface[] = [
   {
-    id: 1,
+    id: `1`,
     default: true,
     name: 'Basic Command',
     command: [`docker`, `run`, `--rm`, `-it`],
@@ -53,7 +45,7 @@ export const AllCommandConfigure: AllCommandConfigureInterface[] = [
     }
   },
   {
-    id: 2,
+    id: `2`,
     default: true,
     name: 'GPU Acceleration Intel',
     command: [`docker`, `run`, `--rm`, `-it`, `--device`, `/dev/dri`],
@@ -75,7 +67,7 @@ export const AllCommandConfigure: AllCommandConfigureInterface[] = [
     }
   },
   {
-    id: 3,
+    id: ` 3`,
     default: true,
     name: 'GPU Acceleration Nvidia',
     command: [`docker`, `run`, `--rm`, `-it`, `--gpus`, `all`, `--device`, `/dev/dri`],
@@ -97,7 +89,7 @@ export const AllCommandConfigure: AllCommandConfigureInterface[] = [
     }
   },
   {
-    id: 4,
+    id: ` 4`,
     default: true,
     name: 'Multiple Gpus',
     command: [
@@ -130,10 +122,32 @@ export const AllCommandConfigure: AllCommandConfigureInterface[] = [
     }
   },
   {
-    id: 5,
+    id: `5`,
     default: true,
     name: 'Only Ports',
     command: [],
+    django: {
+      name: 'django',
+      ports: [7164, 7164]
+    },
+    gazebo: {
+      name: 'gazebo',
+      ports: [6080, 6080]
+    },
+    consoles: {
+      name: 'consoles',
+      ports: [1108, 1108]
+    },
+    other: {
+      name: 'other',
+      ports: [7163, 7163]
+    }
+  },
+  {
+    id: `77`,
+    default: false,
+    name: 'Multiple Gpus',
+    command: [`docker`, `run`, `--rm`, `-it`, `--gpus`, `all`],
     django: {
       name: 'django',
       ports: [7164, 7164]

@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import { ResponeInterface } from '../main/interfaces'
+import { AllCommandConfigureInterface, ResponeInterface } from '../main/interfaces'
 
 // Custom APIs for renderer
 const api = {
@@ -8,8 +8,11 @@ const api = {
     ipcRenderer.invoke('docker:CHECK_AVAILABILITY'),
   checkDockerRADIAvailability: (): Promise<ResponeInterface> =>
     ipcRenderer.invoke('docker:CHECK_RADI_AVAILABILITY'),
-  startDockerRADIContainer: (): Promise<ResponeInterface> =>
-    ipcRenderer.invoke('docker:START_RADI_CONTAINER'),
+  startDockerRADIContainer: (
+    commandConfigure: AllCommandConfigureInterface | null,
+    dockerImage: string | null
+  ): Promise<ResponeInterface> =>
+    ipcRenderer.invoke('docker:START_RADI_CONTAINER', commandConfigure, dockerImage),
   stopDockerRADIContainer: (): Promise<ResponeInterface> =>
     ipcRenderer.invoke('docker:STOP_RADI_CONTAINER'),
   checkRADIContainerRunning: (): Promise<ResponeInterface> =>

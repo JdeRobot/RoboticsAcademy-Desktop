@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import { ResponeInterface } from './interfaces'
+import { AllCommandConfigureInterface, ResponeInterface } from './interfaces'
 import {
   checkDockerAvailability,
   checkDockerRADIAvailability,
@@ -156,22 +156,31 @@ app.whenReady().then(() => {
     event.defaultPrevented
     try {
       const res: ResponeInterface = await checkDockerRADIAvailability()
-      // console.log('docker ', res)
       return res
     } catch (error) {
       return { status: false, msg: ['something went wrong!'] }
     }
   })
   //* Running RADI docker images
-  ipcMain.handle('docker:START_RADI_CONTAINER', async (event: IpcMainInvokeEvent) => {
-    // event.defaultPrevented
-    try {
-      const res: ResponeInterface = await startDockerRADIContainer()
-      return res
-    } catch (error) {
-      return { status: false, msg: ['something went wrong!'] }
+  ipcMain.handle(
+    'docker:START_RADI_CONTAINER',
+    async (
+      event: IpcMainInvokeEvent,
+      commandConfigure: AllCommandConfigureInterface | null,
+      dockerImage: string | null
+    ) => {
+      console.log('====================================')
+      console.log('main ', commandConfigure, ' ', dockerImage)
+      console.log('====================================')
+      // event.defaultPrevented
+      try {
+        const res: ResponeInterface = await startDockerRADIContainer(commandConfigure, dockerImage)
+        return res
+      } catch (error) {
+        return { status: false, msg: ['something went wrong!'] }
+      }
     }
-  })
+  )
   //* Stopping Docker RADI
   ipcMain.handle('docker:STOP_RADI_CONTAINER', async (event: IpcMainInvokeEvent) => {
     event.defaultPrevented
