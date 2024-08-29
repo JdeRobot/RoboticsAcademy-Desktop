@@ -9,16 +9,12 @@ interface StartScrrenButtonsInterface {
   buttonState: string
   dispatch: Dispatch<ReducerActionTypes>
   setContent: any
-  dockerImage: any
-  commandConfigure: any
 }
 
 const StartScreenButtons: FC<StartScrrenButtonsInterface> = ({
   buttonState,
   dispatch,
-  setContent,
-  dockerImage,
-  commandConfigure
+  setContent
 }) => {
   // state
   const [isStopping, setIsStopping] = useState<boolean>(false)
@@ -47,8 +43,31 @@ const StartScreenButtons: FC<StartScrrenButtonsInterface> = ({
       setIsStopping(false)
     }
   }
+  // test
+  const [rows, setRows] = useState(0)
   return (
     <>
+      {/* testing db */}
+      <ButtonWrapper
+        onClick={async () => {
+          try {
+            const data = await window.api.getAllData()
+            console.log('====================================')
+            console.log(data)
+            console.log('====================================')
+            setRows(data.length)
+          } catch (error) {
+            console.error(error)
+          }
+        }}
+        cssClass={`bg-yellow-600 ${styles.startButtonSvg}`}
+      >
+        <>
+          get data {rows}
+          <img src={PlayIcon} className={`w-[24px]`} />
+        </>
+      </ButtonWrapper>
+      {/*  */}
       {buttonState === ButtonEnums.START && (
         <ButtonWrapper
           onClick={() =>

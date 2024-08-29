@@ -78,8 +78,6 @@ const StartScreen: FC<StartScreenInterface> = ({
                         buttonState={buttonState}
                         dispatch={dispatch}
                         setContent={setContent}
-                        dockerImage={dockerImage}
-                        commandConfigure={commandConfigure}
                       />
                     )}
                   </>

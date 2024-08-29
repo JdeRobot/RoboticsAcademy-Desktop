@@ -9,9 +9,12 @@ interface ApiInterface {
   ) => Promise<ResponeInterface>
   stopDockerRADIContainer: () => Promise<ResponeInterface>
   checkRADIContainerRunning: () => Promise<ResponeInterface>
+  // app window
   onClosingApp: (callBack: any) => any
   sendClosingApp: (msg: any) => any
   sendWindowResize: (chanel: string) => void
+  // database
+  getAllData: () => Promise<any>
 }
 declare global {
   interface Window {

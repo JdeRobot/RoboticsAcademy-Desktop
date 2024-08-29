@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+
 import { AllCommandConfigureInterface, ResponeInterface } from './interfaces'
 import {
   checkDockerAvailability,
@@ -13,8 +14,216 @@ import {
 const isMac = process.platform === 'darwin'
 let mainWindow: BrowserWindow | null = null
 
-console.log('paths ', app.getAppPath())
+//! connect with database start
+import { dbInit } from './db'
+import { Database } from 'sqlite3'
+const db: Database = dbInit()
 
+// Data to be stored
+const AllCommandConfigure = [
+  {
+    id: `1`,
+    default: true,
+    name: 'Basic Command',
+    command: [`docker`, `run`, `--rm`, `-it`],
+    django: {
+      name: 'django',
+      ports: [7164, 7164]
+    },
+    gazebo: {
+      name: 'gazebo',
+      ports: [6080, 6080]
+    },
+    consoles: {
+      name: 'consoles',
+      ports: [1108, 1108]
+    },
+    other: {
+      name: 'other',
+      ports: [7163, 7163]
+    }
+  },
+  {
+    id: `2`,
+    default: true,
+    name: 'GPU Acceleration Intel',
+    command: [`docker`, `run`, `--rm`, `-it`, `--device`, `/dev/dri`],
+    django: {
+      name: 'django',
+      ports: [7164, 7164]
+    },
+    gazebo: {
+      name: 'gazebo',
+      ports: [6080, 6080]
+    },
+    consoles: {
+      name: 'consoles',
+      ports: [1108, 1108]
+    },
+    other: {
+      name: 'other',
+      ports: [7163, 7163]
+    }
+  },
+  {
+    id: ` 3`,
+    default: true,
+    name: 'GPU Acceleration Nvidia',
+    command: [`docker`, `run`, `--rm`, `-it`, `--gpus`, `all`, `--device`, `/dev/dri`],
+    django: {
+      name: 'django',
+      ports: [7164, 7164]
+    },
+    gazebo: {
+      name: 'gazebo',
+      ports: [6080, 6080]
+    },
+    consoles: {
+      name: 'consoles',
+      ports: [1108, 1108]
+    },
+    other: {
+      name: 'other',
+      ports: [7163, 7163]
+    }
+  },
+  {
+    id: `4`,
+    default: true,
+    name: 'Multiple Gpus',
+    command: [
+      `docker`,
+      `run`,
+      `--rm`,
+      `-it`,
+      `--gpus`,
+      `all`,
+      `--device`,
+      `/dev/dri`,
+      `-e`,
+      `DRI_NAME=card1`
+    ],
+    django: {
+      name: 'django',
+      ports: [7164, 7164]
+    },
+    gazebo: {
+      name: 'gazebo',
+      ports: [6080, 6080]
+    },
+    consoles: {
+      name: 'consoles',
+      ports: [1108, 1108]
+    },
+    other: {
+      name: 'other',
+      ports: [7163, 7163]
+    }
+  },
+  {
+    id: `5`,
+    default: true,
+    name: 'Only Ports',
+    command: [],
+    django: {
+      name: 'django',
+      ports: [7164, 7164]
+    },
+    gazebo: {
+      name: 'gazebo',
+      ports: [6080, 6080]
+    },
+    consoles: {
+      name: 'consoles',
+      ports: [1108, 1108]
+    },
+    other: {
+      name: 'other',
+      ports: [7163, 7163]
+    }
+  },
+  {
+    id: `77`,
+    default: false,
+    name: 'Multiple Gpus - 2',
+    command: [`docker`, `run`, `--rm`, `-it`, `--gpus`, `all`],
+    django: {
+      name: 'django',
+      ports: [7164, 7164]
+    },
+    gazebo: {
+      name: 'gazebo',
+      ports: [6080, 6080]
+    },
+    consoles: {
+      name: 'consoles',
+      ports: [1108, 1108]
+    },
+    other: {
+      name: 'other',
+      ports: [7163, 7163]
+    }
+  }
+]
+
+// Create the table with the adjusted column name
+// is_default BOOLEAN,  -- Renamed from 'default' to 'is_default'
+db.run(
+  `CREATE TABLE IF NOT EXISTS commands (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,  -- Auto-incrementing ID
+    is_default BOOLEAN,
+    name TEXT,
+    command TEXT,
+    django_name TEXT,
+    django_ports TEXT,
+    gazebo_name TEXT,
+    gazebo_ports TEXT,
+    consoles_name TEXT,
+    consoles_ports TEXT,
+    other_name TEXT,
+    other_ports TEXT
+  )`,
+  (err) => {
+    if (err) {
+      console.error('Error creating table: ' + err.message)
+    } else {
+      console.log('Table created or already exists.')
+
+      // Insert data into the table
+      let insertStmt = db.prepare(
+        `INSERT INTO commands (
+        is_default, name, command,
+        django_name, django_ports,
+        gazebo_name, gazebo_ports,
+        consoles_name, consoles_ports,
+        other_name, other_ports
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      )
+
+      AllCommandConfigure.forEach((entry) => {
+        insertStmt.run(
+          entry.default,
+          entry.name,
+          entry.command.join(' '), // Join command array to a single string
+          entry.django.name,
+          entry.django.ports.join(', '), // Join ports array to a single string
+          entry.gazebo.name,
+          entry.gazebo.ports.join(', '),
+          entry.consoles.name,
+          entry.consoles.ports.join(', '),
+          entry.other.name,
+          entry.other.ports.join(', ')
+        )
+      })
+
+      insertStmt.finalize()
+
+      console.log('Data inserted successfully.')
+    }
+  }
+)
+
+//! connect database end
 // splash screen
 function createSplashWindow(): BrowserWindow {
   const win = new BrowserWindow({
@@ -126,20 +335,6 @@ app.whenReady().then(() => {
   })
 
   //* IPC COMMUNICATION
-  //* Docker check
-  // ipcMain.handle('docker:CHECK_AVAILABILITY', async (event: IpcMainInvokeEvent) => {
-  //   const win: BrowserWindow = createWindow()
-  //   win.isMinimized() ? win.restore() : win.minimize()
-
-  //   return { status: ResponseStatus.ERROR, msg: [''] }
-  //   event.defaultPrevented
-  //   try {
-  //     const res: ResponeInterface = await checkDockerAvailability()
-  //     return res
-  //   } catch (error) {
-  //     return { status: false, msg: ['something went wrong!', `${error}`] }
-  //   }
-  // })
   //* Stopping Docker RADI
   ipcMain.handle('docker:CHECK_RADI_RUNNING', async (event: IpcMainInvokeEvent) => {
     event.defaultPrevented
@@ -169,10 +364,6 @@ app.whenReady().then(() => {
       commandConfigure: AllCommandConfigureInterface | null,
       dockerImage: string | null
     ) => {
-      console.log('====================================')
-      console.log('main ', commandConfigure, ' ', dockerImage)
-      console.log('====================================')
-      // event.defaultPrevented
       try {
         const res: ResponeInterface = await startDockerRADIContainer(commandConfigure, dockerImage)
         return res
@@ -186,7 +377,6 @@ app.whenReady().then(() => {
     event.defaultPrevented
     try {
       const res: ResponeInterface = await stopDockerRADIContainer()
-      // console.log('docker ', res)
       return res
     } catch (error) {
       return { status: false, msg: ['something went wrong!'] }
@@ -195,7 +385,6 @@ app.whenReady().then(() => {
   //* App Window Resize
   // minimize the window
   ipcMain.on('app_window:MINIMIZE', (event) => {
-    // event.preventDefault()
     if (!mainWindow?.isMinimized()) {
       mainWindow?.minimize()
     }
@@ -203,14 +392,12 @@ app.whenReady().then(() => {
 
   // maximize
   ipcMain.on('app_window:MAXIMIZE', (event) => {
-    // event.preventDefault()
     if (!mainWindow?.isMinimized()) {
       mainWindow?.maximize()
     }
   })
   // unmaximize
   ipcMain.on('app_window:UNMAXIMIZE', (event) => {
-    // event.preventDefault()
     if (mainWindow?.isMaximized()) {
       mainWindow?.restore()
     }
@@ -218,10 +405,20 @@ app.whenReady().then(() => {
   // close
   ipcMain.once('app_window:CLOSE', (event) => {
     event.preventDefault()
-    // mainWindow?.close()
-    // mainWindow = null
-    // !isMac &&
     app.quit()
+  })
+
+  //! database ipcMain
+  ipcMain.handle('database:test', async (event) => {
+    return new Promise((resolve, reject) => {
+      db.all('SELECT * FROM commands', [], (err, rows) => {
+        if (err) {
+          reject('Error fetching data: ' + err.message)
+        } else {
+          resolve(rows)
+        }
+      })
+    })
   })
   //* checkRADIContainerRunning Disappering splash screen and show main screen after 3 seconds.
   try {
@@ -263,18 +460,12 @@ app.whenReady().then(() => {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', (e) => {
   if (!isMac) {
+    db.close((err) => {
+      if (err) return console.error(err.message)
+    })
     app.quit()
   }
 })
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
-// const filter = {
-//   urls: ['*://*.google.com/*']
-// }
-// const session = electron.remote.session
-// session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
-//   details.requestHeaders['Origin'] = null
-//   details.headers['Origin'] = null
-//   callback({ requestHeaders: details.requestHeaders })
-// })

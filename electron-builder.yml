@@ -5,6 +5,7 @@ directories:
 extraResources:
   - './splashscreen.html'
   - 'resources/**'
+  - './roboticsacademy.db'
 files:
   - '!**/.vscode/*'
   - '!src/*'
