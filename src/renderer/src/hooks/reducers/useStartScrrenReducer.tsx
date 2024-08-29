@@ -3,7 +3,7 @@ import { ActionEnums, ButtonEnums, ScreenStateEnums } from '@renderer/utils/enum
 import { ReducerActionTypes } from '@renderer/utils/types'
 
 export const initialState: initialStateInterface = {
-  screenState: ScreenStateEnums.SETTINGS, //ScreenStateEnums.START,
+  screenState: ScreenStateEnums.START, //ScreenStateEnums.SETTINGS,
   buttonState: ButtonEnums.START,
   errorWarningMsg: [],
   progress: 0,

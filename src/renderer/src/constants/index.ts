@@ -89,7 +89,7 @@ export const AllCommandConfigure: AllCommandConfigureInterface[] = [
     }
   },
   {
-    id: ` 4`,
+    id: `4`,
     default: true,
     name: 'Multiple Gpus',
     command: [
@@ -102,7 +102,7 @@ export const AllCommandConfigure: AllCommandConfigureInterface[] = [
       `--device`,
       `/dev/dri`,
       `-e`,
-      `DRI_NA  ME=card1`
+      `DRI_NAME=card1`
     ],
     django: {
       name: 'django',
@@ -146,7 +146,7 @@ export const AllCommandConfigure: AllCommandConfigureInterface[] = [
   {
     id: `77`,
     default: false,
-    name: 'Multiple Gpus',
+    name: 'Multiple Gpus - 2',
     command: [`docker`, `run`, `--rm`, `-it`, `--gpus`, `all`],
     django: {
       name: 'django',

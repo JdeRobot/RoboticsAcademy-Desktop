@@ -8,7 +8,7 @@ import {
   Loader,
   StartScreenButtons,
   StartScreenSettings
-} from './../components/index'
+} from '../components/index'
 import { initialState, reducer } from '@renderer/hooks/reducers/useStartScrrenReducer'
 import { useStartScreenEffect } from '@renderer/hooks/effects/useStartScreenEffect'
 import { ScreenStateEnums } from '@renderer/utils/enums'
@@ -17,9 +17,15 @@ type StartScreenInterface = {
   setContent: any
   dockerImage: any
   commandConfigure: any
+  getAndStoreLocalStorageData: any
 }
 
-const StartScreen: FC<StartScreenInterface> = ({ setContent, dockerImage, commandConfigure }) => {
+const StartScreen: FC<StartScreenInterface> = ({
+  setContent,
+  dockerImage,
+  commandConfigure,
+  getAndStoreLocalStorageData
+}) => {
   //* Use State
   const [isLoading, setIsloading] = useState<boolean>(false)
 
@@ -46,7 +52,7 @@ const StartScreen: FC<StartScreenInterface> = ({ setContent, dockerImage, comman
       >
         <div className={`w-full h-full flex flex-col justify-between items-center py-2`}>
           {screenState === ScreenStateEnums.SETTINGS ? (
-            <StartScreenSettings />
+            <StartScreenSettings getAndStoreLocalStorageData={getAndStoreLocalStorageData} />
           ) : (
             <>
               <LogoTitle />

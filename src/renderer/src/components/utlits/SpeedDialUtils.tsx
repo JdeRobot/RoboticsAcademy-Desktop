@@ -10,7 +10,7 @@ const SpeedDialUtils: FC<SpeedDialUtilsInterface> = ({ setUrl, setContent }) => 
   return (
     <div
       data-dial-init
-      className="fixed end-6 bottom-6 group z-[100]"
+      className="fixed end-6 bottom-6 group z-[90]"
       onMouseEnter={() => setIsSpeedDial(true)}
       onMouseLeave={() => setIsSpeedDial(false)}
     >

@@ -15,8 +15,11 @@ import Loader from '@renderer/components/utlits/Loader'
 interface StartScreenSettinsCommandInterface {
   settingsScreenState: SettingsScreenStateEnums
   dispatch: Dispatch<SettingsReducerActionTypes>
+  getAndStoreLocalStorageData: any
 }
-const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({}) => {
+const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
+  getAndStoreLocalStorageData
+}) => {
   // state
   const [isLoading, setIsLoading] = useState<boolean>(true)
   // command state
@@ -83,15 +86,12 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({}) =
   //
   useEffect(() => {
     const buildCommand = () => {
-      const cmdConfig: AllCommandConfigureInterface | undefined = allCommandConfigure.find(
-        (command) => command.id === activeCommandConfigId
-      )
-      if (cmdConfig === undefined) {
+      if (selectedCommandConfig === null) {
         setDockerCommand(``)
         return
       }
 
-      const { command, django, consoles, gazebo, other } = cmdConfig
+      const { command, django, consoles, gazebo, other } = selectedCommandConfig
 
       const ports = `-p ${django.ports[0]}:${django.ports[1]} -p ${gazebo.ports[0]}:${gazebo.ports[1]} -p ${consoles.ports[0]}:${consoles.ports[1]} -p ${other.ports[0]}:${other.ports[1]}`
 
@@ -132,11 +132,16 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({}) =
     )
       return
 
+    console.log('====================================')
+    console.log('selectedCommandConfig to use', selectedCommandConfig)
+    console.log('====================================')
+
     setActiveCommandConfigId(selectedCommandConfig?.id || `-1`)
     localStorage.setItem('ActiveConfigureId', selectedCommandConfig?.id || `-1`)
 
     setActiveDockerImage(selectedDockerImage)
     localStorage.setItem('ActiveDockerImage', selectedDockerImage)
+    getAndStoreLocalStorageData()
   }
 
   return (

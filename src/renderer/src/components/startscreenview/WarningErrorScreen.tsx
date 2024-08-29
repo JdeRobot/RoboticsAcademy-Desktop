@@ -44,7 +44,7 @@ const WarningErrorScreen: FC<WarningErrorScreenInterface> = ({
             src={DropDownIcon}
             alt=""
             className={`w-[24px] h-[24px`}
-            onClick={() => dispatch({ type: 'EXPAND_DIV' })}
+            onClick={() => dispatch({ type: 'EXPAND_DIV', payload: { isExpand: true } })}
           />
         </div>
       </div>

@@ -9,7 +9,9 @@ import {
   StartScreenSettinsAdvance
 } from '@renderer/components/index'
 
-interface StartScreenSettingsInterface {}
+interface StartScreenSettingsInterface {
+  getAndStoreLocalStorageData: any
+}
 
 const settingsInitialState: SettingsInitialStateInterface = {
   settingsScreenState: SettingsScreenStateEnums.COMMAND
@@ -29,7 +31,7 @@ const reducer = (state: SettingsInitialStateInterface, action: SettingsReducerAc
   }
 }
 
-const StartScreenSettings: FC<StartScreenSettingsInterface> = ({}) => {
+const StartScreenSettings: FC<StartScreenSettingsInterface> = ({ getAndStoreLocalStorageData }) => {
   const [{ settingsScreenState }, dispatch] = useReducer(reducer, settingsInitialState)
   return (
     <div className={`w-full h-full flex`}>
@@ -42,6 +44,7 @@ const StartScreenSettings: FC<StartScreenSettingsInterface> = ({}) => {
             <StartScreenSettinsCommand
               settingsScreenState={settingsScreenState}
               dispatch={dispatch}
+              getAndStoreLocalStorageData={getAndStoreLocalStorageData}
             />
           )}
           {settingsScreenState === SettingsScreenStateEnums.CONFIGURE && (

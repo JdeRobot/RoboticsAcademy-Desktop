@@ -2,7 +2,7 @@ import { useEffect, useReducer, useRef, useState } from 'react'
 import './assets/index.css'
 import { TopBar, SpeedDialUtils } from './components'
 import AppClosingWarning from './components/utlits/AppClosingWarning'
-import StartScreen from './views/StartView'
+import StartScreen from './views/StartScreen'
 import { AllCommandConfigure, AllCommandConfigureInterface, AllDockersImages } from './constants'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -76,6 +76,7 @@ const App = () => {
           setContent={setContent}
           dockerImage={dockerImage}
           commandConfigure={commandConfigure}
+          getAndStoreLocalStorageData={getAndStoreLocalStorageData}
         />
       )}
       {/* new screen */}
