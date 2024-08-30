@@ -22,6 +22,10 @@ interface ApiInterface {
   getActiveDockerImage: () => Promise<DatabaseFetching<ResponseStatus, string, string[]>>
   //! POST
   //! UPDATE
+  updateCommandUtils: (
+    id: number,
+    image: string
+  ) => Promise<DatabaseFetching<ResponseStatus, null, string[]>>
   //! DELETE
 }
 declare global {

@@ -46,20 +46,20 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
   // update and current state
   const [dockerCommand, setDockerCommand] = useState<string>('')
   const [errorMsg, setErroMsg] = useState<string>('')
+  const [successMsg, setSuccessMsg] = useState<string>('')
 
   // Fetching data from database
   useEffect(() => {
     setIsLoading(true)
     const fetchingData = async () => {
       try {
+        const commandConfigIdRes: DatabaseFetching<ResponseStatus, number, string[]> =
+          await window.api.getActiveCommandId()
         const commandRes: DatabaseFetching<
           ResponseStatus,
           AllCommandConfigureInterface[],
           string[]
         > = await window.api.getAllCommandConfig()
-
-        const commandConfigIdRes: DatabaseFetching<ResponseStatus, number, string[]> =
-          await window.api.getActiveCommandId()
 
         const dockerImageRes: DatabaseFetching<ResponseStatus, string, string[]> =
           await window.api.getActiveDockerImage()
@@ -74,37 +74,23 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
         setActiveCommandConfigId(commandConfigIdRes.data)
         setAllCommandConfigure(commandRes.data)
         setActiveDockerImage(dockerImageRes.data)
+
         const command: AllCommandConfigureInterface | null =
           commandRes.data.find((command) => command.id === commandConfigIdRes.data) || null
-        setSelectedCommandConfig(command)
 
+        setSelectedCommandConfig(command)
         setSelectedDockerImage(dockerImageRes.data)
       } catch (error) {
         setErroMsg(`error while fetching!`)
       } finally {
         setIsLoading(false)
+        setTimeout(() => {
+          setErroMsg(``)
+        }, 3000)
       }
     }
     fetchingData()
-    return () => {}
   }, [])
-
-  // useEffect
-  // useEffect(() => {
-  //   setIsLoading(true)
-  //   const config = allCommandConfigure.find((config) => {
-  //     return config.id === activeCommandConfigId
-  //   })
-  //   setSelectedCommandConfig(config != null ? config : null)
-
-  //   const getDockerImage = localStorage.getItem('ActiveDockerImage')
-  //   setSelectedDockerImage(getDockerImage != null ? getDockerImage : `noDockerImage`)
-
-  //   //
-  //   setTimeout(() => {
-  //     setIsLoading(false)
-  //   }, 500)
-  // }, [])
 
   //
   useEffect(() => {
@@ -126,7 +112,16 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
 
   // on change func
   const handleChangeDockerImage = (e: ChangeEvent<HTMLSelectElement>) => {
-    setSelectedDockerImage(e.target.value)
+    const dockerImage = e.target.value
+    setSelectedDockerImage(dockerImage)
+
+    const command: AllCommandConfigureInterface | null =
+      allCommandConfigure.find((config: AllCommandConfigureInterface) => {
+        if (dockerImage === `noDockerImage` && config.command.length === 0) return config
+        else if (dockerImage != `noDockerImage`) return config
+      }) || null
+
+    setSelectedCommandConfig(command)
   }
   const handleChangeCommandConfig = (e: ChangeEvent<HTMLSelectElement>) => {
     const configId = Number(e.target.value)
@@ -136,6 +131,48 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
 
     setSelectedCommandConfig(configure != null ? configure : null)
   }
+
+  //! helper func
+  const isSelectDisabled = (imageName: string, command: number): boolean => {
+    if (imageName === `noDockerImage`) {
+      return !(command === 0)
+    }
+    return command === 0
+  }
+
+  const handleUse = async () => {
+    if (
+      selectedCommandConfig?.id === activeCommandConfigId &&
+      selectedDockerImage === activeDockerImage
+    )
+      return
+
+    try {
+      const updateRes: DatabaseFetching<ResponseStatus, null, string[]> =
+        await window.api.updateCommandUtils(selectedCommandConfig?.id || 1, selectedDockerImage)
+      if (updateRes.status === ResponseStatus.ERROR) {
+        setErroMsg(updateRes.msg[0])
+        return
+      }
+
+      // save Active state
+      setActiveCommandConfigId(selectedCommandConfig?.id || 1)
+
+      // save select state
+      setActiveDockerImage(selectedDockerImage)
+
+      // success msg
+      setSuccessMsg(`Saved successfully.`)
+    } catch (error) {
+      setErroMsg(`Something went wrong!`)
+    } finally {
+      setTimeout(() => {
+        setSuccessMsg(``)
+        setErroMsg(``)
+      }, 3000)
+    }
+  }
+
   const handleDelete = () => {
     if (selectedCommandConfig?.default) return
 
@@ -147,24 +184,6 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
 
     // setActiveCommandConfigId(allCommandConfigure[0].id)
     // localStorage.setItem('ActiveConfigureId', allCommandConfigure[0].id)
-  }
-  const handleUse = () => {
-    if (
-      selectedCommandConfig?.id === activeCommandConfigId &&
-      selectedDockerImage === activeDockerImage
-    )
-      return
-
-    // console.log('====================================')
-    // console.log('selectedCommandConfig to use', selectedCommandConfig)
-    // console.log('====================================')
-
-    // setActiveCommandConfigId(selectedCommandConfig?.id || `-1`)
-    // localStorage.setItem('ActiveConfigureId', selectedCommandConfig?.id || `-1`)
-
-    // setActiveDockerImage(selectedDockerImage)
-    // localStorage.setItem('ActiveDockerImage', selectedDockerImage)
-    // getAndStoreLocalStorageData()
   }
 
   return (
@@ -197,32 +216,36 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
             </select>
           </div>
           {/* selet command  */}
-          {selectedDockerImage != `noDockerImage` && (
-            <div className="relative">
-              <label htmlFor="default" className="block mb-2 text-base font-medium text-[#d9d9d9]">
-                Select RADI Docker Image
-              </label>
 
+          <div className="relative">
+            <label htmlFor="default" className="block mb-2 text-base font-medium text-[#d9d9d9]">
+              Select RADI Docker Image
+            </label>
+
+            {selectedDockerImage && (
               <select
-                id="default"
+                id="command"
                 className="w-[400px] h-[40px]  bg-white border-gray-300 text-[#454545] text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 px-4 block"
                 onChange={(e: ChangeEvent<HTMLSelectElement>) => handleChangeCommandConfig(e)}
                 value={selectedCommandConfig != null ? selectedCommandConfig.id : 0}
               >
                 {allCommandConfigure.map((command: AllCommandConfigureInterface, index: number) => (
-                  <option key={index} value={command.id}>
+                  <option
+                    value={command.id}
+                    key={command.id}
+                    disabled={isSelectDisabled(selectedDockerImage, command.command.length)}
+                  >
                     {command.name}
                   </option>
                 ))}
               </select>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Commands */}
           {dockerCommand.length > 0 && selectedDockerImage != `noDockerImage` && (
             <SettingsCommandTerminal dockerCommand={dockerCommand} />
           )}
-
           {/* Delete or Use */}
           <div className={`relative w-[400px] flex justify-between items-center`}>
             {!selectedCommandConfig?.default}
@@ -244,7 +267,11 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
           </div>
 
           {/* show error*/}
-          {errorMsg && <div className="mt-4 text-sm text-red-800 font-extralight">{errorMsg}</div>}
+          {errorMsg && <div className="mt-4 text-sm text-red-700 font-extralight">{errorMsg}</div>}
+          {/* show success*/}
+          {successMsg && (
+            <div className="mt-4 text-sm text-green-500 font-extralight">{successMsg}</div>
+          )}
         </div>
       )}
     </>

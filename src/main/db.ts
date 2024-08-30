@@ -241,7 +241,7 @@ export const insertCommandUtilsData = async (db: Database) => {
   db.run(
     `CREATE TABLE IF NOT EXISTS commands_utils (
     id INTEGER,
-    active_command_id TEXT,
+    active_command_id INTEGER,
     active_docker TEXT
   )`,
     async (err) => {
@@ -302,7 +302,7 @@ export const getAllCommandConfig = (
             id: row.id,
             default: Boolean(row.is_default),
             name: row.name,
-            command: row.command.split(','),
+            command: row.command.length ? row.command.split(',') : [],
             django: {
               name: 'django',
               ports: row.django_ports.split(':').map(Number)
@@ -340,7 +340,7 @@ interface CommandsUtilsTableRow {
 //* get active command
 export const getCommandConfigId = (
   db: Database
-): Promise<DatabaseFetching<ResponseStatus, number | null, string[]>> => {
+): Promise<DatabaseFetching<ResponseStatus, number, string[]>> => {
   return new Promise((resolve, reject) => {
     db.all(
       `SELECT * FROM commands_utils WHERE id=999`,
@@ -349,7 +349,7 @@ export const getCommandConfigId = (
         if (err) {
           reject({
             status: ResponseStatus.ERROR,
-            data: null,
+            data: -1,
             msg: [`error while data fetching from db`]
           })
         } else {
@@ -394,4 +394,32 @@ export const getActiveDockerImage = (
 
 //! POST
 //! UPDATE
+// update active command id
+export const updateCommandUtils = (
+  db: Database,
+  id: number,
+  image: string
+): Promise<DatabaseFetching<ResponseStatus, null, string[]>> => {
+  return new Promise((resolve, reject) => {
+    db.run(
+      `UPDATE commands_utils SET active_command_id = ?, active_docker = ? WHERE id = ?`,
+      [id, image, 999],
+      (err) => {
+        if (err) {
+          reject({
+            status: ResponseStatus.ERROR,
+            data: null,
+            msg: [`error while updating data.`]
+          })
+        } else {
+          resolve({
+            status: ResponseStatus.SUCCESS,
+            data: null,
+            msg: ['active command id update successfully.']
+          })
+        }
+      }
+    )
+  })
+}
 //! DELETE

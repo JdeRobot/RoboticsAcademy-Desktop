@@ -26,7 +26,8 @@ import {
   getAllCommandConfig,
   getCommandConfigId,
   insertCommandData,
-  insertCommandUtilsData
+  insertCommandUtilsData,
+  updateCommandUtils
 } from './db'
 import { Database } from 'sqlite3'
 const db: Database = dbInit()
@@ -247,15 +248,14 @@ app.whenReady().then(async () => {
   //* get active command
   ipcMain.handle(
     'database:GET_ACTIVE_COMMAND_ID',
-    async (event): Promise<DatabaseFetching<ResponseStatus, number | null, string[]>> => {
+    async (event): Promise<DatabaseFetching<ResponseStatus, number, string[]>> => {
       try {
-        const res: DatabaseFetching<ResponseStatus, number | null, string[]> =
-          await getCommandConfigId(db)
+        const res: DatabaseFetching<ResponseStatus, number, string[]> = await getCommandConfigId(db)
         return res
       } catch (error) {
         return {
           status: ResponseStatus.ERROR,
-          data: null,
+          data: -1,
           msg: [`something went wrong!`, String(error)]
         }
       }
@@ -281,6 +281,30 @@ app.whenReady().then(async () => {
 
   //! POST
   //! UPDATE
+  //* update active command id
+  ipcMain.handle(
+    'database:UPDATE_ACTIVE_COMMAND_ID',
+    async (
+      event,
+      id: number,
+      image: string
+    ): Promise<DatabaseFetching<ResponseStatus, null, string[]>> => {
+      try {
+        const res: DatabaseFetching<ResponseStatus, null, string[]> = await updateCommandUtils(
+          db,
+          id,
+          image
+        )
+        return res
+      } catch (error) {
+        return {
+          status: ResponseStatus.ERROR,
+          data: null,
+          msg: [`something went wrong!`, String(error)]
+        }
+      }
+    }
+  )
   //! DELETE
   //* checkRADIContainerRunning Disappering splash screen and show main screen after 3 seconds.
   try {
