@@ -1,7 +1,7 @@
 import { ChangeEvent, Dispatch, FC, useEffect, useState } from 'react'
 import { DeleteIcon, TaskIcon } from '@renderer/assets'
 import ButtonWrapper from '@renderer/components/buttons/ButtonWrapper'
-import { SettingsScreenStateEnums } from '@renderer/utils/enums'
+import { ResponseStatus, SettingsScreenStateEnums } from '@renderer/utils/enums'
 import { SettingsReducerActionTypes } from '@renderer/utils/types'
 
 import {
@@ -11,6 +11,7 @@ import {
 } from '@renderer/constants'
 import SettingsCommandTerminal from './SettingsCommandTerminal'
 import Loader from '@renderer/components/utlits/Loader'
+import { DatabaseFetching, ResponeInterface } from '@renderer/utils/interfaces'
 
 interface StartScreenSettinsCommandInterface {
   settingsScreenState: SettingsScreenStateEnums
@@ -23,34 +24,13 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
   // state
   const [isLoading, setIsLoading] = useState<boolean>(true)
   // command state
-  const [activeCommandConfigId, setActiveCommandConfigId] = useState<string>(() => {
-    const configIdData = localStorage.getItem('ActiveConfigureId')
-
-    return configIdData ? configIdData : `-1`
-  })
+  const [activeCommandConfigId, setActiveCommandConfigId] = useState<number>(0)
   const [allCommandConfigure, setAllCommandConfigure] = useState<
     AllCommandConfigureInterface[] | []
-  >(() => {
-    const allCommandConfigureData = localStorage.getItem('AllCommandConfigure')
-
-    return allCommandConfigureData != null ? JSON.parse(allCommandConfigureData) : []
-  })
+  >([])
 
   const [selectedCommandConfig, setSelectedCommandConfig] =
-    useState<AllCommandConfigureInterface | null>(() => {
-      const allCommandConfigureData = localStorage.getItem('AllCommandConfigure')
-
-      if (allCommandConfigureData === null) return null
-
-      const allCommandConfigureDataParse: AllCommandConfigureInterface[] =
-        JSON.parse(allCommandConfigureData)
-
-      const commandConfig = allCommandConfigureDataParse.find((config) => {
-        return config.id === activeCommandConfigId
-      })
-
-      return commandConfig != null ? commandConfig : null
-    })
+    useState<AllCommandConfigureInterface | null>(null)
 
   // docker image state
   const [activeDockerImage, setActiveDockerImage] = useState<string>(() => {
@@ -65,23 +45,66 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
 
   // update and current state
   const [dockerCommand, setDockerCommand] = useState<string>('')
+  const [errorMsg, setErroMsg] = useState<string>('')
 
-  // useEffect
+  // Fetching data from database
   useEffect(() => {
     setIsLoading(true)
-    const config = allCommandConfigure.find((config) => {
-      return config.id === activeCommandConfigId
-    })
-    setSelectedCommandConfig(config != null ? config : null)
+    const fetchingData = async () => {
+      try {
+        const commandRes: DatabaseFetching<
+          ResponseStatus,
+          AllCommandConfigureInterface[],
+          string[]
+        > = await window.api.getAllCommandConfig()
 
-    const getDockerImage = localStorage.getItem('ActiveDockerImage')
-    setSelectedDockerImage(getDockerImage != null ? getDockerImage : `noDockerImage`)
+        const commandConfigIdRes: DatabaseFetching<ResponseStatus, number, string[]> =
+          await window.api.getActiveCommandId()
 
-    //
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 500)
+        const dockerImageRes: DatabaseFetching<ResponseStatus, string, string[]> =
+          await window.api.getActiveDockerImage()
+
+        if (
+          commandRes.status === ResponseStatus.ERROR ||
+          commandConfigIdRes.status === ResponseStatus.ERROR ||
+          dockerImageRes.status === ResponseStatus.ERROR
+        ) {
+          setErroMsg(`error while fetching!`)
+        }
+        setActiveCommandConfigId(commandConfigIdRes.data)
+        setAllCommandConfigure(commandRes.data)
+        setActiveDockerImage(dockerImageRes.data)
+        const command: AllCommandConfigureInterface | null =
+          commandRes.data.find((command) => command.id === commandConfigIdRes.data) || null
+        setSelectedCommandConfig(command)
+
+        setSelectedDockerImage(dockerImageRes.data)
+      } catch (error) {
+        setErroMsg(`error while fetching!`)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchingData()
+    return () => {}
   }, [])
+
+  // useEffect
+  // useEffect(() => {
+  //   setIsLoading(true)
+  //   const config = allCommandConfigure.find((config) => {
+  //     return config.id === activeCommandConfigId
+  //   })
+  //   setSelectedCommandConfig(config != null ? config : null)
+
+  //   const getDockerImage = localStorage.getItem('ActiveDockerImage')
+  //   setSelectedDockerImage(getDockerImage != null ? getDockerImage : `noDockerImage`)
+
+  //   //
+  //   setTimeout(() => {
+  //     setIsLoading(false)
+  //   }, 500)
+  // }, [])
 
   //
   useEffect(() => {
@@ -106,7 +129,7 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
     setSelectedDockerImage(e.target.value)
   }
   const handleChangeCommandConfig = (e: ChangeEvent<HTMLSelectElement>) => {
-    const configId = e.target.value
+    const configId = Number(e.target.value)
     const configure = allCommandConfigure.find((config) => {
       return config.id === configId
     })
@@ -116,14 +139,14 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
   const handleDelete = () => {
     if (selectedCommandConfig?.default) return
 
-    const tmpAllCommandConfig = allCommandConfigure.filter(
-      (config) => config?.id != selectedCommandConfig?.id
-    )
-    setAllCommandConfigure(tmpAllCommandConfig)
-    localStorage.setItem('AllCommandConfigure', JSON.stringify(tmpAllCommandConfig))
+    // const tmpAllCommandConfig = allCommandConfigure.filter(
+    //   (config) => config?.id != selectedCommandConfig?.id
+    // )
+    // setAllCommandConfigure(tmpAllCommandConfig)
+    // localStorage.setItem('AllCommandConfigure', JSON.stringify(tmpAllCommandConfig))
 
-    setActiveCommandConfigId(allCommandConfigure[0].id)
-    localStorage.setItem('ActiveConfigureId', allCommandConfigure[0].id)
+    // setActiveCommandConfigId(allCommandConfigure[0].id)
+    // localStorage.setItem('ActiveConfigureId', allCommandConfigure[0].id)
   }
   const handleUse = () => {
     if (
@@ -132,16 +155,16 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
     )
       return
 
-    console.log('====================================')
-    console.log('selectedCommandConfig to use', selectedCommandConfig)
-    console.log('====================================')
+    // console.log('====================================')
+    // console.log('selectedCommandConfig to use', selectedCommandConfig)
+    // console.log('====================================')
 
-    setActiveCommandConfigId(selectedCommandConfig?.id || `-1`)
-    localStorage.setItem('ActiveConfigureId', selectedCommandConfig?.id || `-1`)
+    // setActiveCommandConfigId(selectedCommandConfig?.id || `-1`)
+    // localStorage.setItem('ActiveConfigureId', selectedCommandConfig?.id || `-1`)
 
-    setActiveDockerImage(selectedDockerImage)
-    localStorage.setItem('ActiveDockerImage', selectedDockerImage)
-    getAndStoreLocalStorageData()
+    // setActiveDockerImage(selectedDockerImage)
+    // localStorage.setItem('ActiveDockerImage', selectedDockerImage)
+    // getAndStoreLocalStorageData()
   }
 
   return (
@@ -219,6 +242,9 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
               <span className="text-[#d9d9d9] font-medium text-lg">Use</span>
             </ButtonWrapper>
           </div>
+
+          {/* show error*/}
+          {errorMsg && <div className="mt-4 text-sm text-red-800 font-extralight">{errorMsg}</div>}
         </div>
       )}
     </>

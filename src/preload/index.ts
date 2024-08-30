@@ -1,6 +1,11 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import { AllCommandConfigureInterface, ResponeInterface } from '../main/interfaces'
+import {
+  AllCommandConfigureInterface,
+  DatabaseFetching,
+  ResponeInterface,
+  ResponseStatus
+} from '../main/interfaces'
 
 // Custom APIs for renderer
 const api = {
@@ -22,7 +27,17 @@ const api = {
   onClosingApp: (callBack): any => ipcRenderer.on('app:DOCKER_CLOSING', callBack),
   sendWindowResize: (channel): void => ipcRenderer.send(channel),
   // Database
-  getAllData: (): Promise<any> => ipcRenderer.invoke('database:test')
+  //! GET
+  getAllCommandConfig: (): Promise<
+    DatabaseFetching<ResponseStatus, AllCommandConfigureInterface[] | null, string[]>
+  > => ipcRenderer.invoke('database:ALL_COMMAND_CONFIG'),
+  getActiveCommandId: (): Promise<DatabaseFetching<ResponseStatus, number, string[]>> =>
+    ipcRenderer.invoke('database:GET_ACTIVE_COMMAND_ID'),
+  getActiveDockerImage: (): Promise<DatabaseFetching<ResponseStatus, string, string[]>> =>
+    ipcRenderer.invoke('database:GET_ACTIVE_DOCKER_IMAGE')
+  //! POST
+  //! UPDATE
+  //! DELETE
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

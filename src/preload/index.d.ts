@@ -14,7 +14,15 @@ interface ApiInterface {
   sendClosingApp: (msg: any) => any
   sendWindowResize: (chanel: string) => void
   // database
-  getAllData: () => Promise<any>
+  //!GET
+  getAllCommandConfig: () => Promise<
+    DatabaseFetching<ResponseStatus, AllCommandConfigureInterface[] | null, string[]>
+  >
+  getActiveCommandId: () => Promise<DatabaseFetching<ResponseStatus, number, string[]>>
+  getActiveDockerImage: () => Promise<DatabaseFetching<ResponseStatus, string, string[]>>
+  //! POST
+  //! UPDATE
+  //! DELETE
 }
 declare global {
   interface Window {

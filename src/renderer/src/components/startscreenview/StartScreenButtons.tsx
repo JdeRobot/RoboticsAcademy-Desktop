@@ -47,26 +47,6 @@ const StartScreenButtons: FC<StartScrrenButtonsInterface> = ({
   const [rows, setRows] = useState(0)
   return (
     <>
-      {/* testing db */}
-      <ButtonWrapper
-        onClick={async () => {
-          try {
-            const data = await window.api.getAllData()
-            console.log('====================================')
-            console.log(data)
-            console.log('====================================')
-            setRows(data.length)
-          } catch (error) {
-            console.error(error)
-          }
-        }}
-        cssClass={`bg-yellow-600 ${styles.startButtonSvg}`}
-      >
-        <>
-          get data {rows}
-          <img src={PlayIcon} className={`w-[24px]`} />
-        </>
-      </ButtonWrapper>
       {/*  */}
       {buttonState === ButtonEnums.START && (
         <ButtonWrapper

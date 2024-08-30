@@ -2,7 +2,12 @@ import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 
-import { AllCommandConfigureInterface, ResponeInterface } from './interfaces'
+import {
+  AllCommandConfigureInterface,
+  DatabaseFetching,
+  ResponeInterface,
+  ResponseStatus
+} from './interfaces'
 import {
   checkDockerAvailability,
   checkDockerRADIAvailability,
@@ -15,7 +20,14 @@ const isMac = process.platform === 'darwin'
 let mainWindow: BrowserWindow | null = null
 
 //! connect with database start
-import { dbInit, insertCommandData, insertCommandUtilsData } from './db'
+import {
+  dbInit,
+  getActiveDockerImage,
+  getAllCommandConfig,
+  getCommandConfigId,
+  insertCommandData,
+  insertCommandUtilsData
+} from './db'
 import { Database } from 'sqlite3'
 const db: Database = dbInit()
 
@@ -206,17 +218,70 @@ app.whenReady().then(async () => {
   })
 
   //! database ipcMain
-  ipcMain.handle('database:test', async (event) => {
-    return new Promise((resolve, reject) => {
-      db.all('SELECT * FROM commands', [], (err, rows) => {
-        if (err) {
-          reject('Error fetching data: ' + err.message)
-        } else {
-          resolve(rows)
+  //! GET
+  //* get All command row
+  ipcMain.handle(
+    'database:ALL_COMMAND_CONFIG',
+    async (
+      event
+    ): Promise<
+      DatabaseFetching<ResponseStatus, AllCommandConfigureInterface[] | null, string[]>
+    > => {
+      try {
+        const res: DatabaseFetching<
+          ResponseStatus,
+          AllCommandConfigureInterface[] | null,
+          string[]
+        > = await getAllCommandConfig(db)
+        return res
+      } catch (error) {
+        return {
+          status: ResponseStatus.ERROR,
+          data: null,
+          msg: [`something went wrong!`, String(error)]
         }
-      })
-    })
-  })
+      }
+    }
+  )
+
+  //* get active command
+  ipcMain.handle(
+    'database:GET_ACTIVE_COMMAND_ID',
+    async (event): Promise<DatabaseFetching<ResponseStatus, number | null, string[]>> => {
+      try {
+        const res: DatabaseFetching<ResponseStatus, number | null, string[]> =
+          await getCommandConfigId(db)
+        return res
+      } catch (error) {
+        return {
+          status: ResponseStatus.ERROR,
+          data: null,
+          msg: [`something went wrong!`, String(error)]
+        }
+      }
+    }
+  )
+  //* get active docker image
+  ipcMain.handle(
+    'database:GET_ACTIVE_DOCKER_IMAGE',
+    async (event): Promise<DatabaseFetching<ResponseStatus, string, string[]>> => {
+      try {
+        const res: DatabaseFetching<ResponseStatus, string, string[]> =
+          await getActiveDockerImage(db)
+        return res
+      } catch (error) {
+        return {
+          status: ResponseStatus.ERROR,
+          data: ``,
+          msg: [`something went wrong!`, String(error)]
+        }
+      }
+    }
+  )
+
+  //! POST
+  //! UPDATE
+  //! DELETE
   //* checkRADIContainerRunning Disappering splash screen and show main screen after 3 seconds.
   try {
     const splashScreen: BrowserWindow = createSplashWindow()

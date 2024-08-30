@@ -4,6 +4,12 @@ export enum ResponseStatus {
   ERROR = 'ERROR'
 }
 
+export interface DatabaseFetching<Tstatus, Tdata, Tstring> {
+  status: Tstatus
+  data: Tdata
+  msg: Tstring
+}
+
 export interface ResponeInterface {
   status: ResponseStatus
   msg: string[]
@@ -14,7 +20,7 @@ interface PortInterface {
   ports: number[]
 }
 export interface AllCommandConfigureInterface {
-  id: string
+  id: number
   default: boolean
   name: string
   command: string[]

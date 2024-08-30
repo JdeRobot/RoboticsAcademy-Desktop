@@ -2,6 +2,7 @@ import { app } from 'electron'
 import { join, resolve } from 'path'
 // const sqlite3 = require('sqlite3').verbose()
 import sqlite3, { Database } from 'sqlite3'
+import { AllCommandConfigureInterface, DatabaseFetching, ResponseStatus } from './interfaces'
 
 // Data to be stored
 const AllCommandConfigure = [
@@ -258,7 +259,7 @@ export const insertCommandUtilsData = async (db: Database) => {
                 id, active_command_id, active_docker
               ) VALUES (?, ?, ?)`
             )
-            insertStmt.run(999, 1, `jderobot/robotics-academy`)
+            insertStmt.run(999, 1, `jderobotRoboticsAcademy`)
             insertStmt.finalize()
 
             console.log('Data inserted successfully.')
@@ -270,3 +271,127 @@ export const insertCommandUtilsData = async (db: Database) => {
     }
   )
 }
+
+//! GET
+// command table
+interface CommandsTableRow {
+  id: number
+  is_default: boolean
+  name: string
+  command: string
+  consoles_ports: string
+  django_ports: string
+  gazebo_ports: string
+  other_ports: string
+}
+export const getAllCommandConfig = (
+  db: Database
+): Promise<DatabaseFetching<ResponseStatus, AllCommandConfigureInterface[] | null, string[]>> => {
+  return new Promise((resolve, reject) => {
+    db.all('SELECT * FROM commands', [], (err, rows: CommandsTableRow[]) => {
+      if (err) {
+        reject({
+          status: ResponseStatus.ERROR,
+          data: null,
+          msg: [`error while data fetching from db`]
+        })
+      } else {
+        let allCommands: AllCommandConfigureInterface[] = []
+        rows.forEach((row: CommandsTableRow) => {
+          let command: AllCommandConfigureInterface = {
+            id: row.id,
+            default: Boolean(row.is_default),
+            name: row.name,
+            command: row.command.split(','),
+            django: {
+              name: 'django',
+              ports: row.django_ports.split(':').map(Number)
+            },
+            gazebo: {
+              name: 'gazebo',
+              ports: row.gazebo_ports.split(':').map(Number)
+            },
+            consoles: {
+              name: 'consoles',
+              ports: row.consoles_ports.split(':').map(Number)
+            },
+            other: {
+              name: 'other',
+              ports: row.other_ports.split(':').map(Number)
+            }
+          }
+          allCommands.push(command)
+        })
+        resolve({
+          status: ResponseStatus.SUCCESS,
+          data: allCommands,
+          msg: []
+        })
+      }
+    })
+  })
+}
+
+interface CommandsUtilsTableRow {
+  id: number
+  active_command_id: number
+  active_docker: string
+}
+//* get active command
+export const getCommandConfigId = (
+  db: Database
+): Promise<DatabaseFetching<ResponseStatus, number | null, string[]>> => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT * FROM commands_utils WHERE id=999`,
+      [],
+      (err, rows: CommandsUtilsTableRow[]) => {
+        if (err) {
+          reject({
+            status: ResponseStatus.ERROR,
+            data: null,
+            msg: [`error while data fetching from db`]
+          })
+        } else {
+          resolve({
+            status: ResponseStatus.SUCCESS,
+            data: rows[0].active_command_id,
+            msg: []
+          })
+        }
+      }
+    )
+  })
+}
+
+//* get active command
+export const getActiveDockerImage = (
+  db: Database
+): Promise<DatabaseFetching<ResponseStatus, string, string[]>> => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT * FROM commands_utils WHERE id=999`,
+      [],
+      (err, rows: CommandsUtilsTableRow[]) => {
+        if (err) {
+          reject({
+            status: ResponseStatus.ERROR,
+            data: null,
+            msg: [`error while data fetching from db`]
+          })
+        } else {
+          // const
+          resolve({
+            status: ResponseStatus.SUCCESS,
+            data: rows[0].active_docker,
+            msg: []
+          })
+        }
+      }
+    )
+  })
+}
+
+//! POST
+//! UPDATE
+//! DELETE

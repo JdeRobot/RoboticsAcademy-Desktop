@@ -12,7 +12,7 @@ interface PortInterface {
   ports: number[]
 }
 export interface AllCommandConfigureInterface {
-  id: string
+  id: number
   default: boolean
   name: string
   command: string[]
@@ -23,7 +23,7 @@ export interface AllCommandConfigureInterface {
 }
 export const AllCommandConfigure: AllCommandConfigureInterface[] = [
   {
-    id: `1`,
+    id: 1,
     default: true,
     name: 'Basic Command',
     command: [`docker`, `run`, `--rm`, `-it`],
@@ -45,7 +45,7 @@ export const AllCommandConfigure: AllCommandConfigureInterface[] = [
     }
   },
   {
-    id: `2`,
+    id: 2,
     default: true,
     name: 'GPU Acceleration Intel',
     command: [`docker`, `run`, `--rm`, `-it`, `--device`, `/dev/dri`],
@@ -67,7 +67,7 @@ export const AllCommandConfigure: AllCommandConfigureInterface[] = [
     }
   },
   {
-    id: ` 3`,
+    id: 3,
     default: true,
     name: 'GPU Acceleration Nvidia',
     command: [`docker`, `run`, `--rm`, `-it`, `--gpus`, `all`, `--device`, `/dev/dri`],
@@ -89,7 +89,7 @@ export const AllCommandConfigure: AllCommandConfigureInterface[] = [
     }
   },
   {
-    id: `4`,
+    id: 4,
     default: true,
     name: 'Multiple Gpus',
     command: [
@@ -122,7 +122,7 @@ export const AllCommandConfigure: AllCommandConfigureInterface[] = [
     }
   },
   {
-    id: `5`,
+    id: 5,
     default: true,
     name: 'Only Ports',
     command: [],
@@ -144,7 +144,7 @@ export const AllCommandConfigure: AllCommandConfigureInterface[] = [
     }
   },
   {
-    id: `77`,
+    id: 77,
     default: false,
     name: 'Multiple Gpus - 2',
     command: [`docker`, `run`, `--rm`, `-it`, `--gpus`, `all`],

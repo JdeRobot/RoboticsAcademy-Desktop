@@ -1,5 +1,3 @@
-// import { FC } from 'react'
-
 import { ButtonEnums, ResponseStatus, ScreenStateEnums, SettingsScreenStateEnums } from './enums'
 
 // Start Screen
@@ -26,4 +24,10 @@ export interface SettingsInitialStateInterface {
 export interface ResponeInterface {
   status: ResponseStatus
   msg: string[]
+}
+
+export interface DatabaseFetching<Tstatus, Tdata, Tstring> {
+  status: Tstatus
+  data: Tdata
+  msg: Tstring
 }
