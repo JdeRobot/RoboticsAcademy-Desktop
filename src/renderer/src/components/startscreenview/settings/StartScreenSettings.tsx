@@ -38,7 +38,9 @@ const StartScreenSettings: FC<StartScreenSettingsInterface> = ({ getAndStoreLoca
       {/* sidebar */}
       <StartScreenSettingsSidebar settingsScreenState={settingsScreenState} dispatch={dispatch} />
       {/* main input section */}
-      <div className={`w-[calc(100%-142px)]  h-[508px] mt-[50px] flex justify-center`}>
+      <div
+        className={`w-[calc(100%-142px)]  h-[508px]  flex justify-center ${SettingsScreenStateEnums.ADVANCE === settingsScreenState ? `mt-[36px]` : `mt-[36px]`} `}
+      >
         <div className={`h-full w-[400px]`}>
           {settingsScreenState === SettingsScreenStateEnums.COMMAND && (
             <StartScreenSettinsCommand

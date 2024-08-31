@@ -1,37 +1,32 @@
 import { FC, Dispatch, useReducer, ChangeEvent, FocusEvent, useState, useEffect } from 'react'
 import { AddIcon, SaveIcon } from '@renderer/assets'
-import { SettingsScreenStateEnums } from '@renderer/utils/enums'
+import {
+  ResponseStatus,
+  SettingsActionEnums,
+  SettingsScreenStateEnums
+} from '@renderer/utils/enums'
 import { SettingsReducerActionTypes } from '@renderer/utils/types'
 import SettingsCommandTerminal from './SettingsCommandTerminal'
 import { layout } from '@renderer/assets/styles/styles'
-import { ValidDockerLists } from '@renderer/constants'
+import { TIMER, ValidDockerLists } from '@renderer/constants'
 import ButtonWrapper from '@renderer/components/buttons/ButtonWrapper'
 import { NextArrowIcon } from '@renderer/assets/icons/Icons'
 import Ports from './Ports'
+import { DatabaseFetching, PortsInterface } from '@renderer/utils/interfaces'
 
 interface SettingsAdvanceInitializeInterface {
   advanceScreenState: number
+  isPortOnly: boolean
   profileName: string
   dockerCommands: string[]
-  django: {
-    name: string
-    ports: number[]
-  }
-  gazebo: {
-    name: string
-    ports: number[]
-  }
-  consoles: {
-    name: string
-    ports: number[]
-  }
-  other: {
-    name: string
-    ports: number[]
-  }
+  django: PortsInterface
+  gazebo: PortsInterface
+  consoles: PortsInterface
+  other: PortsInterface
 }
 const SettingsAdvanceInitialize: SettingsAdvanceInitializeInterface = {
   advanceScreenState: 1,
+  isPortOnly: true,
   profileName: 'profile',
   dockerCommands: [`docker`, `run`, `--rm`, `-it`],
   django: {
@@ -53,6 +48,7 @@ const SettingsAdvanceInitialize: SettingsAdvanceInitializeInterface = {
 }
 enum SettingsAdvanceActionEnums {
   CHANGE_SCREEN = 'CHANGE_SCREEN',
+  CHANGE_IS_PORT_ONLY = 'CHANGE_IS_PORT_ONLY',
   UPDATE_PORT = 'UPDATE_PORT',
   UPDATE_DOCKER_COMMAND = 'UPDATE_DOCKER_COMMAND',
   UDPATE_PROFILE_NAME = 'UDPATE_PROFILE_NAME',
@@ -69,6 +65,8 @@ const reducer = (state: SettingsAdvanceInitializeInterface, action) => {
       return { ...state, profileName: action.payload.profileName }
     case SettingsAdvanceActionEnums.UPDATE_DOCKER_COMMAND:
       return { ...state, dockerCommands: action.payload.dockerCommands }
+    case SettingsAdvanceActionEnums.CHANGE_IS_PORT_ONLY:
+      return { ...state, isPortOnly: !state.isPortOnly }
     case SettingsAdvanceActionEnums.UPDATE_PORT:
       state[action.payload.name] = action.payload
       return { ...state }
@@ -83,21 +81,33 @@ interface StartScreenSettinsAdvanceInterface {
   settingsScreenState: SettingsScreenStateEnums
   dispatch: Dispatch<SettingsReducerActionTypes>
 }
-const StartScreenSettinsAdvance: FC<StartScreenSettinsAdvanceInterface> = ({}) => {
+const StartScreenSettinsAdvance: FC<StartScreenSettinsAdvanceInterface> = ({ dispatch }) => {
   const [errorMsg, setErrorMsg] = useState<string>('')
+  const [successMsg, setSuccessMsg] = useState<string>('')
   const [isInputRequired, setIsInputRequired] = useState<boolean>(false)
   const [selectedParam, setSelectedParam] = useState<string>(ValidDockerLists[0].command[0])
   const [userParams, setUserParams] = useState<string>('')
   const [dockerCommand, setDockerCommand] = useState<string>('')
+  const [isSavingButtonLoading, setIsSavingButtonLoading] = useState<boolean>(false)
+  // reducer
   const [
-    { advanceScreenState, profileName, dockerCommands, django, consoles, gazebo, other },
+    {
+      advanceScreenState,
+      isPortOnly,
+      profileName,
+      dockerCommands,
+      django,
+      consoles,
+      gazebo,
+      other
+    },
     advanceDispatch
   ] = useReducer(reducer, SettingsAdvanceInitialize)
 
   //* useEffect
   useEffect(() => {
     dockerCommandBuilder()
-  }, [selectedParam, django, consoles, gazebo, other])
+  }, [selectedParam, django, consoles, gazebo, other, isPortOnly])
 
   //* handle profile name change and blur
   const handleNameInputChangeAndBlur = (
@@ -155,12 +165,6 @@ const StartScreenSettinsAdvance: FC<StartScreenSettinsAdvanceInterface> = ({}) =
     })
 
     dockerCommandBuilder()
-  }
-
-  const dockerCommandBuilder = () => {
-    let dockerCommand = dockerCommands.join(' ')
-    dockerCommand = `${dockerCommand} -p ${django.ports[0]}:${django.ports[1]} -p ${gazebo.ports[0]}:${gazebo.ports[1]} -p ${consoles.ports[0]}:${consoles.ports[1]} -p ${other.ports[0]}:${other.ports[1]}`
-    setDockerCommand(dockerCommand)
   }
 
   const handleUpdatePort = (id: string) => {
@@ -251,13 +255,78 @@ const StartScreenSettinsAdvance: FC<StartScreenSettinsAdvanceInterface> = ({}) =
       }
     })
   }
+
+  //* handle save command config
+  const handleAddNewCommandConfig = async () => {
+    setIsSavingButtonLoading(true)
+    try {
+      const commandConfig = {
+        isPortOnly,
+        profileName,
+        dockerCommands,
+        django,
+        gazebo,
+        consoles,
+        other
+      }
+      const addNewCommandConfigRes: DatabaseFetching<ResponseStatus, null, string[]> =
+        await window.api.addNewCommandConfig(commandConfig)
+
+      if (addNewCommandConfigRes.status != ResponseStatus.SUCCESS) {
+        setErrorMsg(addNewCommandConfigRes.msg[1])
+        return
+      }
+      setSuccessMsg(`Command Configure Added Successfully.`)
+      // goto command setting screen
+      setTimeout(() => {
+        dispatch({
+          type: SettingsActionEnums.UPDATE_SCREEN,
+          payload: {
+            settingsScreenState: SettingsScreenStateEnums.COMMAND
+          }
+        })
+      }, TIMER)
+    } catch (error) {
+      console.error(error)
+
+      setErrorMsg(`Something went wrong!`)
+    } finally {
+      setTimeout(() => {
+        setSuccessMsg(``)
+        setErrorMsg(``)
+        setIsSavingButtonLoading(false)
+      }, TIMER)
+    }
+  }
+
+  //* handle port only
+  const handlePortOnly = () => {
+    advanceDispatch({ type: SettingsAdvanceActionEnums.CHANGE_IS_PORT_ONLY })
+
+    const tmpDockerCommands = dockerCommands
+    while (tmpDockerCommands.length > 4) tmpDockerCommands.pop()
+    advanceDispatch({
+      type: SettingsAdvanceActionEnums.UPDATE_DOCKER_COMMAND,
+      payload: {
+        dockerCommands: tmpDockerCommands
+      }
+    })
+  }
+
+  // docker command builder
+  const dockerCommandBuilder = () => {
+    let dockerCommand = dockerCommands.join(' ')
+    if (isPortOnly) dockerCommand = ''
+    dockerCommand = `${dockerCommand} -p ${django.ports[0]}:${django.ports[1]} -p ${gazebo.ports[0]}:${gazebo.ports[1]} -p ${consoles.ports[0]}:${consoles.ports[1]} -p ${other.ports[0]}:${other.ports[1]}`
+    setDockerCommand(dockerCommand)
+  }
   return (
     <div className={`w-full flex flex-col justify-center items-center`}>
       <div>
         {/* Add Button */}
         {advanceScreenState === 0 && (
           <div
-            className="w-full flex flex-col justify-center items-center gap-3 cursor-pointer"
+            className="w-full flex flex-col justify-center items-center gap-4 cursor-pointer"
             onClick={() =>
               advanceDispatch({
                 type: SettingsAdvanceActionEnums.CHANGE_SCREEN,
@@ -292,7 +361,6 @@ const StartScreenSettinsAdvance: FC<StartScreenSettinsAdvanceInterface> = ({}) =
                         className=" bg-white rounded-lg  w-full h-[40px] font-medium text-start text-[#454545] text-base block  focus:border-none "
                         style={{ boxShadow: '0px 0px 0px white', border: 'none' }}
                         placeholder="profile name"
-                        // defaultValue={`hello world!`}
                         value={profileName}
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
                           handleNameInputChangeAndBlur(e)
@@ -303,34 +371,55 @@ const StartScreenSettinsAdvance: FC<StartScreenSettinsAdvanceInterface> = ({}) =
                       />
                     </div>
                   </div>
-                  {/* select command */}
+                  {/* checkbox ports only */}
                   <div className="w-full">
-                    <label
-                      htmlFor="configure_name"
-                      className="block mb-2 text-base font-medium text-[#d9d9d9]"
-                    >
-                      Select RADI Docker Command
-                    </label>
-                    <select
-                      id="configure_name"
-                      className="bg-[#fff] border border-gray-300 text-[#454545]  h-[40px] text-base font-medium rounded-lg focus:ring-red-500 focus:border-red-500 block w-full "
-                      onChange={(e: ChangeEvent<HTMLSelectElement>) => handleChangeParams(e)}
-                      // value={configId}
-                    >
-                      {ValidDockerLists.map((config) => (
-                        <option
-                          value={config.id}
-                          className="text-[#454545] text-base font-medium"
-                          key={config.id}
-                        >
-                          {config.name}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="flex items-center">
+                      <input
+                        checked={isPortOnly}
+                        id="checked-checkbox"
+                        type="checkbox"
+                        value=""
+                        className="w-5 h-5 text-yellow-600 outline-none border-0 rounded-md bg-[#d9d9d9]"
+                        onChange={() => handlePortOnly()}
+                      />
+                      <label
+                        htmlFor="checked-checkbox"
+                        className="ms-2 text-base font-medium text-[#d9d9d9]"
+                      >
+                        Ports only configure
+                      </label>
+                    </div>
                   </div>
+                  {/* select command */}
+                  {!isPortOnly && (
+                    <div className="w-full">
+                      <label
+                        htmlFor="configure_name"
+                        className="block mb-2 text-base font-medium text-[#d9d9d9]"
+                      >
+                        Select RADI Docker Command
+                      </label>
+                      <select
+                        id="configure_name"
+                        className="bg-[#fff] border border-gray-300 text-[#454545]  h-[40px] text-base font-medium rounded-lg focus:ring-red-500 focus:border-red-500 block w-full "
+                        onChange={(e: ChangeEvent<HTMLSelectElement>) => handleChangeParams(e)}
+                        // value={configId}
+                      >
+                        {ValidDockerLists.map((config) => (
+                          <option
+                            value={config.id}
+                            className="text-[#454545] text-base font-medium"
+                            key={config.id}
+                          >
+                            {config.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
 
                   {/* command input */}
-                  {isInputRequired && (
+                  {!isPortOnly && isInputRequired && (
                     <div className="w-full">
                       <label
                         htmlFor="command_input"
@@ -357,15 +446,17 @@ const StartScreenSettinsAdvance: FC<StartScreenSettinsAdvanceInterface> = ({}) =
 
                   {/* buttons */}
                   <div className={`w-full flex justify-end items-center`}>
-                    <div className={`mr-[76px]`}>
-                      <ButtonWrapper
-                        cssClass="bg-green-600 hover:bg-green-700"
-                        onClick={() => addDockerParams()}
-                      >
-                        <img src={AddIcon} alt="save" className="w-[24px] h-[24px]" />
-                        <span className="text-white font-semibold text-base">Add</span>
-                      </ButtonWrapper>
-                    </div>
+                    {!isPortOnly && (
+                      <div className={`mr-[76px]`}>
+                        <ButtonWrapper
+                          cssClass="bg-green-600 hover:bg-green-700"
+                          onClick={() => addDockerParams()}
+                        >
+                          <img src={AddIcon} alt="save" className="w-[24px] h-[24px]" />
+                          <span className="text-white font-semibold text-base">Add</span>
+                        </ButtonWrapper>
+                      </div>
+                    )}
                     <div
                       className={`w-[32px] mt-6 cursor-pointer group`}
                       onClick={() =>
@@ -392,7 +483,7 @@ const StartScreenSettinsAdvance: FC<StartScreenSettinsAdvanceInterface> = ({}) =
                       other={other}
                       handleUpdatePort={handleUpdatePort}
                       handleInputChangeAndBlur={handleInputChangeAndBlur}
-                      errorMsg={errorMsg}
+                      errorMsg={``}
                     />
                     {/* submit or previous */}
                   </div>
@@ -412,7 +503,9 @@ const StartScreenSettinsAdvance: FC<StartScreenSettinsAdvanceInterface> = ({}) =
                     </div>
                     <ButtonWrapper
                       cssClass="bg-green-600 hover:bg-green-700 ml-[88px]"
-                      onClick={() => {}}
+                      onClick={() => handleAddNewCommandConfig()}
+                      isLoading={isSavingButtonLoading}
+                      loadingText="Saving..."
                     >
                       <img src={SaveIcon} alt="save" className="w-6" />
                       <span className="font-semibold  text-base text-white">Done</span>
@@ -424,6 +517,12 @@ const StartScreenSettinsAdvance: FC<StartScreenSettinsAdvanceInterface> = ({}) =
           </>
         )}
       </div>
+      {/* show error*/}
+      {errorMsg && <div className="mt-4 text-sm text-red-700 font-extralight">{errorMsg}</div>}
+      {/* show success*/}
+      {successMsg && (
+        <div className="mt-4 text-sm text-green-500 font-extralight">{successMsg}</div>
+      )}
     </div>
   )
 }

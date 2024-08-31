@@ -56,7 +56,7 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({}) =
           await window.api.getActiveCommandId()
         const commandRes: DatabaseFetching<
           ResponseStatus,
-          AllCommandConfigureInterface[],
+          AllCommandConfigureInterface[] | null,
           string[]
         > = await window.api.getAllCommandConfig()
 
@@ -71,11 +71,11 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({}) =
           setErroMsg(`error while fetching!`)
         }
         setActiveCommandConfigId(commandConfigIdRes.data)
-        setAllCommandConfigure(commandRes.data)
+        setAllCommandConfigure(commandRes.data ?? [])
         setActiveDockerImage(dockerImageRes.data)
 
         const command: AllCommandConfigureInterface | null =
-          commandRes.data.find((command) => command.id === commandConfigIdRes.data) || null
+          commandRes.data?.find((command) => command.id === commandConfigIdRes.data) || null
 
         setSelectedCommandConfig(command)
         setSelectedDockerImage(dockerImageRes.data)

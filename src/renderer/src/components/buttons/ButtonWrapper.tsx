@@ -17,7 +17,7 @@ const ButtonWrapper: FC<ButtonWrapperInterface> = ({
 }) => {
   return (
     <div
-      className={` w-[160px] h-[50px] mt-6 duration-300 rounded-[9px] cursor-pointer ${cssClass} `}
+      className={` w-[150px] h-[50px] mt-6 duration-300 rounded-[9px] cursor-pointer ${cssClass} `}
     >
       <div
         className={`w-full h-full flex items-center justify-center gap-2 font-bold`}

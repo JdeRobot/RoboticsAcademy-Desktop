@@ -394,6 +394,45 @@ export const getActiveDockerImage = (
 }
 
 //! POST
+// add new command config to  commands table
+export const addNewCommandConfig = (
+  db: Database,
+  commandConfig
+): Promise<DatabaseFetching<ResponseStatus, null, string[]>> => {
+  return new Promise((resolve, reject) => {
+    const { isPortOnly, profileName, dockerCommands, django, gazebo, consoles, other } =
+      commandConfig
+
+    const command = isPortOnly ? `` : dockerCommands.join(',')
+    const name = profileName.trim()
+    const django_ports = django.ports.join(':')
+    const gazebo_ports = gazebo.ports.join(':')
+    const consoles_ports = consoles.ports.join(':')
+    const other_ports = other.ports.join(':')
+
+    db.run(
+      `INSERT INTO commands (is_default,name, command, django_ports, gazebo_ports, consoles_ports, other_ports) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [0, name, command, django_ports, gazebo_ports, consoles_ports, other_ports],
+      (err) => {
+        if (err) {
+          console.error(err)
+
+          reject({
+            status: ResponseStatus.ERROR,
+            data: null,
+            msg: [`error while updating data.`]
+          })
+        } else {
+          resolve({
+            status: ResponseStatus.SUCCESS,
+            data: null,
+            msg: ['active command id update successfully.']
+          })
+        }
+      }
+    )
+  })
+}
 //! UPDATE
 // update  commands table
 export const updateCommands = (

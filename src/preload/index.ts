@@ -36,6 +36,8 @@ const api = {
   getActiveDockerImage: (): Promise<DatabaseFetching<ResponseStatus, string, string[]>> =>
     ipcRenderer.invoke('database:GET_ACTIVE_DOCKER_IMAGE'),
   //! POST
+  addNewCommandConfig: (commandConfig): Promise<DatabaseFetching<ResponseStatus, null, string[]>> =>
+    ipcRenderer.invoke('database:ADD_NEW_COMMAND_CONFIG', commandConfig),
   //! UPDATE
   updateCommands: (
     id: number,

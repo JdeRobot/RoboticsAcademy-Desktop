@@ -21,6 +21,7 @@ let mainWindow: BrowserWindow | null = null
 
 //! connect with database start
 import {
+  addNewCommandConfig,
   dbInit,
   deleteCommandConfig,
   getActiveDockerImage,
@@ -282,8 +283,27 @@ app.whenReady().then(async () => {
   )
 
   //! POST
+  //* add new command config to  commands table
+  ipcMain.handle(
+    'database:ADD_NEW_COMMAND_CONFIG',
+    async (event, commandConfig): Promise<DatabaseFetching<ResponseStatus, null, string[]>> => {
+      try {
+        const res: DatabaseFetching<ResponseStatus, null, string[]> = await addNewCommandConfig(
+          db,
+          commandConfig
+        )
+        return res
+      } catch (error) {
+        return {
+          status: ResponseStatus.ERROR,
+          data: null,
+          msg: [`something went wrong!`, String(error)]
+        }
+      }
+    }
+  )
   //! UPDATE
-  //* update command table
+  //* update commands table
   ipcMain.handle(
     'database:UPDATE_COMMANDS',
     async (

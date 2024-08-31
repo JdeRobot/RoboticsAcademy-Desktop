@@ -1,6 +1,6 @@
 import { PortsInterface } from './../renderer/src/utils/interfaces'
 import { ElectronAPI } from '@electron-toolkit/preload'
-import { AllCommandConfigureInterface } from './../main/interfaces'
+import { AllCommandConfigureInterface, DatabaseFetching } from './../main/interfaces'
 interface ApiInterface {
   checkDockerAvailability: () => Promise<ResponeInterface>
   checkDockerRADIAvailability: () => Promise<ResponeInterface>
@@ -22,6 +22,7 @@ interface ApiInterface {
   getActiveCommandId: () => Promise<DatabaseFetching<ResponseStatus, number, string[]>>
   getActiveDockerImage: () => Promise<DatabaseFetching<ResponseStatus, string, string[]>>
   //! POST
+  addNewCommandConfig: (commandConfig) => Promise<DatabaseFetching<ResponseStatus, null, string[]>>
   //! UPDATE
   updateCommands: (
     id: number,

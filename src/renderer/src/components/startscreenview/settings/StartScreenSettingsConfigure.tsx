@@ -114,10 +114,10 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
       try {
         const commandRes: DatabaseFetching<
           ResponseStatus,
-          AllCommandConfigureInterface | null,
+          AllCommandConfigureInterface[] | null,
           string[]
         > = await window.api.getAllCommandConfig()
-        if (commandRes.status != ResponseStatus.SUCCESS) {
+        if (commandRes.status != ResponseStatus.SUCCESS || !commandRes.data) {
           setErrorMsg(commandRes.msg[0])
           return
         }
