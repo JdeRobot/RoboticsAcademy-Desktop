@@ -8,7 +8,7 @@ interface PortsInterface {
   gazebo
   consoles
   other
-  errorMsg
+  errorMsg: string
   handleInputChangeAndBlur
   handleUpdatePort
 }
@@ -44,7 +44,7 @@ const Ports: FC<PortsInterface> = ({
                   className=" bg-white rounded-l-lg w-[94px] h-[40px] font-medium text-center text-[#454545] text-base block  focus:border-none "
                   style={{ boxShadow: '0px 0px 0px white', border: 'none' }}
                   placeholder="port"
-                  value={server.ports[0]}
+                  value={server.ports[0] ?? 0}
                   onChange={(e) => handleInputChangeAndBlur(e)}
                   onBlur={(e) => handleInputChangeAndBlur(e, true)}
                 />
@@ -77,12 +77,12 @@ const Ports: FC<PortsInterface> = ({
               </label>
               <div className="relative w-[182px] h-[40px] flex items-center ">
                 <input
-                  type="text"
+                  type="number"
                   id={`${server.name}_1`}
                   className="bg-white rounded-l-lg w-[94px] h-[40px] font-medium text-center text-[#454545] text-base block  focus:border-none "
                   style={{ boxShadow: '0px 0px 0px white', border: 'none' }}
                   placeholder="port"
-                  value={server.ports[1]}
+                  value={server.ports[1] ?? 0}
                   onChange={(e) => handleInputChangeAndBlur(e)}
                   onBlur={(e) => handleInputChangeAndBlur(e, true)}
                 />

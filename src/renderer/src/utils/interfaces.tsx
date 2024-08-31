@@ -20,6 +20,21 @@ export interface SettingsInitialStateInterface {
   settingsScreenState: SettingsScreenStateEnums
 }
 
+export interface PortsInterface {
+  name: string
+  ports: number[]
+}
+export interface AllCommandConfigureInterface {
+  id: number
+  default: boolean
+  name: string
+  command: string[]
+  django: PortsInterface
+  gazebo: PortsInterface
+  consoles: PortsInterface
+  other: PortsInterface
+}
+
 // response interfaec
 export interface ResponeInterface {
   status: ResponseStatus

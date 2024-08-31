@@ -22,11 +22,13 @@ let mainWindow: BrowserWindow | null = null
 //! connect with database start
 import {
   dbInit,
+  deleteCommandConfig,
   getActiveDockerImage,
   getAllCommandConfig,
   getCommandConfigId,
   insertCommandData,
   insertCommandUtilsData,
+  updateCommands,
   updateCommandUtils
 } from './db'
 import { Database } from 'sqlite3'
@@ -281,9 +283,33 @@ app.whenReady().then(async () => {
 
   //! POST
   //! UPDATE
-  //* update active command id
+  //* update command table
   ipcMain.handle(
-    'database:UPDATE_ACTIVE_COMMAND_ID',
+    'database:UPDATE_COMMANDS',
+    async (
+      event,
+      id: number,
+      updatePorts
+    ): Promise<DatabaseFetching<ResponseStatus, null, string[]>> => {
+      try {
+        const res: DatabaseFetching<ResponseStatus, null, string[]> = await updateCommands(
+          db,
+          id,
+          updatePorts
+        )
+        return res
+      } catch (error) {
+        return {
+          status: ResponseStatus.ERROR,
+          data: null,
+          msg: [`something went wrong!`, String(error)]
+        }
+      }
+    }
+  )
+  //* update command utils table
+  ipcMain.handle(
+    'database:UPDATE_COMMAND_UTILS',
     async (
       event,
       id: number,
@@ -306,6 +332,25 @@ app.whenReady().then(async () => {
     }
   )
   //! DELETE
+  //* delete commands row
+  ipcMain.handle(
+    'database:DELETE_COMMAND_CONFIG',
+    async (event, id: number): Promise<DatabaseFetching<ResponseStatus, null, string[]>> => {
+      try {
+        const res: DatabaseFetching<ResponseStatus, null, string[]> = await deleteCommandConfig(
+          db,
+          id
+        )
+        return res
+      } catch (error) {
+        return {
+          status: ResponseStatus.ERROR,
+          data: null,
+          msg: [`something went wrong!`, String(error)]
+        }
+      }
+    }
+  )
   //* checkRADIContainerRunning Disappering splash screen and show main screen after 3 seconds.
   try {
     const splashScreen: BrowserWindow = createSplashWindow()

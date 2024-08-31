@@ -1,4 +1,7 @@
 import { WebSiteIcon, YoutubeIcon, ForumIcon, XIcon, GithubIcon } from '@renderer/assets'
+import { AllCommandConfigureInterface } from '@renderer/utils/interfaces'
+// utils
+export const TIMER = 2000
 
 // Settings
 export const AllDockersImages = {
@@ -7,20 +10,6 @@ export const AllDockersImages = {
   jderobotRoboticsBackend: 'jderobot/robotics-backend'
 }
 
-interface PortInterface {
-  name: string
-  ports: number[]
-}
-export interface AllCommandConfigureInterface {
-  id: number
-  default: boolean
-  name: string
-  command: string[]
-  django: PortInterface
-  gazebo: PortInterface
-  consoles: PortInterface
-  other: PortInterface
-}
 export const AllCommandConfigure: AllCommandConfigureInterface[] = [
   {
     id: 1,

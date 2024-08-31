@@ -2,12 +2,19 @@ import { ChangeEvent, FC, useEffect, useReducer, useState } from 'react'
 import { layout } from '@renderer/assets/styles/styles'
 import { AddIcon, MinusIcon, NextArrowIcon } from '@renderer/assets/icons/Icons'
 import { LinkChainIcon, SaveIcon } from '@renderer/assets'
-import { AllCommandConfigure } from '@renderer/constants'
+import { AllCommandConfigure, TIMER } from '@renderer/constants'
 import SettingsCommandTerminal from './SettingsCommandTerminal'
 import ButtonWrapper from '@renderer/components/buttons/ButtonWrapper'
 import Ports from './Ports'
+import { ResponseStatus } from '@renderer/utils/enums'
+import {
+  AllCommandConfigureInterface,
+  DatabaseFetching,
+  PortsInterface
+} from '@renderer/utils/interfaces'
 
 export enum SettingsConfigureActionEnums {
+  SET_ALL_COMMAND_CONFIG = 'SET_ALL_COMMAND_CONFIG',
   UPDATE_SCREEN = 'UPDATE_SCREEN',
   CHANGE_CONFIG = 'CHANGE_CONFIG',
   UPDATE_PORT = 'UPDATE_PORT',
@@ -16,29 +23,19 @@ export enum SettingsConfigureActionEnums {
 }
 export interface SettingsConfigureInitializeInterface {
   configureScreenState: number
+  allCommandConfig: AllCommandConfigureInterface | []
   selectedConfig: string
   configName: string
   configId: number
   dockerCommand: string
-  django: {
-    name: string
-    ports: number[]
-  }
-  gazebo: {
-    name: string
-    ports: number[]
-  }
-  consoles: {
-    name: string
-    ports: number[]
-  }
-  other: {
-    name: string
-    ports: number[]
-  }
+  django: PortsInterface
+  gazebo: PortsInterface
+  consoles: PortsInterface
+  other: PortsInterface
 }
 const SetttingsConfigureInitialize: SettingsConfigureInitializeInterface = {
   configureScreenState: 0,
+  allCommandConfig: [],
   selectedConfig: '',
   configName: '',
   configId: -1,
@@ -62,6 +59,11 @@ const SetttingsConfigureInitialize: SettingsConfigureInitializeInterface = {
 }
 const reducer = (state: SettingsConfigureInitializeInterface, action) => {
   switch (action.type) {
+    case SettingsConfigureActionEnums.SET_ALL_COMMAND_CONFIG:
+      return {
+        ...state,
+        allCommandConfig: action.payload.allCommandConfig
+      }
     case SettingsConfigureActionEnums.UPDATE_SCREEN:
       return { ...state, configureScreenState: action.payload.configureScreenState }
     case SettingsConfigureActionEnums.CHANGE_CONFIG:
@@ -86,15 +88,77 @@ interface StartScreenSettingsConfigureInterface {}
 
 const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = ({}) => {
   // state
+  const [configureId, setConfigureId] = useState<number>(1)
   const [errorMsg, setErrorMsg] = useState<string>('')
-  const [configureId, setConfigureId] = useState<number>(AllCommandConfigure[0].id)
+  const [successMsg, setSuccessMsg] = useState<string>('')
+  const [isSavingButtonLoading, setIsSavingButtonLoading] = useState<boolean>(false)
   // REDUCER
   const [
-    { configureScreenState, configName, configId, django, gazebo, consoles, other, dockerCommand },
+    {
+      configureScreenState,
+      allCommandConfig,
+      configName,
+      configId,
+      django,
+      gazebo,
+      consoles,
+      other,
+      dockerCommand
+    },
     configDispatch
   ] = useReducer(reducer, SetttingsConfigureInitialize)
+
+  //! fetching data from db.
   useEffect(() => {
-    const configures = AllCommandConfigure.find((config) => config.id === configureId)
+    const fetchingData = async () => {
+      try {
+        const commandRes: DatabaseFetching<
+          ResponseStatus,
+          AllCommandConfigureInterface | null,
+          string[]
+        > = await window.api.getAllCommandConfig()
+        if (commandRes.status != ResponseStatus.SUCCESS) {
+          setErrorMsg(commandRes.msg[0])
+          return
+        }
+
+        configDispatch({
+          type: SettingsConfigureActionEnums.SET_ALL_COMMAND_CONFIG,
+          payload: {
+            allCommandConfig: commandRes.data
+          }
+        })
+        setConfigureId(commandRes.data?.[0]?.id ?? 0)
+
+        const { name, django, consoles, other, gazebo, id } = commandRes.data?.[0]
+        configDispatch({
+          type: SettingsConfigureActionEnums.CHANGE_CONFIG,
+          payload: {
+            configName: name,
+            configId: id,
+            django,
+            gazebo,
+            consoles,
+            other,
+            dockerCommand
+          }
+        })
+      } catch (error) {
+        setErrorMsg(`Something went wrong!`)
+      } finally {
+        setTimeout(() => {
+          setErrorMsg(``)
+        }, 3000)
+      }
+    }
+    fetchingData()
+  }, [])
+
+  const handleChangeConfigure = (e: ChangeEvent<HTMLSelectElement>) => {
+    const configId = Number(e.target.value)
+    setConfigureId(configId)
+
+    const configures = allCommandConfig.find((config) => config.id === configId)
     if (configures === undefined) return
 
     const { name, django, consoles, other, gazebo, id } = configures
@@ -110,10 +174,6 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
         dockerCommand
       }
     })
-  }, [configureId])
-
-  const handleChangeConfigure = (e: ChangeEvent<HTMLSelectElement>) => {
-    setConfigureId(Number(e.target.value))
   }
 
   const handleUpdatePort = (id: string) => {
@@ -205,10 +265,41 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
     })
   }
 
+  const handleUpdatedConfigurePortSave = async () => {
+    setIsSavingButtonLoading(true)
+    try {
+      const updatePorts = { django, gazebo, consoles, other }
+      const updatePortRes: DatabaseFetching<ResponseStatus, null, string[]> =
+        await window.api.updateCommands(configureId, updatePorts)
+      if (updatePortRes.status != ResponseStatus.SUCCESS) {
+        setErrorMsg(updatePortRes.msg[0])
+        return
+      }
+
+      setSuccessMsg(`configure update successfully.`)
+    } catch (error) {
+      console.error(error)
+
+      setErrorMsg(`Something went wrong!`)
+    } finally {
+      setTimeout(() => {
+        setErrorMsg(``)
+        setSuccessMsg(``)
+        setIsSavingButtonLoading(false)
+        configDispatch({
+          type: SettingsConfigureActionEnums.UPDATE_SCREEN,
+          payload: {
+            configureScreenState: 0
+          }
+        })
+      }, TIMER)
+    }
+  }
+
   return (
-    <div className="w-full h-full flex flex-col xjustify-start items-center gap-4">
+    <div className="w-full h-full flex flex-col xjustify-start items-center gap-2">
       {configureScreenState === 0 && (
-        <div className={`w-full `}>
+        <div className={`w-full flex flex-col gap-4`}>
           {/* configure name */}
 
           <div className="w-full">
@@ -224,7 +315,7 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
               onChange={(e) => handleChangeConfigure(e)}
               value={configId}
             >
-              {AllCommandConfigure.map((config) => (
+              {allCommandConfig.map((config) => (
                 <option
                   value={config.id}
                   className="text-[#454545] text-base font-medium"
@@ -245,94 +336,6 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
             handleInputChangeAndBlur={handleInputChangeAndBlur}
             handleUpdatePort={handleUpdatePort}
           />
-          {/* <div className={`relative w-full ${layout.flexColCenter}  gap-4`}>
-            <div className="w-[400px] flex flex-col items-center justify-between gap-4">
-              {[django, gazebo, consoles, other].map((server, index) => (
-                <div className="w-full flex items-center justify-between" key={index}>
-                  <div className="w-[182px]">
-                    <label
-                      htmlFor="bedrooms-input"
-                      className="flex items-center justify-start gap-2 mb-2 "
-                    >
-                      <img src={LinkChainIcon} alt="link" className={`w-[16px] h-[16px]`} />
-                      <span className="text-base font-medium text-[#d9d9d9] ">
-                        {server.name[0].toLocaleUpperCase() + server.name.substring(1)} Port:
-                      </span>
-                    </label>
-                    <div className="relative w-[182px] h-[40px] flex items-center ">
-                      <input
-                        type="number"
-                        id={`${server.name}_0`}
-                        className=" bg-white rounded-l-lg w-[94px] h-[40px] font-medium text-center text-[#454545] text-base block  focus:border-none "
-                        style={{ boxShadow: '0px 0px 0px white', border: 'none' }}
-                        placeholder="port"
-                        value={server.ports[0]}
-                        onChange={(e) => handleInputChangeAndBlur(e)}
-                        onBlur={(e) => handleInputChangeAndBlur(e, true)}
-                      />
-
-                      <button
-                        className={`bg-gray-100 hover:bg-gray-200 w-[44px] h-full border-l-[1px] border-[#B3B3B3] ${layout.flexCenter}`}
-                        onClick={() => handleUpdatePort(`${server.name}_0_1`)}
-                      >
-                        <AddIcon cssClass="w-3 h-3 text-[#454545]" />
-                      </button>
-                      <button
-                        type="button"
-                        className={`bg-gray-100 hover:bg-gray-200 w-[44px] h-full border-l-[1px] border-[#B3B3B3] rounded-r-lg ${layout.flexCenter}`}
-                        onClick={() => handleUpdatePort(`${server.name}_0_-1`)}
-                      >
-                        <MinusIcon cssClass="w-3 h-3 text-[#454545]" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="text-4xl text-white font-extrabold mt-5">:</div>
-                  <div className="w-[182px]">
-                    <label
-                      htmlFor="bedrooms-input"
-                      className="flex items-center justify-start gap-2 mb-2 "
-                    >
-                      <img src={LinkChainIcon} alt="link" className={`w-[16px] h-[16px]`} />
-                      <span className="text-base font-medium text-[#d9d9d9] ">
-                        {server.name[0].toLocaleUpperCase() + server.name.substring(1)} Port:
-                      </span>
-                    </label>
-                    <div className="relative w-[182px] h-[40px] flex items-center ">
-                      <input
-                        type="text"
-                        id={`${server.name}_1`}
-                        className="bg-white rounded-l-lg w-[94px] h-[40px] font-medium text-center text-[#454545] text-base block  focus:border-none "
-                        style={{ boxShadow: '0px 0px 0px white', border: 'none' }}
-                        placeholder="port"
-                        value={server.ports[1]}
-                        onChange={(e) => handleInputChangeAndBlur(e)}
-                        onBlur={(e) => handleInputChangeAndBlur(e, true)}
-                      />
-
-                      <button
-                        type="button"
-                        className={`bg-gray-100 hover:bg-gray-200 w-[44px] h-full border-l-[1px] border-[#B3B3B3] ${layout.flexCenter}`}
-                        onClick={() => handleUpdatePort(`${server.name}_1_1`)}
-                      >
-                        <AddIcon cssClass="w-3 h-3 text-[#454545]" />
-                      </button>
-                      <button
-                        type="button"
-                        id={server.name.toString() + '_' + 1}
-                        className={`bg-gray-100 hover:bg-gray-200 w-[44px] h-full border-l-[1px] border-[#B3B3B3] rounded-r-lg ${layout.flexCenter}`}
-                        onClick={() => handleUpdatePort(`${server.name}_1_-1`)}
-                      >
-                        <MinusIcon cssClass="w-3 h-3 text-[#454545]" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <span className="absolute w-[400px] -bottom-8 left-[50%] text-sm font-extralight text-red-800 -translate-x-[50%]">
-              {errorMsg}
-            </span>
-          </div> */}
 
           {/* next */}
           <div
@@ -374,7 +377,9 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
             <div className={`ml-[76px]`}>
               <ButtonWrapper
                 cssClass="bg-green-600 hover:bg-green-700"
-                onClick={() => console.log('clied')}
+                onClick={() => handleUpdatedConfigurePortSave()}
+                isLoading={isSavingButtonLoading}
+                loadingText="saving..."
               >
                 <img src={SaveIcon} alt="save" className="w-[24px] h-[24px]" />
                 <span className="text-white font-semibold text-base">Save</span>
@@ -382,6 +387,13 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
             </div>
           </div>
         </div>
+      )}
+
+      {/* show error*/}
+      {errorMsg && <div className="mt-4 text-sm text-red-700 font-extralight">{errorMsg}</div>}
+      {/* show success*/}
+      {successMsg && (
+        <div className="mt-4 text-sm text-green-500 font-extralight">{successMsg}</div>
       )}
     </div>
   )

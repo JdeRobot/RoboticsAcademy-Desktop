@@ -37,12 +37,19 @@ const api = {
     ipcRenderer.invoke('database:GET_ACTIVE_DOCKER_IMAGE'),
   //! POST
   //! UPDATE
+  updateCommands: (
+    id: number,
+    updatePorts
+  ): Promise<DatabaseFetching<ResponseStatus, null, string[]>> =>
+    ipcRenderer.invoke('database:UPDATE_COMMANDS', id, updatePorts),
   updateCommandUtils: (
     id: number,
     image: string
   ): Promise<DatabaseFetching<ResponseStatus, null, string[]>> =>
-    ipcRenderer.invoke('database:UPDATE_ACTIVE_COMMAND_ID', id, image)
+    ipcRenderer.invoke('database:UPDATE_COMMAND_UTILS', id, image),
   //! DELETE
+  deleteCommandConfig: (id: number): Promise<DatabaseFetching<ResponseStatus, null, string[]>> =>
+    ipcRenderer.invoke('database:DELETE_COMMAND_CONFIG', id)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

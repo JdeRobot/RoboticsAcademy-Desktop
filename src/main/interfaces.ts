@@ -15,7 +15,7 @@ export interface ResponeInterface {
   msg: string[]
 }
 
-interface PortInterface {
+interface PortsInterface {
   name: string
   ports: number[]
 }
@@ -24,8 +24,8 @@ export interface AllCommandConfigureInterface {
   default: boolean
   name: string
   command: string[]
-  django: PortInterface
-  gazebo: PortInterface
-  consoles: PortInterface
-  other: PortInterface
+  django: PortsInterface
+  gazebo: PortsInterface
+  consoles: PortsInterface
+  other: PortsInterface
 }

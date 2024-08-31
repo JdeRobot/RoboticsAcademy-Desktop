@@ -1,11 +1,20 @@
 import { FC, ReactNode } from 'react'
+import Loader from '../utlits/Loader'
 
 interface ButtonWrapperInterface {
   children: ReactNode
+  isLoading?: boolean
+  loadingText?: string
   onClick: () => void
   cssClass: string
 }
-const ButtonWrapper: FC<ButtonWrapperInterface> = ({ children, onClick, cssClass }) => {
+const ButtonWrapper: FC<ButtonWrapperInterface> = ({
+  children,
+  isLoading,
+  loadingText,
+  onClick,
+  cssClass
+}) => {
   return (
     <div
       className={` w-[160px] h-[50px] mt-6 duration-300 rounded-[9px] cursor-pointer ${cssClass} `}
@@ -14,7 +23,13 @@ const ButtonWrapper: FC<ButtonWrapperInterface> = ({ children, onClick, cssClass
         className={`w-full h-full flex items-center justify-center gap-2 font-bold`}
         onClick={() => onClick()}
       >
-        {children}
+        {isLoading ? (
+          <div>
+            <Loader>{loadingText}</Loader>
+          </div>
+        ) : (
+          <> {children} </>
+        )}
       </div>
     </div>
   )

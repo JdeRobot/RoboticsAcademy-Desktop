@@ -7,22 +7,27 @@ import { SettingsReducerActionTypes } from '@renderer/utils/types'
 import {
   // AllCommandConfigure,
   // AllDockersImages,
-  AllCommandConfigureInterface
+  AllDockersImages,
+  TIMER
 } from '@renderer/constants'
 import SettingsCommandTerminal from './SettingsCommandTerminal'
 import Loader from '@renderer/components/utlits/Loader'
-import { DatabaseFetching, ResponeInterface } from '@renderer/utils/interfaces'
+import {
+  AllCommandConfigureInterface,
+  DatabaseFetching,
+  ResponeInterface
+} from '@renderer/utils/interfaces'
 
 interface StartScreenSettinsCommandInterface {
   settingsScreenState: SettingsScreenStateEnums
   dispatch: Dispatch<SettingsReducerActionTypes>
   getAndStoreLocalStorageData: any
 }
-const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
-  getAndStoreLocalStorageData
-}) => {
+const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({}) => {
   // state
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isDeleteButtonLoading, setIsDeleteButtonLoading] = useState<boolean>(false)
+  const [isUseButtonLoading, setIsUseButtonLoading] = useState<boolean>(false)
   // command state
   const [activeCommandConfigId, setActiveCommandConfigId] = useState<number>(0)
   const [allCommandConfigure, setAllCommandConfigure] = useState<
@@ -33,14 +38,8 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
     useState<AllCommandConfigureInterface | null>(null)
 
   // docker image state
-  const [activeDockerImage, setActiveDockerImage] = useState<string>(() => {
-    const activeImage = localStorage.getItem('ActiveDockerImage')
-    return activeImage != null ? activeImage : `noDockerImage`
-  })
-  const [allDockerImages, setAllDockerImages] = useState<{}>(() => {
-    const allDockerImagesData = localStorage.getItem('AllDockerImage')
-    return allDockerImagesData != null ? JSON.parse(allDockerImagesData) : {}
-  })
+  const [activeDockerImage, setActiveDockerImage] = useState<string>(``)
+  const [allDockerImages, setAllDockerImages] = useState<{}>(AllDockersImages)
   const [selectedDockerImage, setSelectedDockerImage] = useState<string>(``)
 
   // update and current state
@@ -86,7 +85,7 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
         setIsLoading(false)
         setTimeout(() => {
           setErroMsg(``)
-        }, 3000)
+        }, TIMER)
       }
     }
     fetchingData()
@@ -148,6 +147,7 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
       return
 
     try {
+      setIsUseButtonLoading(true)
       const updateRes: DatabaseFetching<ResponseStatus, null, string[]> =
         await window.api.updateCommandUtils(selectedCommandConfig?.id || 1, selectedDockerImage)
       if (updateRes.status === ResponseStatus.ERROR) {
@@ -169,21 +169,52 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
       setTimeout(() => {
         setSuccessMsg(``)
         setErroMsg(``)
-      }, 3000)
+        setIsUseButtonLoading(false)
+      }, TIMER)
     }
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (selectedCommandConfig?.default) return
 
-    // const tmpAllCommandConfig = allCommandConfigure.filter(
-    //   (config) => config?.id != selectedCommandConfig?.id
-    // )
-    // setAllCommandConfigure(tmpAllCommandConfig)
-    // localStorage.setItem('AllCommandConfigure', JSON.stringify(tmpAllCommandConfig))
+    setIsDeleteButtonLoading(true)
+    try {
+      const id = selectedCommandConfig?.id ?? -1
 
-    // setActiveCommandConfigId(allCommandConfigure[0].id)
-    // localStorage.setItem('ActiveConfigureId', allCommandConfigure[0].id)
+      const deleteComfigRes: DatabaseFetching<ResponseStatus, null, string[]> =
+        await window.api.deleteCommandConfig(id)
+      if (deleteComfigRes.status != ResponseStatus.SUCCESS) {
+        setErroMsg(deleteComfigRes.msg[0])
+        return
+      }
+      setAllCommandConfigure((prevCommand) => {
+        return prevCommand.filter((command) => {
+          return command.id != id
+        })
+      })
+
+      const newId = allCommandConfigure[0].id
+      const activeCommandRes: DatabaseFetching<ResponseStatus, null, string[]> =
+        await window.api.updateCommandUtils(newId, activeDockerImage)
+
+      if (activeCommandRes.status != ResponseStatus.SUCCESS) {
+        setErroMsg(activeCommandRes.msg[0])
+        return
+      }
+
+      setActiveCommandConfigId(newId)
+      setSelectedCommandConfig(allCommandConfigure[0])
+      setSuccessMsg(`configure deleted successfully.`)
+    } catch (error) {
+      setErroMsg(`Something went wrong!`)
+      console.error(error)
+    } finally {
+      setTimeout(() => {
+        setErroMsg(``)
+        setSuccessMsg(``)
+        setIsDeleteButtonLoading(false)
+      }, TIMER)
+    }
   }
 
   return (
@@ -252,6 +283,8 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
             <ButtonWrapper
               cssClass={`${selectedCommandConfig?.default ? `bg-slate-400 cursor-not-allowed` : `bg-red-600`}`}
               onClick={handleDelete}
+              isLoading={isDeleteButtonLoading}
+              loadingText="deleting..."
             >
               <img src={DeleteIcon} alt="delete icon" className="w-[24px]" />
               <span className="text-[#d9d9d9] font-medium text-lg">Delete</span>
@@ -260,6 +293,8 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({
             <ButtonWrapper
               cssClass={`${selectedCommandConfig?.id !== activeCommandConfigId || selectedDockerImage != activeDockerImage ? `bg-green-600` : `bg-gray-400  cursor-not-allowed`} `}
               onClick={handleUse}
+              isLoading={isUseButtonLoading}
+              loadingText="saving..."
             >
               <img src={TaskIcon} alt="delete icon" className="w-[24px]" />
               <span className="text-[#d9d9d9] font-medium text-lg">Use</span>

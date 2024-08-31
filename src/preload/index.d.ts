@@ -1,3 +1,4 @@
+import { PortsInterface } from './../renderer/src/utils/interfaces'
 import { ElectronAPI } from '@electron-toolkit/preload'
 import { AllCommandConfigureInterface } from './../main/interfaces'
 interface ApiInterface {
@@ -22,11 +23,16 @@ interface ApiInterface {
   getActiveDockerImage: () => Promise<DatabaseFetching<ResponseStatus, string, string[]>>
   //! POST
   //! UPDATE
+  updateCommands: (
+    id: number,
+    updatePorts
+  ) => Promise<DatabaseFetching<ResponseStatus, null, string[]>>
   updateCommandUtils: (
     id: number,
     image: string
   ) => Promise<DatabaseFetching<ResponseStatus, null, string[]>>
   //! DELETE
+  deleteCommandConfig: (id: number) => Promise<DatabaseFetching<ResponseStatus, null, string[]>>
 }
 declare global {
   interface Window {

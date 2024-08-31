@@ -3,6 +3,7 @@ import { join, resolve } from 'path'
 // const sqlite3 = require('sqlite3').verbose()
 import sqlite3, { Database } from 'sqlite3'
 import { AllCommandConfigureInterface, DatabaseFetching, ResponseStatus } from './interfaces'
+import { rejects } from 'assert'
 
 // Data to be stored
 const AllCommandConfigure = [
@@ -394,7 +395,41 @@ export const getActiveDockerImage = (
 
 //! POST
 //! UPDATE
-// update active command id
+// update  commands table
+export const updateCommands = (
+  db: Database,
+  id: number,
+  updatePorts
+): Promise<DatabaseFetching<ResponseStatus, null, string[]>> => {
+  return new Promise((resolve, reject) => {
+    const { django, gazebo, consoles, other } = updatePorts
+
+    const django_ports = django.ports.join(':')
+    const gazebo_ports = gazebo.ports.join(':')
+    const consoles_ports = consoles.ports.join(':')
+    const other_ports = other.ports.join(':')
+    db.run(
+      `UPDATE commands SET django_ports = ?, gazebo_ports = ?, consoles_ports = ?, other_ports = ? WHERE id = ?`,
+      [django_ports, gazebo_ports, consoles_ports, other_ports, id],
+      (err) => {
+        if (err) {
+          reject({
+            status: ResponseStatus.ERROR,
+            data: null,
+            msg: [`error while updating data.`]
+          })
+        } else {
+          resolve({
+            status: ResponseStatus.SUCCESS,
+            data: null,
+            msg: ['active command id update successfully.']
+          })
+        }
+      }
+    )
+  })
+}
+// update command utils table
 export const updateCommandUtils = (
   db: Database,
   id: number,
@@ -423,3 +458,25 @@ export const updateCommandUtils = (
   })
 }
 //! DELETE
+export const deleteCommandConfig = (
+  db: Database,
+  id: number
+): Promise<DatabaseFetching<ResponseStatus, null, string[]>> => {
+  return new Promise((resolve, reject) => {
+    db.run(`DELETE FROM commands WHERE id = ?`, [id], (err) => {
+      if (err) {
+        reject({
+          status: ResponseStatus.ERROR,
+          data: null,
+          msg: [`error while deleting data.`]
+        })
+      } else {
+        resolve({
+          status: ResponseStatus.SUCCESS,
+          data: null,
+          msg: ['configure deleted successfully.']
+        })
+      }
+    })
+  })
+}
