@@ -3,65 +3,36 @@ import './assets/index.css'
 import { TopBar, SpeedDialUtils } from './components'
 import AppClosingWarning from './components/utlits/AppClosingWarning'
 import StartScreen from './views/StartScreen'
-import { AllCommandConfigure, AllCommandConfigureInterface, AllDockersImages } from './constants'
-import { v4 as uuidv4 } from 'uuid'
+import { AllCommandConfigureInterface, DatabaseFetching } from './utils/interfaces'
+import { ResponseStatus } from './utils/enums'
 
 const App = () => {
   const [isAppClosing, setIsAppclosing] = useState<boolean>(false)
   const [content, setContent] = useState(false)
-  const [url, setUrl] = useState<string>('http://localhost:7164/')
+  const [djangoPort, setDjangoPort] = useState<number>(7164)
+  const [url, setUrl] = useState<string>(`http://0.0.0.0:${djangoPort}/`)
 
-  // configure state
-  const [commandConfigure, setCommandConfigure] = useState<AllCommandConfigureInterface | null>(
-    null
-  )
-  const [dockerImage, setDockerImage] = useState<string | null>(null)
-
-  function getAndStoreLocalStorageData() {
-    //
-    const activeConfigureIdData: string | null = localStorage.getItem('ActiveConfigureId')
-    const commandConfigureData: string | null = localStorage.getItem('AllCommandConfigure')
-
-    if (commandConfigureData === null || activeConfigureIdData === null) {
-      setCommandConfigure(null)
-      return
-    }
-
-    const commandConfigureDataParse: AllCommandConfigureInterface[] =
-      JSON.parse(commandConfigureData)
-
-    setCommandConfigure(
-      commandConfigureDataParse.find((command) => {
-        return command.id === activeConfigureIdData
-      }) || null
-    )
-
-    // docker image
-    const dockerImageData: string | null = localStorage.getItem('ActiveDockerImage')
-    if (dockerImageData === null) {
-      setDockerImage(null)
-    } else setDockerImage(AllDockersImages[dockerImageData])
-  }
-
-  // checking or store data on localstorage
   useEffect(() => {
-    const updateAllCommandConfig: AllCommandConfigureInterface[] = AllCommandConfigure.map(
-      (config) => {
-        return { ...config, id: uuidv4() }
+    const fetchPorts = async () => {
+      try {
+        const commandConfigIdRes: DatabaseFetching<ResponseStatus, number | null, string[]> =
+          await window.api.getActiveCommandId()
+        const commandConfigRes: DatabaseFetching<
+          ResponseStatus,
+          AllCommandConfigureInterface[] | null,
+          string[]
+        > = await window.api.getAllCommandConfig()
+
+        const command: AllCommandConfigureInterface | null =
+          commandConfigRes.data?.find((config) => config.id === commandConfigIdRes.data) || null
+        setDjangoPort(command?.django.ports[0] ?? 7164)
+        setUrl(`http://0.0.0.0:${command?.django.ports[0] ?? 7164}/`)
+      } catch (error) {
+        console.log(error)
       }
-    )
-
-    //checking if stored already
-    const configureId = localStorage.getItem('currentConfigureId')
-    if (configureId === null) {
-      localStorage.setItem('ActiveConfigureId', String(updateAllCommandConfig[0].id))
-      localStorage.setItem('ActiveDockerImage', 'jderobotRoboticsAcademy')
-      localStorage.setItem('AllCommandConfigure', JSON.stringify(updateAllCommandConfig))
-      localStorage.setItem('AllDockerImage', JSON.stringify(AllDockersImages))
     }
-
-    getAndStoreLocalStorageData()
-  }, [])
+    fetchPorts()
+  }, [djangoPort])
 
   return (
     <div className="absolute w-screen h-screen rounded-lg">
@@ -71,27 +42,22 @@ const App = () => {
       {isAppClosing && <AppClosingWarning />}
       {/* Start Screen */}
 
-      {!content && (
-        <StartScreen
-          setContent={setContent}
-          dockerImage={dockerImage}
-          commandConfigure={commandConfigure}
-          getAndStoreLocalStorageData={getAndStoreLocalStorageData}
-        />
-      )}
+      {!content && <StartScreen setContent={setContent} setDjangoPort={setDjangoPort} />}
       {/* new screen */}
-      {content && (
-        <div className="mt-6 w-full h-[calc(100%-24px)]">
-          <iframe
-            id={'iframe'}
-            style={{
-              width: '100%',
-              height: '100%'
-            }}
-            src={url}
-          ></iframe>
-        </div>
-      )}
+      <>
+        {content && (
+          <div className="mt-6 w-full h-[calc(100%-24px)]">
+            <iframe
+              id={'iframe'}
+              style={{
+                width: '100%',
+                height: '100%'
+              }}
+              src={url}
+            ></iframe>
+          </div>
+        )}
+      </>
       {content && <SpeedDialUtils setContent={setContent} setUrl={setUrl} />}
     </div>
   )

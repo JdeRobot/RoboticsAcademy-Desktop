@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron'
+import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent, session } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 
@@ -33,7 +33,7 @@ import {
   updateCommandUtils
 } from './db'
 import { Database } from 'sqlite3'
-const db: Database = dbInit()
+export const db: Database = dbInit()
 
 //! connect database end
 // splash screen
@@ -72,12 +72,13 @@ const createWindow = (): BrowserWindow => {
     autoHideMenuBar: true,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      nodeIntegration: true, //false
+      nodeIntegration: false,
       webSecurity: true,
       sandbox: false,
       contextIsolation: true
     }
   })
+
   // ...(process.platform === 'linux' ? { icon } : {}),
   mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
     if (details.responseHeaders === undefined) return
@@ -170,21 +171,14 @@ app.whenReady().then(async () => {
     }
   })
   //* Running RADI docker images
-  ipcMain.handle(
-    'docker:START_RADI_CONTAINER',
-    async (
-      event: IpcMainInvokeEvent,
-      commandConfigure: AllCommandConfigureInterface | null,
-      dockerImage: string | null
-    ) => {
-      try {
-        const res: ResponeInterface = await startDockerRADIContainer(commandConfigure, dockerImage)
-        return res
-      } catch (error) {
-        return { status: false, msg: ['something went wrong!'] }
-      }
+  ipcMain.handle('docker:START_RADI_CONTAINER', async (event: IpcMainInvokeEvent) => {
+    try {
+      const res: ResponeInterface = await startDockerRADIContainer()
+      return res
+    } catch (error) {
+      return { status: false, msg: ['something went wrong!'] }
     }
-  )
+  })
   //* Stopping Docker RADI
   ipcMain.handle('docker:STOP_RADI_CONTAINER', async (event: IpcMainInvokeEvent) => {
     event.defaultPrevented
@@ -251,9 +245,10 @@ app.whenReady().then(async () => {
   //* get active command
   ipcMain.handle(
     'database:GET_ACTIVE_COMMAND_ID',
-    async (event): Promise<DatabaseFetching<ResponseStatus, number, string[]>> => {
+    async (event): Promise<DatabaseFetching<ResponseStatus, number | null, string[]>> => {
       try {
-        const res: DatabaseFetching<ResponseStatus, number, string[]> = await getCommandConfigId(db)
+        const res: DatabaseFetching<ResponseStatus, number | null, string[]> =
+          await getCommandConfigId(db)
         return res
       } catch (error) {
         return {
@@ -267,9 +262,9 @@ app.whenReady().then(async () => {
   //* get active docker image
   ipcMain.handle(
     'database:GET_ACTIVE_DOCKER_IMAGE',
-    async (event): Promise<DatabaseFetching<ResponseStatus, string, string[]>> => {
+    async (event): Promise<DatabaseFetching<ResponseStatus, string | null, string[]>> => {
       try {
-        const res: DatabaseFetching<ResponseStatus, string, string[]> =
+        const res: DatabaseFetching<ResponseStatus, string | null, string[]> =
           await getActiveDockerImage(db)
         return res
       } catch (error) {

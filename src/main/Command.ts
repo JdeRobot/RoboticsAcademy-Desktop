@@ -1,8 +1,20 @@
-import { AllCommandConfigureInterface, ResponeInterface, ResponseStatus } from './interfaces'
-
 const { spawn } = require('child_process')
+import { db } from '.'
+import { getActiveDockerImage, getAllCommandConfig, getCommandConfigId } from './db'
+import {
+  AllCommandConfigureInterface,
+  DatabaseFetching,
+  ResponeInterface,
+  ResponseStatus
+} from './interfaces'
+
 const RADI_IMAGE = 'jderobot/robotics-academy'
-const CONTAINER_NAME = 'xrobotics-academy'
+const CONTAINER_NAME = 'robotics-academy'
+export const AllDockersImages = {
+  noDockerImage: 'Run Without Docker Image',
+  jderobotRoboticsAcademy: 'jderobot/robotics-academy',
+  jderobotRoboticsBackend: 'jderobot/robotics-backend'
+}
 
 export const checkDockerAvailability = async (): Promise<ResponeInterface> => {
   return new Promise((resolve, reject) => {
@@ -82,20 +94,42 @@ export const checkDockerRADIAvailability = async (): Promise<ResponeInterface> =
   })
 }
 
-export const startDockerRADIContainer = async (
-  commandConfigure: AllCommandConfigureInterface | null,
-  dockerImage: string | null
-): Promise<ResponeInterface> => {
-  if (commandConfigure === null || dockerImage === null) {
+export const startDockerRADIContainer = async (): Promise<ResponeInterface> => {
+  const commandConfigIdRes: DatabaseFetching<ResponseStatus, number | null, string[]> =
+    await getCommandConfigId(db)
+  const allCommandConfig: DatabaseFetching<
+    ResponseStatus,
+    AllCommandConfigureInterface[] | null,
+    string[]
+  > = await getAllCommandConfig(db)
+  const activeDockerImage: DatabaseFetching<ResponseStatus, string | null, string[]> =
+    await getActiveDockerImage(db)
+  if (
+    commandConfigIdRes.status != ResponseStatus.SUCCESS ||
+    allCommandConfig.status != ResponseStatus.SUCCESS ||
+    activeDockerImage.status != ResponseStatus.SUCCESS ||
+    !activeDockerImage.data ||
+    !allCommandConfig.data ||
+    !commandConfigIdRes.data
+  ) {
     return {
       status: ResponseStatus.ERROR,
       msg: [`Failed to start process: command not found!`]
     }
   }
 
-  const { django, gazebo, consoles, other } = commandConfigure
+  const commandConfigure: AllCommandConfigureInterface | null =
+    allCommandConfig.data.find((command) => command.id === commandConfigIdRes.data) || null
 
-  let commands: string[] = commandConfigure.command
+  if (!commandConfigure) {
+    return {
+      status: ResponseStatus.ERROR,
+      msg: [`Failed to start process: command not found!`]
+    }
+  }
+  const { command, django, gazebo, consoles, other } = commandConfigure
+
+  let commands: string[] = command
   commands.shift()
 
   // detach mode
@@ -109,7 +143,7 @@ export const startDockerRADIContainer = async (
   // other
   commands.push(...['-p', `${other.ports[0]}:${other.ports[1]}`])
   // docker image
-  commands.push(dockerImage)
+  commands.push(AllDockersImages[activeDockerImage.data])
   //
 
   console.log('====================================')

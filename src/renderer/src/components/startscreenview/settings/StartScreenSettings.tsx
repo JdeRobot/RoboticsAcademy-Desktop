@@ -1,17 +1,15 @@
-import { FC, useReducer } from 'react'
+import { Dispatch, FC, SetStateAction, useReducer } from 'react'
 import { SettingsInitialStateInterface } from '@renderer/utils/interfaces'
 import { SettingsActionEnums, SettingsScreenStateEnums } from '@renderer/utils/enums'
 import { SettingsReducerActionTypes } from '@renderer/utils/types'
 import {
   StartScreenSettingsSidebar,
-  StartScreenSettinsCommand,
+  StartScreenSettingsCommand,
   StartScreenSettingsConfigure,
-  StartScreenSettinsAdvance
+  StartScreenSettingsAdvance
 } from '@renderer/components/index'
 
-interface StartScreenSettingsInterface {
-  getAndStoreLocalStorageData: any
-}
+interface StartScreenSettingsInterface {}
 
 const settingsInitialState: SettingsInitialStateInterface = {
   settingsScreenState: SettingsScreenStateEnums.COMMAND
@@ -31,7 +29,7 @@ const reducer = (state: SettingsInitialStateInterface, action: SettingsReducerAc
   }
 }
 
-const StartScreenSettings: FC<StartScreenSettingsInterface> = ({ getAndStoreLocalStorageData }) => {
+const StartScreenSettings: FC<StartScreenSettingsInterface> = ({}) => {
   const [{ settingsScreenState }, dispatch] = useReducer(reducer, settingsInitialState)
   return (
     <div className={`w-full h-full flex`}>
@@ -43,17 +41,16 @@ const StartScreenSettings: FC<StartScreenSettingsInterface> = ({ getAndStoreLoca
       >
         <div className={`h-full w-[400px]`}>
           {settingsScreenState === SettingsScreenStateEnums.COMMAND && (
-            <StartScreenSettinsCommand
+            <StartScreenSettingsCommand
               settingsScreenState={settingsScreenState}
               dispatch={dispatch}
-              getAndStoreLocalStorageData={getAndStoreLocalStorageData}
             />
           )}
           {settingsScreenState === SettingsScreenStateEnums.CONFIGURE && (
             <StartScreenSettingsConfigure />
           )}
           {settingsScreenState === SettingsScreenStateEnums.ADVANCE && (
-            <StartScreenSettinsAdvance
+            <StartScreenSettingsAdvance
               settingsScreenState={settingsScreenState}
               dispatch={dispatch}
             />

@@ -13,11 +13,8 @@ const api = {
     ipcRenderer.invoke('docker:CHECK_AVAILABILITY'),
   checkDockerRADIAvailability: (): Promise<ResponeInterface> =>
     ipcRenderer.invoke('docker:CHECK_RADI_AVAILABILITY'),
-  startDockerRADIContainer: (
-    commandConfigure: AllCommandConfigureInterface | null,
-    dockerImage: string | null
-  ): Promise<ResponeInterface> =>
-    ipcRenderer.invoke('docker:START_RADI_CONTAINER', commandConfigure, dockerImage),
+  startDockerRADIContainer: (): Promise<ResponeInterface> =>
+    ipcRenderer.invoke('docker:START_RADI_CONTAINER'),
   stopDockerRADIContainer: (): Promise<ResponeInterface> =>
     ipcRenderer.invoke('docker:STOP_RADI_CONTAINER'),
   checkRADIContainerRunning: (): Promise<ResponeInterface> =>
@@ -31,9 +28,9 @@ const api = {
   getAllCommandConfig: (): Promise<
     DatabaseFetching<ResponseStatus, AllCommandConfigureInterface[] | null, string[]>
   > => ipcRenderer.invoke('database:ALL_COMMAND_CONFIG'),
-  getActiveCommandId: (): Promise<DatabaseFetching<ResponseStatus, number, string[]>> =>
+  getActiveCommandId: (): Promise<DatabaseFetching<ResponseStatus, number | null, string[]>> =>
     ipcRenderer.invoke('database:GET_ACTIVE_COMMAND_ID'),
-  getActiveDockerImage: (): Promise<DatabaseFetching<ResponseStatus, string, string[]>> =>
+  getActiveDockerImage: (): Promise<DatabaseFetching<ResponseStatus, string | null, string[]>> =>
     ipcRenderer.invoke('database:GET_ACTIVE_DOCKER_IMAGE'),
   //! POST
   addNewCommandConfig: (commandConfig): Promise<DatabaseFetching<ResponseStatus, null, string[]>> =>

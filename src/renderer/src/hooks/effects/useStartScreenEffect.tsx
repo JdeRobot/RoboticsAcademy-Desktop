@@ -1,15 +1,12 @@
-import { ResponeInterface } from '@renderer/utils/interfaces'
+import { DatabaseFetching, ResponeInterface } from '@renderer/utils/interfaces'
 import { ActionEnums, ScreenStateEnums, ResponseStatus, ButtonEnums } from '@renderer/utils/enums'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { AllCommandConfigureInterface } from '@renderer/constants'
 
 interface UseStartScreenEffectInterface {
   setIsloading: Dispatch<SetStateAction<boolean>>
   setMsg: Dispatch<SetStateAction<string>>
   screenState: ScreenStateEnums
   dispatch: any
-  dockerImage: any
-  commandConfigure: any
 }
 const TIMER: number = 1000
 
@@ -17,9 +14,7 @@ export const useStartScreenEffect = ({
   setIsloading,
   setMsg,
   screenState,
-  dispatch,
-  dockerImage,
-  commandConfigure
+  dispatch
 }: UseStartScreenEffectInterface) => {
   //* func
   const handleShowErrorScreen = (error: string[]) => {
@@ -69,10 +64,7 @@ export const useStartScreenEffect = ({
   useEffect(() => {
     const startDockerRADIContainerFunc = async (): Promise<void> => {
       try {
-        const res: ResponeInterface = await window.api.startDockerRADIContainer(
-          commandConfigure,
-          dockerImage
-        )
+        const res: ResponeInterface = await window.api.startDockerRADIContainer()
         if (res.status === ResponseStatus.SUCCESS) {
           setTimeout(() => {
             setMsg(res.msg[0])

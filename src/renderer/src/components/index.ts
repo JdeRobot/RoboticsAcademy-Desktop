@@ -7,9 +7,9 @@ import FooterLinks from './startscreenview/FooterLinks'
 // start screen settings
 import StartScreenSettings from './startscreenview/settings/StartScreenSettings'
 import StartScreenSettingsSidebar from './startscreenview/settings/StartScreenSettingsSidebar'
-import StartScreenSettinsCommand from './startscreenview/settings/StartScreenSettinsCommand'
+import StartScreenSettingsCommand from './startscreenview/settings/StartScreenSettingsCommand'
 import StartScreenSettingsConfigure from './startscreenview/settings/StartScreenSettingsConfigure'
-import StartScreenSettinsAdvance from './startscreenview/settings/StartScreenSettinsAdvance'
+import StartScreenSettingsAdvance from './startscreenview/settings/StartScreenSettingsAdvance'
 import SettingsCommandTerminal from './startscreenview/settings/SettingsCommandTerminal'
 import Ports from './startscreenview/settings/Ports'
 //* utils
@@ -28,9 +28,9 @@ export {
   // Start Screen Settings
   StartScreenSettings,
   StartScreenSettingsSidebar,
-  StartScreenSettinsCommand,
+  StartScreenSettingsCommand,
   StartScreenSettingsConfigure,
-  StartScreenSettinsAdvance,
+  StartScreenSettingsAdvance,
   SettingsCommandTerminal,
   Ports,
   // utils

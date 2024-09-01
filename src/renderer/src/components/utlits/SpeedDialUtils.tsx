@@ -23,7 +23,7 @@ const SpeedDialUtils: FC<SpeedDialUtilsInterface> = ({ setUrl, setContent }) => 
           type="button"
           data-tooltip-target="tooltip-copy"
           data-tooltip-placement="left"
-          className={`${isOpenSpeedDial ? `opacity-100` : `opacity-0`} flex duration-100 justify-center items-center  w-14 h-14 bg-blue-600 rounded-full dark:border-gray-600 shadow-sm hover:bg-blue-700 `}
+          className={`${isOpenSpeedDial ? `opacity-100` : `opacity-0`} flex duration-100 justify-center items-center  w-14 h-14 bg-slate-600 rounded-full dark:border-gray-600  hover:bg-slate-700 shadow-lg shadow-gray-600`}
           onClick={() => {
             setContent(false)
             setTimeout(() => {
@@ -38,7 +38,7 @@ const SpeedDialUtils: FC<SpeedDialUtilsInterface> = ({ setUrl, setContent }) => 
           type="button"
           data-tooltip-target="tooltip-copy"
           data-tooltip-placement="left"
-          className={`${isOpenSpeedDial ? `opacity-100` : `opacity-0`} flex duration-100 justify-center items-center  w-14 h-14 bg-blue-600 rounded-full dark:border-gray-600 shadow-sm hover:bg-blue-700 `}
+          className={`${isOpenSpeedDial ? `opacity-100` : `opacity-0`} flex duration-100 justify-center items-center  w-14 h-14 bg-slate-600 rounded-full dark:border-gray-600  hover:bg-slate-700 shadow-lg shadow-gray-600`}
           onClick={() => setContent(false)}
         >
           <img src={SettingsIcon} alt="settings" className="w-6" />
@@ -68,7 +68,6 @@ const SpeedDialUtils: FC<SpeedDialUtilsInterface> = ({ setUrl, setContent }) => 
             d="M9 1v16M1 9h16"
           />
         </svg>
-        <span className="sr-only">Open actions menu</span>
       </button>
     </div>
   )

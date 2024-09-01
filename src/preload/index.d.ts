@@ -4,10 +4,7 @@ import { AllCommandConfigureInterface, DatabaseFetching } from './../main/interf
 interface ApiInterface {
   checkDockerAvailability: () => Promise<ResponeInterface>
   checkDockerRADIAvailability: () => Promise<ResponeInterface>
-  startDockerRADIContainer: (
-    commandConfigure: AllCommandConfigureInterface | null,
-    dockerImage: string | null
-  ) => Promise<ResponeInterface>
+  startDockerRADIContainer: () => Promise<ResponeInterface>
   stopDockerRADIContainer: () => Promise<ResponeInterface>
   checkRADIContainerRunning: () => Promise<ResponeInterface>
   // app window
@@ -19,8 +16,8 @@ interface ApiInterface {
   getAllCommandConfig: () => Promise<
     DatabaseFetching<ResponseStatus, AllCommandConfigureInterface[] | null, string[]>
   >
-  getActiveCommandId: () => Promise<DatabaseFetching<ResponseStatus, number, string[]>>
-  getActiveDockerImage: () => Promise<DatabaseFetching<ResponseStatus, string, string[]>>
+  getActiveCommandId: () => Promise<DatabaseFetching<ResponseStatus, number | null, string[]>>
+  getActiveDockerImage: () => Promise<DatabaseFetching<ResponseStatus, string | null, string[]>>
   //! POST
   addNewCommandConfig: (commandConfig) => Promise<DatabaseFetching<ResponseStatus, null, string[]>>
   //! UPDATE

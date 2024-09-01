@@ -341,7 +341,7 @@ interface CommandsUtilsTableRow {
 //* get active command
 export const getCommandConfigId = (
   db: Database
-): Promise<DatabaseFetching<ResponseStatus, number, string[]>> => {
+): Promise<DatabaseFetching<ResponseStatus, number | null, string[]>> => {
   return new Promise((resolve, reject) => {
     db.all(
       `SELECT * FROM commands_utils WHERE id=999`,
@@ -350,8 +350,8 @@ export const getCommandConfigId = (
         if (err) {
           reject({
             status: ResponseStatus.ERROR,
-            data: -1,
-            msg: [`error while data fetching from db`]
+            data: null,
+            msg: [`error while data fetching from db`, String(err)]
           })
         } else {
           resolve({
@@ -368,7 +368,7 @@ export const getCommandConfigId = (
 //* get active command
 export const getActiveDockerImage = (
   db: Database
-): Promise<DatabaseFetching<ResponseStatus, string, string[]>> => {
+): Promise<DatabaseFetching<ResponseStatus, string | null, string[]>> => {
   return new Promise((resolve, reject) => {
     db.all(
       `SELECT * FROM commands_utils WHERE id=999`,

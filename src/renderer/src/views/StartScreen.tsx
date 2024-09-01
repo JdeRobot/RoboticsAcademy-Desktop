@@ -1,4 +1,4 @@
-import { FC, useReducer, useState } from 'react'
+import { Dispatch, FC, SetStateAction, useEffect, useReducer, useState } from 'react'
 import styles from './../assets/styles/startView.module.css'
 import {
   LogoTitle,
@@ -11,21 +11,15 @@ import {
 } from '../components/index'
 import { initialState, reducer } from '@renderer/hooks/reducers/useStartScrrenReducer'
 import { useStartScreenEffect } from '@renderer/hooks/effects/useStartScreenEffect'
-import { ScreenStateEnums } from '@renderer/utils/enums'
+import { ResponseStatus, ScreenStateEnums } from '@renderer/utils/enums'
+import { AllCommandConfigureInterface, DatabaseFetching } from '@renderer/utils/interfaces'
 
 type StartScreenInterface = {
-  setContent: any
-  dockerImage: any
-  commandConfigure: any
-  getAndStoreLocalStorageData: any
+  setContent: Dispatch<SetStateAction<boolean>>
+  setDjangoPort: Dispatch<SetStateAction<number>>
 }
 
-const StartScreen: FC<StartScreenInterface> = ({
-  setContent,
-  dockerImage,
-  commandConfigure,
-  getAndStoreLocalStorageData
-}) => {
+const StartScreen: FC<StartScreenInterface> = ({ setContent, setDjangoPort }) => {
   //* Use State
   const [isLoading, setIsloading] = useState<boolean>(false)
 
@@ -39,11 +33,29 @@ const StartScreen: FC<StartScreenInterface> = ({
     setIsloading,
     setMsg,
     dispatch,
-    screenState,
-    dockerImage,
-    commandConfigure
+    screenState
   })
 
+  useEffect(() => {
+    const fetchPorts = async () => {
+      try {
+        const commandConfigIdRes: DatabaseFetching<ResponseStatus, number | null, string[]> =
+          await window.api.getActiveCommandId()
+        const commandConfigRes: DatabaseFetching<
+          ResponseStatus,
+          AllCommandConfigureInterface[] | null,
+          string[]
+        > = await window.api.getAllCommandConfig()
+
+        const command: AllCommandConfigureInterface | null =
+          commandConfigRes.data?.find((config) => config.id === commandConfigIdRes.data) || null
+        setDjangoPort(command?.django.ports[0] ?? 7164)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchPorts()
+  }, [screenState])
   return (
     <div className={styles.backgroundVideo}>
       <div className={styles.blurLayer}></div>
@@ -52,7 +64,7 @@ const StartScreen: FC<StartScreenInterface> = ({
       >
         <div className={`w-full h-full flex flex-col justify-between items-center py-2`}>
           {screenState === ScreenStateEnums.SETTINGS ? (
-            <StartScreenSettings getAndStoreLocalStorageData={getAndStoreLocalStorageData} />
+            <StartScreenSettings />
           ) : (
             <>
               <LogoTitle />

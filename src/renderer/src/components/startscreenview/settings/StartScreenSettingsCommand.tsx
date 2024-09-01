@@ -1,29 +1,19 @@
-import { ChangeEvent, Dispatch, FC, useEffect, useState } from 'react'
+import { ChangeEvent, Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
 import { DeleteIcon, TaskIcon } from '@renderer/assets'
 import ButtonWrapper from '@renderer/components/buttons/ButtonWrapper'
 import { ResponseStatus, SettingsScreenStateEnums } from '@renderer/utils/enums'
 import { SettingsReducerActionTypes } from '@renderer/utils/types'
 
-import {
-  // AllCommandConfigure,
-  // AllDockersImages,
-  AllDockersImages,
-  TIMER
-} from '@renderer/constants'
+import { AllDockersImages, TIMER } from '@renderer/constants'
 import SettingsCommandTerminal from './SettingsCommandTerminal'
 import Loader from '@renderer/components/utlits/Loader'
-import {
-  AllCommandConfigureInterface,
-  DatabaseFetching,
-  ResponeInterface
-} from '@renderer/utils/interfaces'
+import { AllCommandConfigureInterface, DatabaseFetching } from '@renderer/utils/interfaces'
 
 interface StartScreenSettinsCommandInterface {
   settingsScreenState: SettingsScreenStateEnums
   dispatch: Dispatch<SettingsReducerActionTypes>
-  getAndStoreLocalStorageData: any
 }
-const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({}) => {
+const StartScreenSettingsCommand: FC<StartScreenSettinsCommandInterface> = ({}) => {
   // state
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isDeleteButtonLoading, setIsDeleteButtonLoading] = useState<boolean>(false)
@@ -52,7 +42,7 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({}) =
     setIsLoading(true)
     const fetchingData = async () => {
       try {
-        const commandConfigIdRes: DatabaseFetching<ResponseStatus, number, string[]> =
+        const commandConfigIdRes: DatabaseFetching<ResponseStatus, number | null, string[]> =
           await window.api.getActiveCommandId()
         const commandRes: DatabaseFetching<
           ResponseStatus,
@@ -60,7 +50,7 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({}) =
           string[]
         > = await window.api.getAllCommandConfig()
 
-        const dockerImageRes: DatabaseFetching<ResponseStatus, string, string[]> =
+        const dockerImageRes: DatabaseFetching<ResponseStatus, string | null, string[]> =
           await window.api.getActiveDockerImage()
 
         if (
@@ -69,16 +59,17 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({}) =
           dockerImageRes.status === ResponseStatus.ERROR
         ) {
           setErroMsg(`error while fetching!`)
+          return
         }
-        setActiveCommandConfigId(commandConfigIdRes.data)
+        setActiveCommandConfigId(commandConfigIdRes.data ?? 1)
         setAllCommandConfigure(commandRes.data ?? [])
-        setActiveDockerImage(dockerImageRes.data)
+        setActiveDockerImage(dockerImageRes.data ?? `noDockerImage`)
 
         const command: AllCommandConfigureInterface | null =
           commandRes.data?.find((command) => command.id === commandConfigIdRes.data) || null
 
         setSelectedCommandConfig(command)
-        setSelectedDockerImage(dockerImageRes.data)
+        setSelectedDockerImage(dockerImageRes.data ?? `noDockerImage`)
       } catch (error) {
         setErroMsg(`error while fetching!`)
       } finally {
@@ -160,7 +151,6 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({}) =
 
       // save select state
       setActiveDockerImage(selectedDockerImage)
-
       // success msg
       setSuccessMsg(`Saved successfully.`)
     } catch (error) {
@@ -313,4 +303,4 @@ const StartScreenSettinsCommand: FC<StartScreenSettinsCommandInterface> = ({}) =
   )
 }
 
-export default StartScreenSettinsCommand
+export default StartScreenSettingsCommand
