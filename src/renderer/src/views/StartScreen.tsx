@@ -23,15 +23,17 @@ type StartScreenInterface = {
 const StartScreen: FC<StartScreenInterface> = ({ setContent, setDjangoPort }) => {
   //* Use State
   const [isLoading, setIsloading] = useState<boolean>(false)
+  const [isPortOnly, setIsPortOnly] = useState<boolean>(false)
+  const [msg, setMsg] = useState<string>('')
 
   //* Use Hooks
   const [
     { screenState, buttonState, errorWarningMsg, progress, totalProgressSteps, isExpand },
     dispatch
   ] = useReducer(reducer, initialState)
-  const [msg, setMsg] = useState<string>('')
   useStartScreenEffect({
     setIsloading,
+    isPortOnly,
     setMsg,
     dispatch,
     screenState
@@ -51,6 +53,15 @@ const StartScreen: FC<StartScreenInterface> = ({ setContent, setDjangoPort }) =>
         const command: AllCommandConfigureInterface | null =
           commandConfigRes.data?.find((config) => config.id === commandConfigIdRes.data) || null
         setDjangoPort(command?.django.ports[0] ?? 7164)
+
+        // check active docker image
+        const activeDockerImageRes: DatabaseFetching<ResponseStatus, string | null, string[]> =
+          await window.api.getActiveDockerImage()
+        if (activeDockerImageRes.status != ResponseStatus.SUCCESS || !activeDockerImageRes.data) {
+          setIsPortOnly(false)
+          return
+        }
+        setIsPortOnly(activeDockerImageRes.data === `noDockerImage` ? true : false)
       } catch (error) {
         console.log(error)
       }
@@ -91,6 +102,7 @@ const StartScreen: FC<StartScreenInterface> = ({ setContent, setDjangoPort }) =>
                         buttonState={buttonState}
                         dispatch={dispatch}
                         setContent={setContent}
+                        isPortOnly={isPortOnly}
                       />
                     )}
                   </>

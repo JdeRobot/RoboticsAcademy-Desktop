@@ -7,7 +7,7 @@ export const initialState: initialStateInterface = {
   buttonState: ButtonEnums.START,
   errorWarningMsg: [],
   progress: 0,
-  totalProgressSteps: 3,
+  totalProgressSteps: 3, // count of steps is 3
   isExpand: false
 }
 

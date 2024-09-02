@@ -10,12 +10,14 @@ interface StartScrrenButtonsInterface {
   buttonState: string
   dispatch: Dispatch<ReducerActionTypes>
   setContent: Dispatch<boolean>
+  isPortOnly: any
 }
 
 const StartScreenButtons: FC<StartScrrenButtonsInterface> = ({
   buttonState,
   dispatch,
-  setContent
+  setContent,
+  isPortOnly
 }) => {
   // state
   const [isStopping, setIsStopping] = useState<boolean>(false)
@@ -46,96 +48,112 @@ const StartScreenButtons: FC<StartScrrenButtonsInterface> = ({
   }
   return (
     <>
-      {/*  */}
-      {buttonState === ButtonEnums.START && (
+      {isPortOnly ? (
         <ButtonWrapper
-          onClick={() =>
-            dispatch({
-              type: ActionEnums.START,
-              payload: { screenState: ScreenStateEnums.LOADING }
-            })
-          }
-          cssClass={`bg-yellow-600 ${styles.startButtonSvg}`}
+          onClick={() => setContent(true)}
+          cssClass={`bg-green-600 ${styles.startButtonSvg}`}
         >
           <>
-            Start
-            <img src={PlayIcon} className={`w-[24px]`} />
-          </>
-        </ButtonWrapper>
-      )}
-      {/* //TODO: NEED TO WORK */}
-      {buttonState === ButtonEnums.CONTINUE && (
-        <ButtonWrapper
-          onClick={() =>
-            dispatch({
-              type: ActionEnums.START,
-              payload: { screenState: ScreenStateEnums.LOADING }
-            })
-          }
-          cssClass={`bg-yellow-600 ${styles.startButtonSvg}`}
-        >
-          <>
-            Continue{' '}
             <span>
-              <img src={RightArrowIcon} alt="" className="w-[24px]" />
+              <img src={GameConsoleIcon} alt="" className="w-[24px]" />
             </span>
+            Exercise
           </>
         </ButtonWrapper>
-      )}
-      {buttonState === ButtonEnums.BACK && (
-        <ButtonWrapper
-          onClick={() =>
-            dispatch({
-              type: ActionEnums.RESET
-            })
-          }
-          cssClass={`bg-blue-600 ${styles.startButtonSvg}`}
-        >
-          <>
-            <span>
-              <img src={BackIcon} alt="" className="w-[24px]" />
-            </span>{' '}
-            Back
-          </>
-        </ButtonWrapper>
-      )}
-
-      {/* stop or exercise button */}
-      {buttonState === ButtonEnums.STOP && (
-        <div className={`flex items-center gap-2`}>
-          {/* stop */}
-
-          <ButtonWrapper
-            onClick={() => stopDockerFunc()}
-            cssClass={`bg-red-600 ${styles.startButtonSvg}`}
-          >
-            {isStopping ? (
-              <Loader>Stopping...</Loader>
-            ) : (
-              <>
-                <span>
-                  <img src={PowerIcon} alt="" className="w-[24px]" />
-                </span>{' '}
-                Stop
-              </>
-            )}
-          </ButtonWrapper>
-
-          {/* exercise */}
-          {!isStopping && (
+      ) : (
+        <>
+          {/*  */}
+          {buttonState === ButtonEnums.START && (
             <ButtonWrapper
-              onClick={() => setContent(true)}
-              cssClass={`bg-green-600 ${styles.startButtonSvg}`}
+              onClick={() =>
+                dispatch({
+                  type: ActionEnums.START,
+                  payload: { screenState: ScreenStateEnums.LOADING }
+                })
+              }
+              cssClass={`bg-yellow-600 ${styles.startButtonSvg}`}
             >
               <>
-                <span>
-                  <img src={GameConsoleIcon} alt="" className="w-[24px]" />
-                </span>{' '}
-                Exercise
+                Start
+                <img src={PlayIcon} className={`w-[24px]`} />
               </>
             </ButtonWrapper>
           )}
-        </div>
+          {/* //TODO: NEED TO WORK */}
+          {buttonState === ButtonEnums.CONTINUE && (
+            <ButtonWrapper
+              onClick={() =>
+                dispatch({
+                  type: ActionEnums.START,
+                  payload: { screenState: ScreenStateEnums.LOADING }
+                })
+              }
+              cssClass={`bg-yellow-600 ${styles.startButtonSvg}`}
+            >
+              <>
+                Continue{' '}
+                <span>
+                  <img src={RightArrowIcon} alt="" className="w-[24px]" />
+                </span>
+              </>
+            </ButtonWrapper>
+          )}
+          {buttonState === ButtonEnums.BACK && (
+            <ButtonWrapper
+              onClick={() =>
+                dispatch({
+                  type: ActionEnums.RESET
+                })
+              }
+              cssClass={`bg-blue-600 ${styles.startButtonSvg}`}
+            >
+              <>
+                <span>
+                  <img src={BackIcon} alt="" className="w-[24px]" />
+                </span>{' '}
+                Back
+              </>
+            </ButtonWrapper>
+          )}
+
+          {/* stop or exercise button */}
+          {buttonState === ButtonEnums.STOP && (
+            <div className={`flex items-center gap-2`}>
+              {/* stop */}
+
+              <ButtonWrapper
+                onClick={() => stopDockerFunc()}
+                cssClass={`bg-red-600 ${styles.startButtonSvg}`}
+              >
+                {isStopping ? (
+                  <Loader>Stopping...</Loader>
+                ) : (
+                  <>
+                    <span>
+                      <img src={PowerIcon} alt="" className="w-[24px]" />
+                    </span>{' '}
+                    Stop
+                  </>
+                )}
+              </ButtonWrapper>
+
+              {/* exercise */}
+              {!isStopping && (
+                <ButtonWrapper
+                  onClick={() => setContent(true)}
+                  cssClass={`bg-green-600 ${styles.startButtonSvg}`}
+                >
+                  <>
+                    <span>
+                      <img src={GameConsoleIcon} alt="" className="w-[24px]" />
+                    </span>
+                    Exercise
+                  </>
+                </ButtonWrapper>
+              )}
+            </div>
+          )}
+        </>
       )}
     </>
   )
