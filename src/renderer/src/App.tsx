@@ -1,6 +1,6 @@
-import { useEffect, useReducer, useRef, useState } from 'react'
-import './assets/index.css'
+import { useEffect, useState } from 'react'
 import { TopBar, SpeedDialUtils } from './components'
+import './assets/index.css'
 import AppClosingWarning from './components/utlits/AppClosingWarning'
 import StartScreen from './views/StartScreen'
 import { AllCommandConfigureInterface, DatabaseFetching } from './utils/interfaces'
@@ -46,7 +46,7 @@ const App = () => {
       {/* new screen */}
       <>
         {content && (
-          <div className="mt-6 w-full h-[calc(100%-24px)]">
+          <div className="mt-6 w-full h-[calc(100%-28px)]">
             <iframe
               id={'iframe'}
               style={{

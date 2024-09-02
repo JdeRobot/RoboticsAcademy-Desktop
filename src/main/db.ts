@@ -1,9 +1,7 @@
 import { app } from 'electron'
-import { join, resolve } from 'path'
-// const sqlite3 = require('sqlite3').verbose()
-import sqlite3, { Database } from 'sqlite3'
+import { resolve } from 'path'
+import * as sqlite3 from 'sqlite3'
 import { AllCommandConfigureInterface, DatabaseFetching, ResponseStatus } from './interfaces'
-import { rejects } from 'assert'
 
 // Data to be stored
 const AllCommandConfigure = [
@@ -151,7 +149,7 @@ const AllCommandConfigure = [
     }
   }
 ]
-export const dbInit = (): Database => {
+export const dbInit = (): sqlite3.Database => {
   const getDBPath = () => {
     let base = app.getAppPath()
     if (app.isPackaged) {
@@ -172,22 +170,22 @@ export const dbInit = (): Database => {
   return db
 }
 
-// if table data already exits
-const isTableExit = async (db: Database, tableName: string): Promise<boolean> => {
+//@ Check table data already exits or not
+const isTableExit = async (db: sqlite3.Database, tableName: string): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     db.all(`SELECT * FROM ${tableName}`, [], (err, rows) => {
       if (err) {
         console.error(err)
         reject(false)
       }
-
       if (rows.length === 0) resolve(false)
       else resolve(true)
     })
   })
 }
 
-export const insertCommandData = async (db: Database) => {
+//@ insert command config data when app install (for the first time)
+export const insertCommandData = async (db: sqlite3.Database) => {
   db.run(
     `CREATE TABLE IF NOT EXISTS commands (
     id INTEGER PRIMARY KEY AUTOINCREMENT,  -- Auto-incrementing ID
@@ -238,7 +236,8 @@ export const insertCommandData = async (db: Database) => {
   )
 }
 
-export const insertCommandUtilsData = async (db: Database) => {
+//@ insert command utils data when app install (for the first time)
+export const insertCommandUtilsData = async (db: sqlite3.Database) => {
   db.run(
     `CREATE TABLE IF NOT EXISTS commands_utils (
     id INTEGER,
@@ -274,7 +273,7 @@ export const insertCommandUtilsData = async (db: Database) => {
 }
 
 //! GET
-// command table
+//@ get all rows from commands table
 interface CommandsTableRow {
   id: number
   is_default: boolean
@@ -286,7 +285,7 @@ interface CommandsTableRow {
   other_ports: string
 }
 export const getAllCommandConfig = (
-  db: Database
+  db: sqlite3.Database
 ): Promise<DatabaseFetching<ResponseStatus, AllCommandConfigureInterface[] | null, string[]>> => {
   return new Promise((resolve, reject) => {
     db.all('SELECT * FROM commands', [], (err, rows: CommandsTableRow[]) => {
@@ -333,14 +332,14 @@ export const getAllCommandConfig = (
   })
 }
 
+//@ get active command
 interface CommandsUtilsTableRow {
   id: number
   active_command_id: number
   active_docker: string
 }
-//* get active command
 export const getCommandConfigId = (
-  db: Database
+  db: sqlite3.Database
 ): Promise<DatabaseFetching<ResponseStatus, number | null, string[]>> => {
   return new Promise((resolve, reject) => {
     db.all(
@@ -365,9 +364,9 @@ export const getCommandConfigId = (
   })
 }
 
-//* get active command
+//@ get active command
 export const getActiveDockerImage = (
-  db: Database
+  db: sqlite3.Database
 ): Promise<DatabaseFetching<ResponseStatus, string | null, string[]>> => {
   return new Promise((resolve, reject) => {
     db.all(
@@ -381,7 +380,6 @@ export const getActiveDockerImage = (
             msg: [`error while data fetching from db`]
           })
         } else {
-          // const
           resolve({
             status: ResponseStatus.SUCCESS,
             data: rows[0].active_docker,
@@ -394,9 +392,9 @@ export const getActiveDockerImage = (
 }
 
 //! POST
-// add new command config to  commands table
+//@ add new command config to  commands table
 export const addNewCommandConfig = (
-  db: Database,
+  db: sqlite3.Database,
   commandConfig
 ): Promise<DatabaseFetching<ResponseStatus, null, string[]>> => {
   return new Promise((resolve, reject) => {
@@ -434,9 +432,9 @@ export const addNewCommandConfig = (
   })
 }
 //! UPDATE
-// update  commands table
+//@ update commands table
 export const updateCommands = (
-  db: Database,
+  db: sqlite3.Database,
   id: number,
   updatePorts
 ): Promise<DatabaseFetching<ResponseStatus, null, string[]>> => {
@@ -468,9 +466,10 @@ export const updateCommands = (
     )
   })
 }
-// update command utils table
+
+//@ update command utils table
 export const updateCommandUtils = (
-  db: Database,
+  db: sqlite3.Database,
   id: number,
   image: string
 ): Promise<DatabaseFetching<ResponseStatus, null, string[]>> => {
@@ -497,8 +496,9 @@ export const updateCommandUtils = (
   })
 }
 //! DELETE
+//@ delete command config from commands table
 export const deleteCommandConfig = (
-  db: Database,
+  db: sqlite3.Database,
   id: number
 ): Promise<DatabaseFetching<ResponseStatus, null, string[]>> => {
   return new Promise((resolve, reject) => {

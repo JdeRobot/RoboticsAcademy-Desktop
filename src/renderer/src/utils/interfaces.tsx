@@ -34,6 +34,10 @@ export interface AllCommandConfigureInterface {
   consoles: PortsInterface
   other: PortsInterface
 }
+export interface PortsInputInterface {
+  name: string
+  ports: number[]
+}
 
 // response interfaec
 export interface ResponeInterface {

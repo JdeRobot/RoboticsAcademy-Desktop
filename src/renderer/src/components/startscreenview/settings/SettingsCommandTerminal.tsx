@@ -1,13 +1,15 @@
+import { FC, useState } from 'react'
+import PropTypes from 'prop-types'
 import { CommandIcon, CopyIcon } from '@renderer/assets'
 import styles from '@renderer/assets/styles/startView.module.css'
-import { FC, useState } from 'react'
+import { TIMER } from '@renderer/constants'
 
 interface SettingsCommandTerminalInterface {
   dockerCommand: string
 }
 
 const SettingsCommandTerminal: FC<SettingsCommandTerminalInterface> = ({ dockerCommand }) => {
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState<boolean>(false)
 
   const copyToClipboard = () => {
     navigator.clipboard
@@ -16,7 +18,7 @@ const SettingsCommandTerminal: FC<SettingsCommandTerminalInterface> = ({ dockerC
         setCopied(true)
         setTimeout(() => {
           setCopied(false)
-        }, 2000)
+        }, TIMER * 2)
       })
       .catch((err) => {
         console.error('Failed to copy text: ', err)
@@ -55,5 +57,7 @@ const SettingsCommandTerminal: FC<SettingsCommandTerminalInterface> = ({ dockerC
     </div>
   )
 }
-
+SettingsCommandTerminal.propTypes = {
+  dockerCommand: PropTypes.string.isRequired
+}
 export default SettingsCommandTerminal

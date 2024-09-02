@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useReducer } from 'react'
+import { FC, useReducer } from 'react'
 import { SettingsInitialStateInterface } from '@renderer/utils/interfaces'
 import { SettingsActionEnums, SettingsScreenStateEnums } from '@renderer/utils/enums'
 import { SettingsReducerActionTypes } from '@renderer/utils/types'
@@ -60,5 +60,5 @@ const StartScreenSettings: FC<StartScreenSettingsInterface> = ({}) => {
     </div>
   )
 }
-
+StartScreenSettings.propTypes = {}
 export default StartScreenSettings

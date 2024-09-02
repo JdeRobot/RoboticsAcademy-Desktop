@@ -1,6 +1,7 @@
-import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent, session } from 'electron'
+import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent, shell } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import { Database } from 'sqlite3'
 
 import {
   AllCommandConfigureInterface,
@@ -16,10 +17,6 @@ import {
   stopDockerRADIContainer
 } from './Command'
 
-const isMac = process.platform === 'darwin'
-let mainWindow: BrowserWindow | null = null
-
-//! connect with database start
 import {
   addNewCommandConfig,
   dbInit,
@@ -32,10 +29,13 @@ import {
   updateCommands,
   updateCommandUtils
 } from './db'
-import { Database } from 'sqlite3'
+
+const isMac = process.platform === 'darwin'
+let mainWindow: BrowserWindow | null = null
+
+// connected to database
 export const db: Database = dbInit()
 
-//! connect database end
 // splash screen
 function createSplashWindow(): BrowserWindow {
   const win = new BrowserWindow({
@@ -46,8 +46,6 @@ function createSplashWindow(): BrowserWindow {
     alwaysOnTop: true
   })
 
-  // console.log(process.resourcesPath)
-
   const splashScreenSrc = app.isPackaged
     ? join(process.resourcesPath, 'splashscreen.html')
     : join(__dirname, './../../', 'splashscreen.html')
@@ -56,8 +54,8 @@ function createSplashWindow(): BrowserWindow {
   return win
 }
 
+// main window
 const createWindow = (): BrowserWindow => {
-  // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 720,
@@ -79,7 +77,7 @@ const createWindow = (): BrowserWindow => {
     }
   })
 
-  // ...(process.platform === 'linux' ? { icon } : {}),
+  //
   mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
     if (details.responseHeaders === undefined) return
     callback({
@@ -90,53 +88,36 @@ const createWindow = (): BrowserWindow => {
       )
     })
   })
-  // mainWindow.webContents.setWindowOpenHandler((details) => {
-  //   shell.openExternal(details.url)
-  //   return { action: 'deny' }
-  // })
+  mainWindow.webContents.setWindowOpenHandler((details) => {
+    shell.openExternal(details.url)
+    return { action: 'deny' }
+  })
 
-  // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
-    // mainWindow.loadURL('http://localhost:7164/exercises/')
   }
 
+  // window resize/close func
   mainWindow.on('closed', (e) => {
     mainWindow = null
-    console.log('main window closed')
-    // e.preventDefault()
-    // Optionally quit the application when the main window is closed
-    // app.quit()
   })
-
-  mainWindow.on('maximize', () => {
-    console.log('Window is maximized')
-    // Call your custom function here
-    // onWindowMaximized()
-  })
-  mainWindow.on('unmaximize', () => {
-    console.log('Window restored from maximized')
-  })
-
+  mainWindow.on('maximize', () => {})
+  mainWindow.on('unmaximize', () => {})
   // Event listener for when the window is restored from minimized state
-  mainWindow.on('restore', () => {
-    console.log('Window restored from minimized')
-  })
+  mainWindow.on('restore', () => {})
 
   return mainWindow
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-
 app.whenReady().then(async () => {
-  //* Store data
+  //Store data
   await insertCommandData(db)
   await insertCommandUtilsData(db)
+
+  // TODO:
   // Modify the origin for all requests to the following urls.
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.roboticsacademy')
@@ -149,18 +130,17 @@ app.whenReady().then(async () => {
   })
 
   //* IPC COMMUNICATION
-  //* Stopping Docker RADI
+  //@ Stopping Docker RADI
   ipcMain.handle('docker:CHECK_RADI_RUNNING', async (event: IpcMainInvokeEvent) => {
     event.defaultPrevented
     try {
       const res: ResponeInterface = await checkRADIContainerRunning()
-      // console.log('docker ', res)
       return res
     } catch (error) {
       return { status: false, msg: ['something went wrong!'] }
     }
   })
-  //* Robotics Academy Docker Image
+  //@ Robotics Academy Docker Image
   ipcMain.handle('docker:CHECK_RADI_AVAILABILITY', async (event: IpcMainInvokeEvent) => {
     event.defaultPrevented
     try {
@@ -170,7 +150,7 @@ app.whenReady().then(async () => {
       return { status: false, msg: ['something went wrong!'] }
     }
   })
-  //* Running RADI docker images
+  //@ Running RADI docker images
   ipcMain.handle('docker:START_RADI_CONTAINER', async (event: IpcMainInvokeEvent) => {
     try {
       const res: ResponeInterface = await startDockerRADIContainer()
@@ -179,7 +159,7 @@ app.whenReady().then(async () => {
       return { status: false, msg: ['something went wrong!'] }
     }
   })
-  //* Stopping Docker RADI
+  //@ Stopping Docker RADI
   ipcMain.handle('docker:STOP_RADI_CONTAINER', async (event: IpcMainInvokeEvent) => {
     event.defaultPrevented
     try {
@@ -189,6 +169,7 @@ app.whenReady().then(async () => {
       return { status: false, msg: ['something went wrong!'] }
     }
   })
+
   //* App Window Resize
   // minimize the window
   ipcMain.on('app_window:MINIMIZE', (event) => {
@@ -217,7 +198,7 @@ app.whenReady().then(async () => {
 
   //! database ipcMain
   //! GET
-  //* get All command row
+  //@ get All command row
   ipcMain.handle(
     'database:ALL_COMMAND_CONFIG',
     async (
@@ -242,7 +223,7 @@ app.whenReady().then(async () => {
     }
   )
 
-  //* get active command
+  //@ get active command
   ipcMain.handle(
     'database:GET_ACTIVE_COMMAND_ID',
     async (event): Promise<DatabaseFetching<ResponseStatus, number | null, string[]>> => {
@@ -259,7 +240,7 @@ app.whenReady().then(async () => {
       }
     }
   )
-  //* get active docker image
+  //@ get active docker image
   ipcMain.handle(
     'database:GET_ACTIVE_DOCKER_IMAGE',
     async (event): Promise<DatabaseFetching<ResponseStatus, string | null, string[]>> => {
@@ -278,7 +259,7 @@ app.whenReady().then(async () => {
   )
 
   //! POST
-  //* add new command config to  commands table
+  //@ add new command config to  commands table
   ipcMain.handle(
     'database:ADD_NEW_COMMAND_CONFIG',
     async (event, commandConfig): Promise<DatabaseFetching<ResponseStatus, null, string[]>> => {
@@ -298,7 +279,7 @@ app.whenReady().then(async () => {
     }
   )
   //! UPDATE
-  //* update commands table
+  //@ update commands table
   ipcMain.handle(
     'database:UPDATE_COMMANDS',
     async (
@@ -322,7 +303,7 @@ app.whenReady().then(async () => {
       }
     }
   )
-  //* update command utils table
+  //@ update command utils table
   ipcMain.handle(
     'database:UPDATE_COMMAND_UTILS',
     async (
@@ -347,7 +328,7 @@ app.whenReady().then(async () => {
     }
   )
   //! DELETE
-  //* delete commands row
+  //@ delete commands row
   ipcMain.handle(
     'database:DELETE_COMMAND_CONFIG',
     async (event, id: number): Promise<DatabaseFetching<ResponseStatus, null, string[]>> => {
@@ -366,7 +347,7 @@ app.whenReady().then(async () => {
       }
     }
   )
-  //* checkRADIContainerRunning Disappering splash screen and show main screen after 3 seconds.
+  //@ checkRADIContainerRunning Disappering splash screen and show main screen after 3 seconds.
   try {
     const splashScreen: BrowserWindow = createSplashWindow()
     const mainScreen: BrowserWindow = createWindow()
@@ -412,6 +393,3 @@ app.on('window-all-closed', (e) => {
     app.quit()
   }
 })
-
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.

@@ -1,5 +1,6 @@
 import { FC, ReactNode } from 'react'
 import Loader from '../utlits/Loader'
+import PropTypes from 'prop-types'
 
 interface ButtonWrapperInterface {
   children: ReactNode
@@ -17,7 +18,7 @@ const ButtonWrapper: FC<ButtonWrapperInterface> = ({
 }) => {
   return (
     <div
-      className={` w-[150px] h-[50px] mt-6 duration-300 rounded-[9px] cursor-pointer ${cssClass} `}
+      className={`w-[150px] h-[50px] mt-6 duration-300 rounded-[9px] cursor-pointer ${cssClass}`}
     >
       <div
         className={`w-full h-full flex items-center justify-center gap-2 font-bold`}
@@ -34,5 +35,11 @@ const ButtonWrapper: FC<ButtonWrapperInterface> = ({
     </div>
   )
 }
-
+ButtonWrapper.propTypes = {
+  children: PropTypes.element.isRequired,
+  isLoading: PropTypes.bool,
+  loadingText: PropTypes.string,
+  cssClass: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired
+}
 export default ButtonWrapper

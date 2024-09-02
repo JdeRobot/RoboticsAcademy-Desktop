@@ -1,5 +1,7 @@
 import { FC, Dispatch, useReducer, ChangeEvent, FocusEvent, useState, useEffect } from 'react'
+import * as PropType from 'prop-types'
 import { AddIcon, SaveIcon } from '@renderer/assets'
+import { DatabaseFetching, PortsInterface } from '@renderer/utils/interfaces'
 import {
   ResponseStatus,
   SettingsActionEnums,
@@ -11,8 +13,7 @@ import { layout } from '@renderer/assets/styles/styles'
 import { TIMER, ValidDockerLists } from '@renderer/constants'
 import ButtonWrapper from '@renderer/components/buttons/ButtonWrapper'
 import { NextArrowIcon } from '@renderer/assets/icons/Icons'
-import Ports from './Ports'
-import { DatabaseFetching, PortsInterface } from '@renderer/utils/interfaces'
+import { Ports } from '@renderer/components'
 
 interface SettingsAdvanceInitializeInterface {
   advanceScreenState: number
@@ -111,7 +112,7 @@ const StartScreenSettinsAdvance: FC<StartScreenSettinsAdvanceInterface> = ({ dis
 
   //* handle profile name change and blur
   const handleNameInputChangeAndBlur = (
-    e: ChangeEvent<HTMLInputElement> | FocusEvent<HTMLInputElement>,
+    e: ChangeEvent<HTMLInputElement> | FocusEvent<HTMLInputElement, Element>,
     blur = false
   ) => {
     setErrorMsg(``)
@@ -476,17 +477,31 @@ const StartScreenSettinsAdvance: FC<StartScreenSettinsAdvanceInterface> = ({ dis
               {advanceScreenState === 2 && (
                 <div>
                   <div>
-                    <Ports
-                      django={django}
-                      gazebo={gazebo}
-                      consoles={consoles}
-                      other={other}
-                      handleUpdatePort={handleUpdatePort}
-                      handleInputChangeAndBlur={handleInputChangeAndBlur}
-                      errorMsg={``}
-                    />
-                    {/* submit or previous */}
+                    {django != null &&
+                    django != undefined &&
+                    gazebo != null &&
+                    gazebo != undefined &&
+                    consoles != null &&
+                    consoles != undefined &&
+                    other != null &&
+                    other != undefined ? (
+                      <>
+                        <Ports
+                          django={django}
+                          gazebo={gazebo}
+                          consoles={consoles}
+                          other={other}
+                          handleUpdatePort={handleUpdatePort}
+                          handleInputChangeAndBlur={handleInputChangeAndBlur}
+                          errorMsg={``}
+                        />
+                      </>
+                    ) : (
+                      <div>Invalid Ports</div>
+                    )}
                   </div>
+
+                  <div>{/* submit or previous */}</div>
                   <div className="w-full flex justify-start items-center">
                     <div
                       className={`w-[32px] mt-6 cursor-pointer group`}
@@ -526,5 +541,7 @@ const StartScreenSettinsAdvance: FC<StartScreenSettinsAdvanceInterface> = ({ dis
     </div>
   )
 }
-
+StartScreenSettinsAdvance.propTypes = {
+  dispatch: PropType.func.isRequired
+}
 export default StartScreenSettinsAdvance

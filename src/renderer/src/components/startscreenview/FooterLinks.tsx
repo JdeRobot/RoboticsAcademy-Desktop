@@ -10,7 +10,7 @@ interface FooterLinksInterface {
   screenState: string
   dispatch: Dispatch<ReducerActionTypes>
 }
-//TODO:  UPDATE ALL LINKS
+
 const FooterLinks: FC<FooterLinksInterface> = ({ screenState, dispatch }) => {
   return (
     <div className="w-full px-4 flex justify-between items-center select-none">

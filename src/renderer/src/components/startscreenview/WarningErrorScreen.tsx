@@ -1,5 +1,6 @@
+import { FC } from 'react'
+import PropTypes from 'prop-types'
 import { DropDownIcon, WarningIcon, ErrorIcon } from '@renderer/assets'
-import { Dispatch, FC, SetStateAction } from 'react'
 
 interface WarningErrorScreenInterface {
   isExpand: boolean
@@ -12,13 +13,12 @@ interface WarningErrorScreenInterface {
 const WarningErrorScreen: FC<WarningErrorScreenInterface> = ({
   isExpand,
   screenState,
-  buttonState,
   errorWarningMsg,
   dispatch
 }) => {
   return (
     <div
-      className={`w-full ${isExpand ? `pb-4 pt-2 px-2` : `h-[32px]`} px-1  bg-[#D9D9D9] text-[#454545] rounded-[30px] duration-300 `}
+      className={`w-full ${isExpand ? `pb-4 pt-2 px-2 gap-x-8 h-[300px]` : `h-[32px]`} px-2  bg-[#D9D9D9] text-[#454545] rounded-[30px] duration-500 overflow-hidden`}
     >
       {/* close mode */}
       <div className={`w-full h-[32px] flex items-center justify-between`}>
@@ -29,7 +29,7 @@ const WarningErrorScreen: FC<WarningErrorScreenInterface> = ({
             className={`w-[24px] h-[24px]`}
           />
 
-          <p className={`text-sm `}>
+          <p className={`text-sm`}>
             <span className="font-semibold">
               {screenState === 'error' ? `Error :` : `Warning :`}
             </span>{' '}
@@ -44,14 +44,14 @@ const WarningErrorScreen: FC<WarningErrorScreenInterface> = ({
             src={DropDownIcon}
             alt=""
             className={`w-[24px] h-[24px`}
-            onClick={() => dispatch({ type: 'EXPAND_DIV', payload: { isExpand: true } })}
+            onClick={() => dispatch({ type: 'EXPAND_DIV', payload: { isExpand: !isExpand } })}
           />
         </div>
       </div>
       {/* show details in expand */}
       {isExpand && (
         <div
-          className={`w-full h-[240px] py-2 px-2 text-sm text-wrap break-words  duration-300 scrollbar overflow-x-hidden overflow-scroll`}
+          className={`${isExpand ? `h-[240px]` : `h-[0px]`} w-full  py-2 px-2 text-sm text-wrap break-words xduration-300 scrollbar overflow-x-hidden overflow-scroll`}
           id="scrollbar-style"
         >
           <div className="select-text">
@@ -65,4 +65,12 @@ const WarningErrorScreen: FC<WarningErrorScreenInterface> = ({
   )
 }
 
+WarningErrorScreen.propTypes = {
+  isExpand: PropTypes.bool.isRequired,
+  dispatch: PropTypes.any,
+  screenState: PropTypes.string.isRequired,
+  buttonState: PropTypes.string.isRequired,
+  errorWarningMsg: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.any]))
+    .isRequired
+}
 export default WarningErrorScreen

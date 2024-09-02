@@ -1,7 +1,7 @@
 import { WebSiteIcon, YoutubeIcon, ForumIcon, XIcon, GithubIcon } from '@renderer/assets'
 import { AllCommandConfigureInterface } from '@renderer/utils/interfaces'
 // utils
-export const TIMER = 2000
+export const TIMER: number = 2000
 
 // Settings
 export const AllDockersImages = {

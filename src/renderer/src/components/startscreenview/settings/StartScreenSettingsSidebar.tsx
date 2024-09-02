@@ -1,4 +1,5 @@
 import { Dispatch, FC } from 'react'
+import PropType from 'prop-types'
 import { CmdIcon, ConfigureIcon, ConnectIcon } from '@renderer/assets/icons/Icons'
 import { layout } from '@renderer/assets/styles/styles'
 import { SettingsActionEnums, SettingsScreenStateEnums } from '@renderer/utils/enums'
@@ -8,7 +9,6 @@ interface StartScreenSettingsSidebarrInterface {
   settingsScreenState: SettingsScreenStateEnums
   dispatch: Dispatch<SettingsReducerActionTypes>
 }
-// dispatch: Dispatch<SettingsReducerActionTypes>
 const StartScreenSettingsSidebar: FC<StartScreenSettingsSidebarrInterface> = ({
   settingsScreenState,
   dispatch
@@ -63,6 +63,15 @@ const StartScreenSettingsSidebar: FC<StartScreenSettingsSidebarrInterface> = ({
       </div>
     </div>
   )
+}
+
+StartScreenSettingsSidebar.propTypes = {
+  settingsScreenState: PropType.oneOf([
+    SettingsScreenStateEnums.COMMAND,
+    SettingsScreenStateEnums.ADVANCE,
+    SettingsScreenStateEnums.CONFIGURE
+  ]).isRequired,
+  dispatch: PropType.func.isRequired
 }
 
 export default StartScreenSettingsSidebar

@@ -1,5 +1,6 @@
-import { RightArrowIcon, BackIcon, PowerIcon, GameConsoleIcon, PlayIcon } from '@renderer/assets'
 import { Dispatch, FC, useState } from 'react'
+import PropTypes from 'prop-types'
+import { RightArrowIcon, BackIcon, PowerIcon, GameConsoleIcon, PlayIcon } from '@renderer/assets'
 import Loader from '../utlits/Loader'
 import ButtonWrapper from '../buttons/ButtonWrapper'
 import styles from '../../assets/styles/styles'
@@ -8,7 +9,7 @@ import { ReducerActionTypes } from '@renderer/utils/types'
 interface StartScrrenButtonsInterface {
   buttonState: string
   dispatch: Dispatch<ReducerActionTypes>
-  setContent: any
+  setContent: Dispatch<boolean>
 }
 
 const StartScreenButtons: FC<StartScrrenButtonsInterface> = ({
@@ -43,8 +44,6 @@ const StartScreenButtons: FC<StartScrrenButtonsInterface> = ({
       setIsStopping(false)
     }
   }
-  // test
-  const [rows, setRows] = useState(0)
   return (
     <>
       {/*  */}
@@ -90,7 +89,7 @@ const StartScreenButtons: FC<StartScrrenButtonsInterface> = ({
               type: ActionEnums.RESET
             })
           }
-          cssClass={`"bg-blue-600 ${styles.startButtonSvg}`}
+          cssClass={`bg-blue-600 ${styles.startButtonSvg}`}
         >
           <>
             <span>
@@ -140,6 +139,12 @@ const StartScreenButtons: FC<StartScrrenButtonsInterface> = ({
       )}
     </>
   )
+}
+
+StartScreenButtons.propTypes = {
+  buttonState: PropTypes.string.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  setContent: PropTypes.func.isRequired
 }
 
 export default StartScreenButtons

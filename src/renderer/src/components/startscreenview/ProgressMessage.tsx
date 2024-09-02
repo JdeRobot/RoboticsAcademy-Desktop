@@ -1,4 +1,5 @@
 import { FC } from 'react'
+import PropTypes from 'prop-types'
 
 interface ProgressMessageInterface {
   msg: string
@@ -33,4 +34,9 @@ const ProgressMessage: FC<ProgressMessageInterface> = ({ msg, progress, totalPro
   )
 }
 
+ProgressMessage.propTypes = {
+  msg: PropTypes.string.isRequired,
+  progress: PropTypes.number.isRequired,
+  totalProgressSteps: PropTypes.number.isRequired
+}
 export default ProgressMessage

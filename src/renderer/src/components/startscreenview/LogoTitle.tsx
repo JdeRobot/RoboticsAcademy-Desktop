@@ -1,8 +1,10 @@
+import { FC } from 'react'
 import { Logo } from '@renderer/assets'
 import Styles from './../../assets/styles/startView.module.css'
-type Props = {}
 
-const LogoTitle = (props: Props) => {
+interface LogoTitleInterface {}
+
+const LogoTitle: FC<LogoTitleInterface> = ({}) => {
   return (
     <div className="w-full flex flex-col items-center justify-center ">
       <div className={`bg-[#d9d9d9] h-[96px] w-[96px] rounded-3xl`}>
@@ -22,5 +24,5 @@ const LogoTitle = (props: Props) => {
     </div>
   )
 }
-
+LogoTitle.propTypes = {}
 export default LogoTitle

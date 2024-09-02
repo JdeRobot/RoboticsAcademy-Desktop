@@ -1,4 +1,5 @@
 import { Dispatch, FC, SetStateAction, useEffect, useReducer, useState } from 'react'
+import PropType from 'prop-types'
 import styles from './../assets/styles/startView.module.css'
 import {
   LogoTitle,
@@ -11,8 +12,8 @@ import {
 } from '../components/index'
 import { initialState, reducer } from '@renderer/hooks/reducers/useStartScrrenReducer'
 import { useStartScreenEffect } from '@renderer/hooks/effects/useStartScreenEffect'
-import { ResponseStatus, ScreenStateEnums } from '@renderer/utils/enums'
 import { AllCommandConfigureInterface, DatabaseFetching } from '@renderer/utils/interfaces'
+import { ResponseStatus, ScreenStateEnums } from '@renderer/utils/enums'
 
 type StartScreenInterface = {
   setContent: Dispatch<SetStateAction<boolean>>
@@ -110,5 +111,8 @@ const StartScreen: FC<StartScreenInterface> = ({ setContent, setDjangoPort }) =>
     </div>
   )
 }
-
+StartScreen.propTypes = {
+  setContent: PropType.func.isRequired,
+  setDjangoPort: PropType.func.isRequired
+}
 export default StartScreen

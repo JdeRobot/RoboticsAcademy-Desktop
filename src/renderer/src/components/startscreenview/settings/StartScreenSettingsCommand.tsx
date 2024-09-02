@@ -1,4 +1,4 @@
-import { ChangeEvent, Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
+import { ChangeEvent, Dispatch, FC, useEffect, useState } from 'react'
 import { DeleteIcon, TaskIcon } from '@renderer/assets'
 import ButtonWrapper from '@renderer/components/buttons/ButtonWrapper'
 import { ResponseStatus, SettingsScreenStateEnums } from '@renderer/utils/enums'
@@ -303,4 +303,5 @@ const StartScreenSettingsCommand: FC<StartScreenSettinsCommandInterface> = ({}) 
   )
 }
 
+StartScreenSettingsCommand.propTypes = {}
 export default StartScreenSettingsCommand

@@ -1,5 +1,5 @@
-const { spawn } = require('child_process')
-import { db } from '.'
+import { spawn } from 'child_process'
+import { db } from './index'
 import { getActiveDockerImage, getAllCommandConfig, getCommandConfigId } from './db'
 import {
   AllCommandConfigureInterface,
@@ -8,13 +8,13 @@ import {
   ResponseStatus
 } from './interfaces'
 
-const RADI_IMAGE = 'jderobot/robotics-academy'
-const CONTAINER_NAME = 'robotics-academy'
 export const AllDockersImages = {
   noDockerImage: 'Run Without Docker Image',
   jderobotRoboticsAcademy: 'jderobot/robotics-academy',
   jderobotRoboticsBackend: 'jderobot/robotics-backend'
 }
+
+const CONTAINER_NAME = 'robotics-academy'
 
 export const checkDockerAvailability = async (): Promise<ResponeInterface> => {
   return new Promise((resolve, reject) => {
@@ -52,46 +52,69 @@ export const checkDockerAvailability = async (): Promise<ResponeInterface> => {
 }
 
 export const checkDockerRADIAvailability = async (): Promise<ResponeInterface> => {
-  return new Promise((resolve, reject) => {
-    const docker = spawn('docker', ['images', '-q', `${RADI_IMAGE}`])
+  try {
+    const activeDockerImageRes: DatabaseFetching<ResponseStatus, string | null, string[]> =
+      await getActiveDockerImage(db)
 
-    let output = ''
-    let errorOutput = ''
-
-    docker.stdout.on('data', (data) => {
-      output += data.toString()
-    })
-
-    docker.stderr.on('data', (data) => {
-      errorOutput += data.toString()
-    })
-
-    docker.on('close', (code) => {
-      if (code === 0 && output.length > 0) {
-        resolve({ status: ResponseStatus.SUCCESS, msg: [`RADI founded: ${output}`] })
-      } else if (code === 0 && output.length === 0) {
-        resolve({
-          status: ResponseStatus.ERROR,
-          msg: [
-            'RADI is not installed!',
-            `Robotics Academy Docker Image (RADI) is not found on your system`
-          ]
-        })
-      } else {
-        resolve({
-          status: ResponseStatus.ERROR,
-          msg: [`RADI is not founded: ${errorOutput}`]
-        })
-      }
-    })
-
-    docker.on('error', (err) => {
-      reject({
+    if (
+      activeDockerImageRes.status != ResponseStatus.SUCCESS ||
+      activeDockerImageRes.data === null
+    ) {
+      return {
         status: ResponseStatus.ERROR,
-        msg: [`Failed to start process: ${err.message}`]
+        msg: [`Failed to start process: ${activeDockerImageRes.msg[0]}`]
+      }
+    }
+    return new Promise((resolve, reject) => {
+      const docker = spawn('docker', [
+        'images',
+        '-q',
+        `${AllDockersImages[activeDockerImageRes.data ?? `jderobotRoboticsAcademy`]}`
+      ])
+
+      let output = ''
+      let errorOutput = ''
+
+      docker.stdout.on('data', (data) => {
+        output += data.toString()
+      })
+
+      docker.stderr.on('data', (data) => {
+        errorOutput += data.toString()
+      })
+
+      docker.on('close', (code) => {
+        if (code === 0 && output.length > 0) {
+          resolve({ status: ResponseStatus.SUCCESS, msg: [`RADI founded: ${output}`] })
+        } else if (code === 0 && output.length === 0) {
+          resolve({
+            status: ResponseStatus.ERROR,
+            msg: [
+              'RADI is not installed!',
+              `Robotics Academy Docker Image (RADI) is not found on your system`
+            ]
+          })
+        } else {
+          resolve({
+            status: ResponseStatus.ERROR,
+            msg: [`RADI is not founded: ${errorOutput}`]
+          })
+        }
+      })
+
+      docker.on('error', (err) => {
+        reject({
+          status: ResponseStatus.ERROR,
+          msg: [`Failed to start process: ${err.message}`]
+        })
       })
     })
-  })
+  } catch (error) {
+    return {
+      status: ResponseStatus.ERROR,
+      msg: [`Failed to start process: ${String(error)}`]
+    }
+  }
 }
 
 export const startDockerRADIContainer = async (): Promise<ResponeInterface> => {
@@ -146,27 +169,6 @@ export const startDockerRADIContainer = async (): Promise<ResponeInterface> => {
   commands.push(AllDockersImages[activeDockerImage.data])
   //
 
-  console.log('====================================')
-  console.log('commands ', commands)
-  console.log('====================================')
-
-  const hardCommands = [
-    'run',
-    '--rm',
-    '-d',
-    '--name',
-    `${CONTAINER_NAME}`,
-    '-it',
-    '-p',
-    '7164:7164',
-    '-p',
-    '6080:6080',
-    '-p',
-    '1108:1108',
-    '-p',
-    '7163:7163',
-    `${RADI_IMAGE}`
-  ]
   return new Promise((resolve, reject) => {
     const docker = spawn('docker', commands)
 

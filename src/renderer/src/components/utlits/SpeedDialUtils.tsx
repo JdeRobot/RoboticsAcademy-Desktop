@@ -1,5 +1,6 @@
-import { HomeIcon, SettingsIcon } from '@renderer/assets'
 import { Dispatch, FC, SetStateAction, useState } from 'react'
+import PropTypes from 'prop-types'
+import { HomeIcon, SettingsIcon } from '@renderer/assets'
 
 interface SpeedDialUtilsInterface {
   setUrl: Dispatch<SetStateAction<string>>
@@ -73,4 +74,8 @@ const SpeedDialUtils: FC<SpeedDialUtilsInterface> = ({ setUrl, setContent }) => 
   )
 }
 
+SpeedDialUtils.propTypes = {
+  setUrl: PropTypes.func.isRequired,
+  setContent: PropTypes.func.isRequired
+}
 export default SpeedDialUtils

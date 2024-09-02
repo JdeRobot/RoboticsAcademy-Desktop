@@ -7,6 +7,7 @@ import {
 import { Dispatch, FC, SetStateAction, useState } from 'react'
 import PropTypes from 'prop-types'
 import { ResponseStatus } from '@renderer/utils/enums'
+import { Logo } from '@renderer/assets'
 
 interface TopBarInterface {
   setIsAppclosing: Dispatch<SetStateAction<boolean>>
@@ -66,15 +67,22 @@ const TopBar: FC<TopBarInterface> = ({ setIsAppclosing }) => {
     isRADIContainerRunning()
   }
   return (
-    <div className={`absolute w-full h-[24px] bg-gray-600 z-[100] hover:cursor-pointer`}>
+    <div
+      className={`absolute w-full h-[28px] bg-[#454545] xbg-gray-600 z-[100] hover:cursor-pointer`}
+    >
       <div className={`w-full h-full flex justify-between items-center`}>
         {/* dragable bar area */}
-        <div className={`w-[calc(100%-90px)] h-full draggable`}></div>
+        <div className={`w-[calc(100%-90px)] h-full draggable flex justify-center items-center`}>
+          <div className="flex justify-center items-center gap-2">
+            <img src={Logo} alt="" className="w-[24px]" />
+            <span className="font-medium text-base">Robotics Academy</span>
+          </div>
+        </div>
         {/* minimize & maximize */}
         <div className={`w-[90px] h-full flex justify-center items-center select-none`}>
           {/* minimize */}
           <div
-            className={`flex justify-center items-center h-[24px] w-[30px]  hover:bg-gray-600 group  duration-300`}
+            className={`flex justify-center items-center h-[28px] w-[30px]  hover:bg-gray-600 group  duration-300`}
             onClick={() => window.api.sendWindowResize('app_window:MINIMIZE')}
           >
             <WindowMinIcon cssClass="group-hover:fill-white fill-gray-300" />
@@ -82,7 +90,7 @@ const TopBar: FC<TopBarInterface> = ({ setIsAppclosing }) => {
 
           {/* Maximize & Unminimize */}
           <div
-            className={`flex justify-center items-center h-[24px] w-[30px] py-2 hover:bg-green-600 group  duration-300`}
+            className={`flex justify-center items-center h-[28px] w-[30px] py-2 hover:bg-green-600 group  duration-300`}
             onClick={() => maximizeUnmaximizeFunc()}
           >
             {isMaximize ? (
@@ -93,7 +101,7 @@ const TopBar: FC<TopBarInterface> = ({ setIsAppclosing }) => {
           </div>
 
           <div
-            className={`flex justify-center items-center h-[24px] w-[30px]  hover:bg-red-600 group  duration-300`}
+            className={`flex justify-center items-center h-[28px] w-[30px]  hover:bg-red-600 group  duration-300`}
             onClick={() => handlewindowClose()}
           >
             <WindowCloseIcon cssClass="group-hover:fill-white fill-gray-300" />

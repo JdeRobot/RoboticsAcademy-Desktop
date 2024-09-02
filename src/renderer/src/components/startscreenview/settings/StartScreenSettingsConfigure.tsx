@@ -1,17 +1,14 @@
-import { ChangeEvent, FC, useEffect, useReducer, useState } from 'react'
-import { layout } from '@renderer/assets/styles/styles'
-import { AddIcon, MinusIcon, NextArrowIcon } from '@renderer/assets/icons/Icons'
-import { LinkChainIcon, SaveIcon } from '@renderer/assets'
+import { ChangeEvent, FocusEvent, FC, useEffect, useReducer, useState } from 'react'
+import { Ports, ButtonWrapper, SettingsCommandTerminal } from '@renderer/components'
 import { AllCommandConfigure, TIMER } from '@renderer/constants'
-import SettingsCommandTerminal from './SettingsCommandTerminal'
-import ButtonWrapper from '@renderer/components/buttons/ButtonWrapper'
-import Ports from './Ports'
-import { ResponseStatus } from '@renderer/utils/enums'
+import { SaveIcon } from '@renderer/assets'
+import { NextArrowIcon } from '@renderer/assets/icons/Icons'
 import {
   AllCommandConfigureInterface,
   DatabaseFetching,
   PortsInterface
 } from '@renderer/utils/interfaces'
+import { ResponseStatus } from '@renderer/utils/enums'
 
 export enum SettingsConfigureActionEnums {
   SET_ALL_COMMAND_CONFIG = 'SET_ALL_COMMAND_CONFIG',
@@ -212,12 +209,15 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
     })
   }
 
-  const handleInputChangeAndBlur = (e: ChangeEvent<HTMLInputElement>, blur = false) => {
+  const handleInputChangeAndBlur = (
+    e: ChangeEvent<HTMLInputElement> | FocusEvent<HTMLInputElement, Element>,
+    isBlur = false
+  ) => {
     const value = e.target.value
     const [name, idx] = e.target.id.split('_')
     const portIndex = Number(idx)
 
-    if (blur) {
+    if (isBlur) {
       setErrorMsg(``)
 
       if (Number(value) === 0) {
@@ -327,15 +327,28 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
             </select>
           </div>
           {/* All Ports */}
-          <Ports
-            django={django}
-            gazebo={gazebo}
-            consoles={consoles}
-            other={other}
-            errorMsg={errorMsg}
-            handleInputChangeAndBlur={handleInputChangeAndBlur}
-            handleUpdatePort={handleUpdatePort}
-          />
+          <div>
+            {django != null &&
+            django != undefined &&
+            gazebo != null &&
+            gazebo != undefined &&
+            consoles != null &&
+            consoles != undefined &&
+            other != null &&
+            other != undefined ? (
+              <Ports
+                django={django}
+                gazebo={gazebo}
+                consoles={consoles}
+                other={other}
+                errorMsg={errorMsg}
+                handleInputChangeAndBlur={handleInputChangeAndBlur}
+                handleUpdatePort={handleUpdatePort}
+              />
+            ) : (
+              <div>Invalid Ports</div>
+            )}
+          </div>
 
           {/* next */}
           <div
@@ -399,4 +412,5 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
   )
 }
 
+StartScreenSettingsConfigure.propTypes = {}
 export default StartScreenSettingsConfigure

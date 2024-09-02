@@ -1,6 +1,7 @@
-import { DatabaseFetching, ResponeInterface } from '@renderer/utils/interfaces'
+import { ResponeInterface } from '@renderer/utils/interfaces'
 import { ActionEnums, ScreenStateEnums, ResponseStatus, ButtonEnums } from '@renderer/utils/enums'
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect } from 'react'
+import { TIMER } from '@renderer/constants'
 
 interface UseStartScreenEffectInterface {
   setIsloading: Dispatch<SetStateAction<boolean>>
@@ -8,7 +9,6 @@ interface UseStartScreenEffectInterface {
   screenState: ScreenStateEnums
   dispatch: any
 }
-const TIMER: number = 1000
 
 export const useStartScreenEffect = ({
   setIsloading,
@@ -25,6 +25,12 @@ export const useStartScreenEffect = ({
         buttonState: ButtonEnums.BACK,
         errorWarningMsg: ['Something went wrong!', ...error],
         progress: 0
+      }
+    })
+    dispatch({
+      type: ActionEnums.EXPAND_DIV,
+      payload: {
+        isExpand: true
       }
     })
   }
@@ -86,7 +92,7 @@ export const useStartScreenEffect = ({
                 progress: 0
               }
             })
-          }, TIMER * 3)
+          }, TIMER * 2)
         } else {
           handleShowErrorScreen(res.msg)
         }
