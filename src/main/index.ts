@@ -347,7 +347,7 @@ app.whenReady().then(async () => {
       }
     }
   )
-  //@ checkRADIContainerRunning Disappering splash screen and show main screen after 3 seconds.
+  //@ Disappering splash screen and show main screen after 3 seconds.
   try {
     const splashScreen: BrowserWindow = createSplashWindow()
     const mainScreen: BrowserWindow = createWindow()

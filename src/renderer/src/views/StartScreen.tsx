@@ -96,7 +96,9 @@ const StartScreen: FC<StartScreenInterface> = ({ setContent, setDjangoPort }) =>
                 {screenState !== ScreenStateEnums.LOADING && (
                   <>
                     {isLoading ? (
-                      <Loader>fetching...</Loader>
+                      <Loader>
+                        <span>fetching...</span>
+                      </Loader>
                     ) : (
                       <StartScreenButtons
                         buttonState={buttonState}
