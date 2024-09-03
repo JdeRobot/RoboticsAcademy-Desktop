@@ -3,7 +3,21 @@
   "version": "2.0.0",
   "description": "Cross platform Desktop Application for Robotics Academy.",
   "main": "./out/main/index.js",
-  "author": "",
+  "author": "Prakhar Bansal",
+  "contributors": [
+    {
+      "name": "JoseMaria Cañas",
+      "url": "https://gsyc.urjc.es/jmplaza/"
+    },
+    {
+      "name": "Apoorv Garg",
+      "url": "https://apoorvgarg.in/"
+    },
+    {
+      "name": "Md. Shariar Kabir",
+      "email": "kabircp08@gmail.com"
+    }
+  ],
   "homepage": "",
   "scripts": {
     "format": "prettier --write .",
