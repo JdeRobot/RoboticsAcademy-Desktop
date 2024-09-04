@@ -34,9 +34,13 @@ dmg:
   artifactName: ${name}-${version}.${ext}
 linux:
   icon: resources/icons/icon.icns
+  desktop:
+    Type: 'Application'
+    Encoding: 'UTF-8'
+    Name: 'Robotics Academy'
   target:
     - deb
-  maintainer: electronjs.org
+  maintainer: https://jderobot.github.io/RoboticsAcademy/
   category: Utility
 appImage:
   artifactName: ${name}-${version}.${ext}

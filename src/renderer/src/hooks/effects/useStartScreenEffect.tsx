@@ -134,7 +134,7 @@ export const useStartScreenEffect = ({
         }, TIMER)
 
         setTimeout(() => {
-          setMsg(`Running jderoboto/robotics-academy image contianer.`)
+          setMsg(`Running selected RADI image.`)
           // 5) Running command config and docker image from currently USE in Settings.
           startDockerRADIContainerFunc()
         }, TIMER * 2)
