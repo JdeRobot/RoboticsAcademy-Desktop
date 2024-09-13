@@ -19,11 +19,7 @@ const TopBar: FC<TopBarInterface> = ({ setIsAppclosing }) => {
 
   const maximizeUnmaximizeFunc = () => {
     // if window maximize before and unmaximize or else maximize the window
-    if (!isMaximize) {
-      window.api.sendWindowResize('app_window:MAXIMIZE')
-    } else {
-      window.api.sendWindowResize('app_window:UNMAXIMIZE')
-    }
+    window.api.sendWindowResize('app_window:MAX_UNMAX')
     setIsMaximize((prev) => !prev)
   }
 

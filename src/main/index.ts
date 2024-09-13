@@ -55,7 +55,7 @@ function createSplashWindow(): BrowserWindow {
 }
 
 // main window
-const createWindow = (): BrowserWindow => {
+const createWindow = async (): Promise<BrowserWindow> => {
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 720,
@@ -64,7 +64,7 @@ const createWindow = (): BrowserWindow => {
     show: false,
     frame: false,
     alwaysOnTop: false,
-    transparent: true,
+    transparent: false,
     focusable: true,
     icon: join(__dirname, './../../resources/icons/icon.png'),
     autoHideMenuBar: true,
@@ -177,17 +177,16 @@ app.whenReady().then(async () => {
   })
 
   // maximize
-  ipcMain.on('app_window:MAXIMIZE', (_event) => {
-    if (!mainWindow?.isMinimized()) {
-      mainWindow?.maximize()
+  ipcMain.on('app_window:MAX_UNMAX', (_event) => {
+    if (mainWindow == null || mainWindow === undefined) return
+
+    if (mainWindow.isMaximized()) {
+      mainWindow.restore()
+    } else {
+      mainWindow.maximize()
     }
   })
-  // unmaximize
-  ipcMain.on('app_window:UNMAXIMIZE', (_event) => {
-    if (mainWindow?.isMaximized()) {
-      mainWindow?.restore()
-    }
-  })
+
   // close
   ipcMain.once('app_window:CLOSE', (_event) => {
     app.quit()
@@ -347,7 +346,7 @@ app.whenReady().then(async () => {
   //@ Disappering splash screen and show main screen after 3 seconds.
   try {
     const splashScreen: BrowserWindow = createSplashWindow()
-    const mainScreen: BrowserWindow = createWindow()
+    const mainScreen: BrowserWindow = await createWindow()
 
     mainScreen.once('ready-to-show', () => {
       setTimeout(
