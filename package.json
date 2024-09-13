@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "description": "Cross platform Desktop Application for Robotics Academy.",
   "main": "./out/main/index.js",
-  "author": "Prakhar Bansal",
+  "author": "Robotics Academy",
   "contributors": [
     {
       "name": "JoseMaria Cañas",
@@ -26,7 +26,8 @@
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "start": "electron-vite preview",
-    "dev": "electron-vite dev",
+    "dev": "electron-vite dev --watch",
+    "dist": "electron-builder --win",
     "build": "npm run typecheck && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "rebuild-sql": "electron-rebuild -f -w sqlite3",
@@ -39,6 +40,7 @@
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
     "electron-updater": "^6.2.1",
+    "node-gyp": "^10.2.0",
     "sqlite3": "^5.1.7",
     "uuid": "^10.0.0"
   },
@@ -51,8 +53,9 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.20",
-    "electron": "^31.3.1",
+    "electron": "^32.1.0",
     "electron-builder": "^24.13.3",
+    "electron-rebuild": "^3.2.9",
     "electron-vite": "^2.3.0",
     "eslint": "^9.8.0",
     "eslint-plugin-react": "^7.35.0",
@@ -65,5 +68,7 @@
     "tailwindcss": "^3.4.8",
     "typescript": "^5.5.4",
     "vite": "^5.4.0"
-  }
+  },
+  "repository": "https://github.com/codezerro/RoboticsAcademy-Desktop.git",
+  "license": "MIT"
 }

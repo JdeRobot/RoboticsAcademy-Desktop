@@ -5,12 +5,13 @@ import AppClosingWarning from './components/utlits/AppClosingWarning'
 import StartScreen from './views/StartScreen'
 import { AllCommandConfigureInterface, DatabaseFetching } from './utils/interfaces'
 import { ResponseStatus } from './utils/enums'
+import { RA_URL } from './constants'
 
 const App = () => {
   const [isAppClosing, setIsAppclosing] = useState<boolean>(false)
   const [content, setContent] = useState(false)
   const [djangoPort, setDjangoPort] = useState<number>(7164)
-  const [url, setUrl] = useState<string>(`http://0.0.0.0:${djangoPort}/`)
+  const [url, setUrl] = useState<string>(`${RA_URL}${djangoPort}/`)
 
   useEffect(() => {
     const fetchPorts = async () => {
@@ -26,7 +27,7 @@ const App = () => {
         const command: AllCommandConfigureInterface | null =
           commandConfigRes.data?.find((config) => config.id === commandConfigIdRes.data) || null
         setDjangoPort(command?.django.ports[0] ?? 7164)
-        setUrl(`http://0.0.0.0:${command?.django.ports[0] ?? 7164}/`)
+        setUrl(`${RA_URL}${command?.django.ports[0] ?? 7164}/`)
       } catch (error) {
         console.log(error)
       }

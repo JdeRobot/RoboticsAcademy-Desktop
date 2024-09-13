@@ -6,7 +6,7 @@ interface SpeedDialUtilsInterface {
   setUrl: Dispatch<SetStateAction<string>>
   setContent: Dispatch<SetStateAction<boolean>>
 }
-const SpeedDialUtils: FC<SpeedDialUtilsInterface> = ({ setUrl, setContent }) => {
+const SpeedDialUtils: FC<SpeedDialUtilsInterface> = ({ setContent }) => {
   const [isOpenSpeedDial, setIsSpeedDial] = useState<boolean>(false)
   return (
     <div

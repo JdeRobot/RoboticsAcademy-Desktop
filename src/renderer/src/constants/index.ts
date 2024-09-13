@@ -1,6 +1,8 @@
 import { WebSiteIcon, YoutubeIcon, ForumIcon, XIcon, GithubIcon } from '@renderer/assets'
 import { AllCommandConfigureInterface } from '@renderer/utils/interfaces'
+
 // utils
+export const RA_URL: string = 'http://localhost:'
 export const TIMER: number = 2000
 
 // Settings
@@ -190,7 +192,7 @@ export const socialLinks: socialLinksInterface[] = [
   }
 ]
 
-const validParams = [
+export const validParams = [
   'docker',
   'run',
   '--rm',

@@ -94,7 +94,6 @@ const StartScreenSettingsConfigure: FC<StartScreenSettingsConfigureInterface> = 
     {
       configureScreenState,
       allCommandConfig,
-      configName,
       configId,
       django,
       gazebo,

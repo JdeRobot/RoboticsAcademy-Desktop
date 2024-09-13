@@ -2,6 +2,9 @@ appId: com.roboticsacademy.app
 productName: RoboticsAcademy
 directories:
   buildResources: build
+
+buildDependenciesFromSource: true
+
 extraResources:
   - './splashscreen.html'
   - 'resources/**'
@@ -17,11 +20,17 @@ asarUnpack:
   - resources/**
 win:
   executableName: RoboticsAcademy
+  requestedExecutionLevel: requireAdministrator
+  target:
+    - nsis
+  icon: resources/icons/icon.ico
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
+  oneClick: false
+  perMachine: false
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
@@ -47,6 +56,6 @@ appImage:
 npmRebuild: false
 publish:
   provider: generic
-  url: https://example.com/auto-updates
+  url:
 electronDownload:
-  mirror: https://npmmirror.com/mirrors/electron/
+  mirror:

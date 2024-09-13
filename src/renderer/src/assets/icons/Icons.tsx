@@ -62,7 +62,13 @@ export const ConnectIcon: FC<CssClassProps> = ({ cssClass }) => (
 )
 
 export const ConfigureIcon: FC<CssClassProps> = ({ cssClass }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16px"
+    height="16px"
+    viewBox="0 0 24 24"
+    className={`${cssClass}`}
+  >
     <path
       fill="none"
       stroke="#fff"

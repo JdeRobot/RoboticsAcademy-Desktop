@@ -101,7 +101,7 @@ const createWindow = (): BrowserWindow => {
   }
 
   // window resize/close func
-  mainWindow.on('closed', (e) => {
+  mainWindow.on('closed', (_e) => {
     mainWindow = null
   })
   mainWindow.on('maximize', () => {})
@@ -131,8 +131,7 @@ app.whenReady().then(async () => {
 
   //* IPC COMMUNICATION
   //@ Stopping Docker RADI
-  ipcMain.handle('docker:CHECK_RADI_RUNNING', async (event: IpcMainInvokeEvent) => {
-    event.defaultPrevented
+  ipcMain.handle('docker:CHECK_RADI_RUNNING', async (_event: IpcMainInvokeEvent) => {
     try {
       const res: ResponeInterface = await checkRADIContainerRunning()
       return res
@@ -141,8 +140,7 @@ app.whenReady().then(async () => {
     }
   })
   //@ Robotics Academy Docker Image
-  ipcMain.handle('docker:CHECK_RADI_AVAILABILITY', async (event: IpcMainInvokeEvent) => {
-    event.defaultPrevented
+  ipcMain.handle('docker:CHECK_RADI_AVAILABILITY', async (_event: IpcMainInvokeEvent) => {
     try {
       const res: ResponeInterface = await checkDockerRADIAvailability()
       return res
@@ -151,7 +149,7 @@ app.whenReady().then(async () => {
     }
   })
   //@ Running RADI docker images
-  ipcMain.handle('docker:START_RADI_CONTAINER', async (event: IpcMainInvokeEvent) => {
+  ipcMain.handle('docker:START_RADI_CONTAINER', async (_event: IpcMainInvokeEvent) => {
     try {
       const res: ResponeInterface = await startDockerRADIContainer()
       return res
@@ -160,8 +158,8 @@ app.whenReady().then(async () => {
     }
   })
   //@ Stopping Docker RADI
-  ipcMain.handle('docker:STOP_RADI_CONTAINER', async (event: IpcMainInvokeEvent) => {
-    event.defaultPrevented
+  ipcMain.handle('docker:STOP_RADI_CONTAINER', async (_event: IpcMainInvokeEvent) => {
+    _event.defaultPrevented
     try {
       const res: ResponeInterface = await stopDockerRADIContainer()
       return res
@@ -172,27 +170,26 @@ app.whenReady().then(async () => {
 
   //* App Window Resize
   // minimize the window
-  ipcMain.on('app_window:MINIMIZE', (event) => {
+  ipcMain.on('app_window:MINIMIZE', (_event) => {
     if (!mainWindow?.isMinimized()) {
       mainWindow?.minimize()
     }
   })
 
   // maximize
-  ipcMain.on('app_window:MAXIMIZE', (event) => {
+  ipcMain.on('app_window:MAXIMIZE', (_event) => {
     if (!mainWindow?.isMinimized()) {
       mainWindow?.maximize()
     }
   })
   // unmaximize
-  ipcMain.on('app_window:UNMAXIMIZE', (event) => {
+  ipcMain.on('app_window:UNMAXIMIZE', (_event) => {
     if (mainWindow?.isMaximized()) {
       mainWindow?.restore()
     }
   })
   // close
-  ipcMain.once('app_window:CLOSE', (event) => {
-    event.preventDefault()
+  ipcMain.once('app_window:CLOSE', (_event) => {
     app.quit()
   })
 
@@ -202,7 +199,7 @@ app.whenReady().then(async () => {
   ipcMain.handle(
     'database:ALL_COMMAND_CONFIG',
     async (
-      event
+      _event
     ): Promise<
       DatabaseFetching<ResponseStatus, AllCommandConfigureInterface[] | null, string[]>
     > => {
@@ -226,7 +223,7 @@ app.whenReady().then(async () => {
   //@ get active command
   ipcMain.handle(
     'database:GET_ACTIVE_COMMAND_ID',
-    async (event): Promise<DatabaseFetching<ResponseStatus, number | null, string[]>> => {
+    async (_event): Promise<DatabaseFetching<ResponseStatus, number | null, string[]>> => {
       try {
         const res: DatabaseFetching<ResponseStatus, number | null, string[]> =
           await getCommandConfigId(db)
@@ -243,7 +240,7 @@ app.whenReady().then(async () => {
   //@ get active docker image
   ipcMain.handle(
     'database:GET_ACTIVE_DOCKER_IMAGE',
-    async (event): Promise<DatabaseFetching<ResponseStatus, string | null, string[]>> => {
+    async (_event): Promise<DatabaseFetching<ResponseStatus, string | null, string[]>> => {
       try {
         const res: DatabaseFetching<ResponseStatus, string | null, string[]> =
           await getActiveDockerImage(db)
@@ -262,7 +259,7 @@ app.whenReady().then(async () => {
   //@ add new command config to  commands table
   ipcMain.handle(
     'database:ADD_NEW_COMMAND_CONFIG',
-    async (event, commandConfig): Promise<DatabaseFetching<ResponseStatus, null, string[]>> => {
+    async (_event, commandConfig): Promise<DatabaseFetching<ResponseStatus, null, string[]>> => {
       try {
         const res: DatabaseFetching<ResponseStatus, null, string[]> = await addNewCommandConfig(
           db,
@@ -283,7 +280,7 @@ app.whenReady().then(async () => {
   ipcMain.handle(
     'database:UPDATE_COMMANDS',
     async (
-      event,
+      _event,
       id: number,
       updatePorts
     ): Promise<DatabaseFetching<ResponseStatus, null, string[]>> => {
@@ -307,7 +304,7 @@ app.whenReady().then(async () => {
   ipcMain.handle(
     'database:UPDATE_COMMAND_UTILS',
     async (
-      event,
+      _event,
       id: number,
       image: string
     ): Promise<DatabaseFetching<ResponseStatus, null, string[]>> => {
@@ -331,7 +328,7 @@ app.whenReady().then(async () => {
   //@ delete commands row
   ipcMain.handle(
     'database:DELETE_COMMAND_CONFIG',
-    async (event, id: number): Promise<DatabaseFetching<ResponseStatus, null, string[]>> => {
+    async (_event, id: number): Promise<DatabaseFetching<ResponseStatus, null, string[]>> => {
       try {
         const res: DatabaseFetching<ResponseStatus, null, string[]> = await deleteCommandConfig(
           db,
@@ -363,7 +360,7 @@ app.whenReady().then(async () => {
     })
 
     //* minimize screen
-    ipcMain.handle('docker:CHECK_AVAILABILITY', async (event: IpcMainInvokeEvent) => {
+    ipcMain.handle('docker:CHECK_AVAILABILITY', async (_event: IpcMainInvokeEvent) => {
       try {
         const res: ResponeInterface = await checkDockerAvailability()
         return res
@@ -385,7 +382,7 @@ app.whenReady().then(async () => {
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
-app.on('window-all-closed', (e) => {
+app.on('window-all-closed', (_e) => {
   if (!isMac) {
     db.close((err) => {
       if (err) return console.error(err.message)

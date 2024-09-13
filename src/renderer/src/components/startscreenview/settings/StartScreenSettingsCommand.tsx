@@ -29,6 +29,7 @@ const StartScreenSettingsCommand: FC<StartScreenSettinsCommandInterface> = ({}) 
 
   // docker image state
   const [activeDockerImage, setActiveDockerImage] = useState<string>(``)
+  //@ts-ignore
   const [allDockerImages, setAllDockerImages] = useState<{}>(AllDockersImages)
   const [selectedDockerImage, setSelectedDockerImage] = useState<string>(``)
 
@@ -108,7 +109,7 @@ const StartScreenSettingsCommand: FC<StartScreenSettinsCommandInterface> = ({}) 
     const command: AllCommandConfigureInterface | null =
       allCommandConfigure.find((config: AllCommandConfigureInterface) => {
         if (dockerImage === `noDockerImage` && config.command.length === 0) return config
-        else if (dockerImage != `noDockerImage`) return config
+        else return config
       }) || null
 
     setSelectedCommandConfig(command)
@@ -253,7 +254,7 @@ const StartScreenSettingsCommand: FC<StartScreenSettinsCommandInterface> = ({}) 
                 {allCommandConfigure.map((command: AllCommandConfigureInterface, index: number) => (
                   <option
                     value={command.id}
-                    key={command.id}
+                    key={index}
                     disabled={isSelectDisabled(selectedDockerImage, command.command.length)}
                   >
                     {command.name}
