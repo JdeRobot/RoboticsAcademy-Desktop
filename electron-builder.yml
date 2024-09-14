@@ -28,9 +28,20 @@ nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
-  createDesktopShortcut: always
+  installerLanguages:
+    - en
+    - es
+  createDesktopShortcut: true
+  displayLanguageSelector: true
+  createStartMenuShortcut: true
+  allowToChangeInstallationDirectory: true
   oneClick: false
   perMachine: false
+  installerIcon: resources/icons/icon.ico
+  uninstallerIcon: resources/icons/icon.ico
+  installerHeaderIcon: resources/icons/icon.ico
+  license: license/license_en_US.txt
+
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
