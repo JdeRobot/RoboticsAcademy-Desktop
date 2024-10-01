@@ -113,6 +113,9 @@ const createWindow = async (): Promise<BrowserWindow> => {
 }
 
 app.whenReady().then(async () => {
+  // disable http-cache
+  app.commandLine.appendSwitch('disable-http-cache')
+
   //Store data
   await insertCommandData(db)
   await insertCommandUtilsData(db)
