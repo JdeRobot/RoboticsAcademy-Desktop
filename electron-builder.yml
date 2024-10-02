@@ -1,0 +1,72 @@
+appId: com.roboticsacademy.app
+productName: RoboticsAcademy
+directories:
+  buildResources: build
+
+buildDependenciesFromSource: true
+
+extraResources:
+  - './splashscreen.html'
+  - 'resources/**'
+  - './roboticsacademy.db'
+files:
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
+  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+asarUnpack:
+  - resources/**
+win:
+  executableName: RoboticsAcademy
+  requestedExecutionLevel: requireAdministrator
+  target:
+    - nsis
+  icon: resources/icons/icon.ico
+nsis:
+  artifactName: ${name}-${version}-setup.${ext}
+  shortcutName: ${productName}
+  uninstallDisplayName: ${productName}
+  installerLanguages:
+    - en
+    - es
+  createDesktopShortcut: true
+  displayLanguageSelector: true
+  createStartMenuShortcut: true
+  allowToChangeInstallationDirectory: true
+  oneClick: false
+  perMachine: false
+  installerIcon: resources/icons/icon.ico
+  uninstallerIcon: resources/icons/icon.ico
+  installerHeaderIcon: resources/icons/icon.ico
+  license: license/license_en_US.txt
+
+mac:
+  entitlementsInherit: build/entitlements.mac.plist
+  extendInfo:
+    - NSCameraUsageDescription: Application requests access to the device's camera.
+    - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
+    - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
+    - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
+  notarize: false
+dmg:
+  artifactName: ${name}-${version}.${ext}
+linux:
+  icon: resources/icons/icon.icns
+  desktop:
+    Type: 'Application'
+    Encoding: 'UTF-8'
+    Name: 'Robotics Academy'
+  target:
+    - deb
+  maintainer: https://jderobot.github.io/RoboticsAcademy/
+  category: Utility
+appImage:
+  artifactName: ${name}-${version}.${ext}
+npmRebuild: false
+publish:
+  provider: generic
+  url:
+electronDownload:
+  mirror:

@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self'" />
+    <title>Robotics Academy</title>
+    <style>
+      body {
+        position: absolute;
+        top: 10;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden !important;
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+          'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        user-select: none !important;
+      }
+
+      html {
+        color: #f3f3f3;
+      }
+
+      h1 {
+        margin-left: 0px;
+      }
+
+      .loading-container {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+        background-color: #282e3a;
+        border-radius: 20px;
+      }
+      .loading-area {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .loading-logo {
+        width: 170px;
+      }
+      .loading-dots {
+        position: relative;
+        top: -5px;
+        width: 45px;
+      }
+      .developer {
+        font-size: 12px;
+        margin: 4px;
+        padding: 0;
+        color: #a4a4a4;
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        width: 100%;
+      }
+      .developer > span {
+        font-size: 15px;
+        font-weight: 500;
+        margin: 2px;
+      }
+      .version {
+        position: absolute;
+        top: 88%;
+        left: 90%;
+        color: #f3f3f3;
+        font-size: 12px;
+      }
+
+      .orginzationText {
+        /* font-size: 150px; */
+        font-weight: 800;
+        outline: none;
+        background: linear-gradient(
+          135deg,
+          #5335cf 0%,
+          #de005e 25%,
+          #f66e48 50%,
+          #de005e 75%,
+          #5335cf 100%
+        );
+        background-size: 400%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: textAnimate 20s linear infinite;
+      }
+      @keyframes textAnimate {
+        to {
+          background-position: 400%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loading-container">
+      <div class="loading-area">
+        <img src="./resources/logo.gif" class="loading-logo" />
+        <h2 style="margin: 0px">Robotics Academy</h2>
+        <p class="developer">by <span class="orginzationText">JdeRobot</span></p>
+      </div>
+      <img src="./resources/loading.svg" class="loading-dots" />
+      <p class="version">v2.0.0</p>
+    </div>
+  </body>
+</html>

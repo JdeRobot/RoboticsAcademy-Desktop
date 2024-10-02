@@ -4,12 +4,13 @@ Welcome to the Robotics Academy Desktop project! We're excited to have you here 
 
 ## Table of Contents
 
-1. [Getting Started](#getting-started)
-2. [Development Setup](#development-setup)
-3. [Issues](#issues)
-4. [Contributing Code](#contributing-code)
-5. [Code of Conduct](#code-of-conduct)
-6. [License](#license)
+- [Contributing to Robotics Academy Desktop](#contributing-to-robotics-academy-desktop)
+  - [Table of Contents](#table-of-contents)
+  - [Getting Started](#getting-started)
+  - [Development Setup](#development-setup)
+  - [Issues](#issues)
+  - [Contributing Code](#contributing-code)
+  - [Code of Conduct](#code-of-conduct)
 
 ## Getting Started
 
@@ -41,7 +42,7 @@ To set up your development environment and get the Robotics Academy Desktop runn
 5. Start the application:
 
    ```bash
-   npm start
+   npm run dev
    ```
 
 6. Make changes and test your code.
