@@ -92,3 +92,4 @@ typings/
 out/
 old/
 dist/
+node_modules

@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent, shell } from 'electron
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { Database } from 'sqlite3'
+import { autoUpdater, AppUpdater } from 'electron-updater'
 
 import {
   AllCommandConfigureInterface,
@@ -32,6 +33,9 @@ import {
 
 const isMac = process.platform === 'darwin'
 let mainWindow: BrowserWindow | null = null
+
+// disable auto-update download
+autoUpdater.autoDownload = false
 
 // connected to database
 export const db: Database = dbInit()
@@ -115,6 +119,9 @@ const createWindow = async (): Promise<BrowserWindow> => {
 app.whenReady().then(async () => {
   // disable http-cache
   app.commandLine.appendSwitch('disable-http-cache')
+
+  // check update
+  autoUpdater.checkForUpdates()
 
   //Store data
   await insertCommandData(db)
@@ -391,4 +398,11 @@ app.on('window-all-closed', (_e) => {
     })
     app.quit()
   }
+})
+
+// Auto Updater
+autoUpdater.on('update-available', (info) => {
+  console.log('====================================')
+  console.log('info ', info)
+  console.log('====================================')
 })
