@@ -1,6 +1,6 @@
 {
   "name": "RoboticsAcademy",
-  "version": "2.0.0",
+  "version": "2.3.3",
   "description": "Cross platform Desktop Application for Robotics Academy.",
   "main": "./out/main/index.js",
   "author": "Robotics Academy",

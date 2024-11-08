@@ -201,7 +201,7 @@ export const insertCommandData = async (db: sqlite3.Database) => {
       if (err) {
         console.error('Error creating table: ' + err.message)
       } else {
-        console.log('commands Table created or already exists.')
+        // console.log('commands Table created or already exists.')
 
         try {
           const checkTableExist = await isTableExit(db, `commands`)
@@ -248,7 +248,7 @@ export const insertCommandUtilsData = async (db: sqlite3.Database) => {
       if (err) {
         console.error('Error creating table: ' + err.message)
       } else {
-        console.log('commands_utils Table created or already exists.')
+        // console.log('commands_utils Table created or already exists.')
 
         try {
           const checkTableExist = await isTableExit(db, `commands_utils`)

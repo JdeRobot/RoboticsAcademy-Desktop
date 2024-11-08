@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent, shell } from 'electron
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { Database } from 'sqlite3'
-import { autoUpdater, AppUpdater } from 'electron-updater'
+import { autoUpdater } from 'electron-updater'
 
 import {
   AllCommandConfigureInterface,
@@ -33,6 +33,7 @@ import {
 
 const isMac = process.platform === 'darwin'
 let mainWindow: BrowserWindow | null = null
+const appVersion = `v${app.getVersion()}`
 
 // disable auto-update download
 autoUpdater.autoDownload = false
@@ -47,7 +48,13 @@ function createSplashWindow(): BrowserWindow {
     height: 300,
     frame: false,
     transparent: true,
-    alwaysOnTop: true
+    alwaysOnTop: true,
+    webPreferences: {
+      nodeIntegration: false,
+      webSecurity: true,
+      sandbox: false,
+      contextIsolation: true
+    }
   })
 
   const splashScreenSrc = app.isPackaged
@@ -55,6 +62,21 @@ function createSplashWindow(): BrowserWindow {
     : join(__dirname, './../../', 'splashscreen.html')
 
   win.loadFile(splashScreenSrc)
+
+  win.webContents.on('did-finish-load', () => {
+    win.webContents
+      .executeJavaScript(
+        `
+        const version = document.getElementById('version')
+        version.textContent = '${appVersion}'
+        `
+      )
+      .then((result) => {
+        console.log('Executed in renderer:', result)
+      })
+      .catch(console.error)
+  })
+
   return win
 }
 
@@ -140,6 +162,23 @@ app.whenReady().then(async () => {
   })
 
   //* IPC COMMUNICATION
+  //@ Utils
+  // get api version
+  ipcMain.handle('app:APP_VERSION', async (_event: IpcMainInvokeEvent) => {
+    try {
+      return {
+        status: ResponseStatus.SUCCESS,
+        data: `${app.getVersion()}`,
+        msg: []
+      }
+    } catch (error: any) {
+      return {
+        status: ResponseStatus.SUCCESS,
+        data: null,
+        msg: ['something went wrong!', `${error.message}`]
+      }
+    }
+  })
   //@ Stopping Docker RADI
   ipcMain.handle('docker:CHECK_RADI_RUNNING', async (_event: IpcMainInvokeEvent) => {
     try {
@@ -174,7 +213,7 @@ app.whenReady().then(async () => {
       const res: ResponeInterface = await stopDockerRADIContainer()
       return res
     } catch (error) {
-      return { status: false, msg: ['something went wrong!'] }
+      return { status: ResponseStatus.ERROR, msg: ['something went wrong!'] }
     }
   })
 

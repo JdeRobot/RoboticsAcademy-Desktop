@@ -9,6 +9,9 @@ import {
 
 // Custom APIs for renderer
 const api = {
+  // Utils
+  getAppVersion: (): Promise<ResponeInterface> => ipcRenderer.invoke('app:APP_VERSION'),
+  // Docker
   checkDockerAvailability: (): Promise<ResponeInterface> =>
     ipcRenderer.invoke('docker:CHECK_AVAILABILITY'),
   checkDockerRADIAvailability: (): Promise<ResponeInterface> =>
