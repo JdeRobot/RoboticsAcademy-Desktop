@@ -40,12 +40,12 @@ interface ApiInterface {
   deleteCommandConfig: (id: number) => Promise<DatabaseFetching<ResponseStatus, null, string[]>>
 
   // updater-window
+  updaterWindowOpenLink: (url: string) => void
   updaterWindowClose: () => void
 }
 
 declare global {
   interface Window {
-    electron: ElectronAPI
     api: ApiInterface
   }
 }

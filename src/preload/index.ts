@@ -54,6 +54,7 @@ const api = {
     ipcRenderer.invoke('database:DELETE_COMMAND_CONFIG', id),
 
   // Updater Window
+  updaterWindowOpenLink: (url: string) => ipcRenderer.invoke('updater:OPEN_LINK', url),
   updaterWindowClose: () => ipcRenderer.invoke('updater:CLOSE_WINDOW')
 }
 
@@ -62,14 +63,12 @@ const api = {
 // just add to the DOM global.
 if (process.contextIsolated) {
   try {
-    contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
   } catch (error) {
     console.error(error)
   }
 } else {
   // @ts-ignore (define in dts)
-  window.electron = electronAPI
   // @ts-ignore (define in dts)
   window.api = api
 }

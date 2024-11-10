@@ -398,6 +398,11 @@ app.whenReady().then(async () => {
   )
 
   // Updater Window
+  ipcMain.handle('updater:OPEN_LINK', (_event, url: string) => {
+    try {
+      shell.openExternal(url)
+    } catch (error) {}
+  })
   ipcMain.handle('updater:CLOSE_WINDOW', (_event) => {
     try {
       if (updaterWindow) updaterWindow.destroy()

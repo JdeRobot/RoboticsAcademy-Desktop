@@ -31,53 +31,7 @@
         margin-left: 0px;
       }
 
-      .updater-container {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: start;
-        align-items: center;
-        background-color: white;
-      }
-      .loading-area {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      }
-      .loading-logo {
-        width: 170px;
-      }
-      .loading-dots {
-        position: relative;
-        top: -5px;
-        width: 45px;
-      }
-      .developer {
-        font-size: 12px;
-        margin: 4px;
-        padding: 0;
-        color: #a4a4a4;
-        display: flex;
-        justify-content: end;
-        align-items: center;
-        width: 100%;
-      }
-      .developer > span {
-        font-size: 15px;
-        font-weight: 500;
-        margin: 2px;
-      }
-      .version {
-        position: absolute;
-        top: 88%;
-        left: 90%;
-        color: #f3f3f3;
-        font-size: 12px;
-      }
-
       .orginzationText {
-        /* font-size: 150px; */
         font-weight: 800;
         outline: none;
         background: linear-gradient(
@@ -100,6 +54,14 @@
       }
 
       /* start */
+      .updater-container {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        align-items: center;
+        background-color: white;
+      }
       /* header */
       .header {
         width: 100%;
@@ -138,7 +100,7 @@
       .updater-body {
         margin-top: 20px;
         display: flex;
-        gap: 16px;
+        gap: 12px;
         font-size: 16px;
         color: rgba(51, 51, 51, 100);
         font-weight: 400;
@@ -155,6 +117,64 @@
       }
       .updater-body > .updater-body-update-info > p {
         margin: 0px !important;
+      }
+      /* buttons */
+      .buttons {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        margin-top: 40px;
+      }
+      .button {
+        width: 90px;
+        height: 30px;
+        color: #f3f3f3;
+        border-radius: 5px;
+        display: flex;
+        justify-content: center;
+        font-weight: 500;
+        align-items: center;
+        box-shadow: 0 5px 8px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+      }
+      .buttons > .buttons-yes {
+        background-color: #f5c000;
+      }
+      .buttons > .buttons-no {
+        background-color: #bf1e12;
+      }
+
+      /* footer */
+      .footer {
+        width: 100%;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        margin-bottom: 8px;
+      }
+      .footer > .footer-change-log {
+        text-decoration: underline;
+        color: rgba(0, 51, 255, 0.89);
+        font-size: 12px;
+        margin-left: 84px;
+      }
+      .footer > .powered {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-right: 12px;
+      }
+      .footer > .powered > .powered-by {
+        font-size: 12px;
+        font-weight: 400;
+        color: #a4a4a4;
+        padding-bottom: 2px;
+        margin-left: 4px;
       }
     </style>
     <script>
@@ -211,18 +231,50 @@
         <div class="updater-body-update-info">
           <p>A new version of Robotics Academy Desktop Available.</p>
           <p>Do you want to download version 2.0.1 ?</p>
-          <p>Current Version <span id="current-version">2.0.0</span></p>
+          <p>Version on your system <span id="current-version">2.0.0</span></p>
         </div>
       </div>
       <!-- button -->
+      <div class="buttons">
+        <!-- yes -->
+        <div class="button buttons-yes" id="button-yes">Yes</div>
+        <!-- no -->
+        <div class="button buttons-no" id="button-no">No</div>
+      </div>
       <!-- footer -->
+      <div class="footer">
+        <!--  -->
+        <div></div>
+        <!-- change log link -->
+        <div class="footer-change-log">change log</div>
+        <!-- powered by -->
+        <div class="powered">
+          <span class="powered-by">Powered by</span>
+          <span class="orginzationText">JdeRobot</span>
+        </div>
+      </div>
     </div>
 
     <script>
-      const closeButton = document.getElementById('close-window')
-      closeButton.addEventListener('click', async () => {
+      //func
+      async function closeWindowFunc() {
         try {
           window.api.updaterWindowClose()
+        } catch (err) {
+          console.log(err)
+        }
+      }
+      // element to close window
+      const closeButton = document.getElementById('close-window')
+      const noButton = document.getElementById('button-no')
+      closeButton.addEventListener('click', closeWindowFunc)
+      noButton.addEventListener('click', closeWindowFunc)
+
+      // element to open link
+      const yesButton = document.getElementById('button-yes')
+      yesButton.addEventListener('click', async () => {
+        try {
+          window.api.updaterWindowOpenLink('https://google.com')
         } catch (err) {
           console.log(err)
         }
