@@ -51,7 +51,10 @@ const api = {
     ipcRenderer.invoke('database:UPDATE_COMMAND_UTILS', id, image),
   //! DELETE
   deleteCommandConfig: (id: number): Promise<DatabaseFetching<ResponseStatus, null, string[]>> =>
-    ipcRenderer.invoke('database:DELETE_COMMAND_CONFIG', id)
+    ipcRenderer.invoke('database:DELETE_COMMAND_CONFIG', id),
+
+  // Updater Window
+  updaterWindowClose: () => ipcRenderer.invoke('updater:CLOSE_WINDOW')
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

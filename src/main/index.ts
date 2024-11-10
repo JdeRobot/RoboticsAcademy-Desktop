@@ -30,9 +30,11 @@ import {
   updateCommands,
   updateCommandUtils
 } from './db'
+import { createUpdaterWindow } from './appWindow'
 
 const isMac = process.platform === 'darwin'
 let mainWindow: BrowserWindow | null = null
+let updaterWindow: BrowserWindow | null = null
 const appVersion = `v${app.getVersion()}`
 
 // disable auto-update download
@@ -79,6 +81,8 @@ function createSplashWindow(): BrowserWindow {
 
   return win
 }
+
+//  updater window
 
 // main window
 const createWindow = async (): Promise<BrowserWindow> => {
@@ -392,15 +396,24 @@ app.whenReady().then(async () => {
       }
     }
   )
+
+  // Updater Window
+  ipcMain.handle('updater:CLOSE_WINDOW', (_event) => {
+    try {
+      if (updaterWindow) updaterWindow.destroy()
+    } catch (error) {}
+  })
   //@ Disappering splash screen and show main screen after 3 seconds.
   try {
     const splashScreen: BrowserWindow = createSplashWindow()
+    updaterWindow = createUpdaterWindow()
     const mainScreen: BrowserWindow = await createWindow()
 
+    updaterWindow.show()
     mainScreen.once('ready-to-show', () => {
       setTimeout(
         () => {
-          mainScreen.show()
+          // mainScreen.show()
           splashScreen.destroy()
         },
         app.isPackaged ? 3000 : 0
