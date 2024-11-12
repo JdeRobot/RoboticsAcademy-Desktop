@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent, shell } from 'electron
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { Database } from 'sqlite3'
+import { autoUpdater } from 'electron-updater'
 
 import {
   AllCommandConfigureInterface,
@@ -29,93 +30,29 @@ import {
   updateCommands,
   updateCommandUtils
 } from './db'
+import { createSplashWindow, createUpdaterWindow, createWindow } from './appWindow'
 
 const isMac = process.platform === 'darwin'
 let mainWindow: BrowserWindow | null = null
+let updaterWindow: BrowserWindow | null = null
+const appVersion = `v${app.getVersion()}`
+
+// disable auto-update download
+autoUpdater.autoDownload = false
 
 // connected to database
 export const db: Database = dbInit()
-
-// splash screen
-function createSplashWindow(): BrowserWindow {
-  const win = new BrowserWindow({
-    width: 525,
-    height: 300,
-    frame: false,
-    transparent: true,
-    alwaysOnTop: true
-  })
-
-  const splashScreenSrc = app.isPackaged
-    ? join(process.resourcesPath, 'splashscreen.html')
-    : join(__dirname, './../../', 'splashscreen.html')
-
-  win.loadFile(splashScreenSrc)
-  return win
-}
-
-// main window
-const createWindow = async (): Promise<BrowserWindow> => {
-  mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 720,
-    minWidth: 1280,
-    minHeight: 720,
-    show: false,
-    frame: false,
-    alwaysOnTop: false,
-    transparent: false,
-    focusable: true,
-    icon: join(__dirname, './../../resources/icons/icon.png'),
-    autoHideMenuBar: true,
-    webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
-      nodeIntegration: false,
-      webSecurity: true,
-      sandbox: false,
-      contextIsolation: true
-    }
-  })
-
-  //
-  mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-    if (details.responseHeaders === undefined) return
-    callback({
-      responseHeaders: Object.fromEntries(
-        Object.entries(details.responseHeaders).filter(
-          (header) => !/x-frame-options/i.test(header[0])
-        )
-      )
-    })
-  })
-  mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
-    return { action: 'deny' }
-  })
-
-  // Load the remote URL for development or the local html file for production.
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
-  } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
-  }
-
-  // window resize/close func
-  mainWindow.on('closed', (_e) => {
-    mainWindow = null
-  })
-  mainWindow.on('maximize', () => {})
-  mainWindow.on('unmaximize', () => {})
-  // Event listener for when the window is restored from minimized state
-  mainWindow.on('restore', () => {})
-
-  return mainWindow
-}
 
 app.whenReady().then(async () => {
   // disable http-cache
   app.commandLine.appendSwitch('disable-http-cache')
 
+  // check update
+  try {
+    autoUpdater.checkForUpdates()
+  } catch (error) {
+    console.log(error)
+  }
   //Store data
   await insertCommandData(db)
   await insertCommandUtilsData(db)
@@ -133,6 +70,23 @@ app.whenReady().then(async () => {
   })
 
   //* IPC COMMUNICATION
+  //@ Utils
+  // get api version
+  ipcMain.handle('app:APP_VERSION', async (_event: IpcMainInvokeEvent) => {
+    try {
+      return {
+        status: ResponseStatus.SUCCESS,
+        data: `${app.getVersion()}`,
+        msg: []
+      }
+    } catch (error: any) {
+      return {
+        status: ResponseStatus.SUCCESS,
+        data: null,
+        msg: ['something went wrong!', `${error.message}`]
+      }
+    }
+  })
   //@ Stopping Docker RADI
   ipcMain.handle('docker:CHECK_RADI_RUNNING', async (_event: IpcMainInvokeEvent) => {
     try {
@@ -167,13 +121,15 @@ app.whenReady().then(async () => {
       const res: ResponeInterface = await stopDockerRADIContainer()
       return res
     } catch (error) {
-      return { status: false, msg: ['something went wrong!'] }
+      return { status: ResponseStatus.ERROR, msg: ['something went wrong!'] }
     }
   })
 
   //* App Window Resize
   // minimize the window
   ipcMain.on('app_window:MINIMIZE', (_event) => {
+    if (mainWindow === null || mainWindow === undefined) return
+
     if (!mainWindow?.isMinimized()) {
       mainWindow?.minimize()
     }
@@ -346,15 +302,34 @@ app.whenReady().then(async () => {
       }
     }
   )
+
+  // Updater Window
+  ipcMain.handle('updater:OPEN_LINK', (_event, url: string) => {
+    try {
+      shell.openExternal(url)
+    } catch (error) {
+      console.log(error)
+    }
+  })
+  ipcMain.handle('updater:CLOSE_WINDOW', (_event) => {
+    try {
+      if (updaterWindow != null) updaterWindow.destroy()
+    } catch (error) {}
+  })
   //@ Disappering splash screen and show main screen after 3 seconds.
   try {
-    const splashScreen: BrowserWindow = createSplashWindow()
-    const mainScreen: BrowserWindow = await createWindow()
+    const splashScreen: BrowserWindow = createSplashWindow({ appVersion })
+    // const mainScreen: BrowserWindow = await createWindow()
 
-    mainScreen.once('ready-to-show', () => {
+    mainWindow = await createWindow()
+    // updaterWindow.show()
+
+    mainWindow?.once('ready-to-show', () => {
       setTimeout(
         () => {
-          mainScreen.show()
+          // updaterWindow = createUpdaterWindow('2.0.1')
+          // updaterWindow.show()
+          mainWindow?.show()
           splashScreen.destroy()
         },
         app.isPackaged ? 3000 : 0
@@ -391,4 +366,12 @@ app.on('window-all-closed', (_e) => {
     })
     app.quit()
   }
+})
+
+// Auto Updater
+autoUpdater.on('update-available', (info) => {
+  updaterWindow = createUpdaterWindow(info.version)
+  setTimeout(() => {
+    updaterWindow?.show()
+  }, 10 * 1000)
 })

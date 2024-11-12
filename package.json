@@ -18,7 +18,7 @@
       "email": "kabircp08@gmail.com"
     }
   ],
-  "homepage": "",
+  "homepage": "https://jderobot.github.io/",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
@@ -40,7 +40,7 @@
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
     "electron-settings": "^4.0.4",
-    "electron-updater": "^6.2.1",
+    "electron-updater": "^6.3.9",
     "node-gyp": "^10.2.0",
     "sqlite3": "^5.1.7",
     "uuid": "^10.0.0"
@@ -70,6 +70,9 @@
     "typescript": "^5.5.4",
     "vite": "^5.4.0"
   },
-  "repository": "https://github.com/codezerro/RoboticsAcademy-Desktop.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codezerro/RoboticsAcademy-Desktop"
+  },
   "license": "MIT"
 }

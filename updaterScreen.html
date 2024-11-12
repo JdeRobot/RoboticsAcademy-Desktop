@@ -1,0 +1,310 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <!-- <meta
+      http-equiv="Content-Security-Policy"
+      content="script-src 'self' 'sha256-nIcnn83YNljR5yr5x/oVAdAFNemfHxxTO3zjtez52do='"
+    /> -->
+    <title>Robotics Academy</title>
+    <style>
+      body {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 500px;
+        height: 250px;
+        overflow: hidden !important;
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+          'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        user-select: none !important;
+      }
+
+      html {
+        color: #333333;
+      }
+
+      h1 {
+        margin-left: 0px;
+      }
+
+      .orginzationText {
+        font-weight: 800;
+        outline: none;
+        background: linear-gradient(
+          135deg,
+          #5335cf 0%,
+          #de005e 25%,
+          #f66e48 50%,
+          #de005e 75%,
+          #5335cf 100%
+        );
+        background-size: 400%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: textAnimate 20s linear infinite;
+      }
+      @keyframes textAnimate {
+        to {
+          background-position: 400%;
+        }
+      }
+
+      .draggable {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-app-region: drag;
+      }
+
+      /* start */
+      .updater-container {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        align-items: center;
+        background-color: white;
+      }
+      /* header */
+      .header {
+        width: 500px;
+        height: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0px 0px;
+        background-color: #d9d9d9;
+        box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.2);
+      }
+      .header-logo-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+      }
+      .header > .header-logo-title > .header-logo {
+        margin-left: 12px;
+        height: 1.5rem;
+        width: 1.5rem;
+      }
+      .header > .header-logo-title > .header-title {
+        font-size: 14px;
+        font-weight: 500;
+        opacity: 80%;
+      }
+      .header > .header-close {
+        padding: 2px 8px 3px 8px;
+        fill: #333;
+        cursor: pointer;
+        transition-duration: 300ms;
+        transition-property: fill;
+      }
+      .header > .header-close:hover {
+        background: red;
+        fill: white;
+      }
+
+      /* updater-body */
+      .updater-body {
+        margin-top: 20px;
+        display: flex;
+        gap: 12px;
+        font-size: 16px;
+        color: rgba(51, 51, 51, 100);
+        font-weight: 400;
+        align-items: self-start;
+        width: 100%;
+        justify-content: center;
+      }
+      .updater-body > .updater-body-download-icon {
+      }
+      .updater-body > .updater-body-update-info {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .updater-body > .updater-body-update-info > p {
+        margin: 0px !important;
+      }
+      /* buttons */
+      .buttons {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        margin-top: 40px;
+      }
+      .button {
+        width: 90px;
+        height: 30px;
+        color: #f3f3f3;
+        border-radius: 5px;
+        display: flex;
+        justify-content: center;
+        font-weight: 500;
+        align-items: center;
+        box-shadow: 0 5px 8px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+      }
+      .buttons > .buttons-yes {
+        background-color: #f5c000;
+      }
+      .buttons > .buttons-no {
+        background-color: #bf1e12;
+      }
+
+      /* footer */
+      .footer {
+        width: 100%;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        margin-bottom: 8px;
+      }
+      .footer > .footer-change-log {
+        text-decoration: underline;
+        color: rgba(0, 51, 255, 0.89);
+        font-size: 12px;
+        margin-left: 84px;
+        cursor: pointer;
+      }
+      .footer > .powered {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-right: 12px;
+      }
+      .footer > .powered > .powered-by {
+        font-size: 12px;
+        font-weight: 400;
+        color: #a4a4a4;
+        padding-bottom: 2px;
+        margin-left: 4px;
+      }
+    </style>
+    <script>
+      window.onload = async function () {
+        // get current version
+        try {
+          const c_version = await window.api.getAppVersion()
+          const version = document.getElementById('current-version')
+          if (c_version.status === 'SUCCESS') {
+            version.textContent = c_version.data
+          }
+        } catch (err) {
+          console.log(err)
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="updater-container">
+      <!-- header -->
+      <div class="header">
+        <div class="header-logo-title draggable">
+          <img src="./resources/icons/icon.png" alt="jdeRobot" class="header-logo" />
+          <span class="header-title">Robotics Academy Desktop Update Available</span>
+        </div>
+        <div class="header-close" id="close-window">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24px"
+            viewBox="0 -960 960 960"
+            width="25px"
+          >
+            <path
+              d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
+            />
+          </svg>
+        </div>
+      </div>
+      <!-- updater-body -->
+      <div class="updater-body">
+        <!-- download-icon -->
+        <div class="updater-body-download-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="48px"
+            viewBox="0 -960 960 960"
+            width="48px"
+            fill="#0C94FB"
+          >
+            <path
+              d="M260-120v-73l47-47H140q-24 0-42-18t-18-42v-480q0-24 18-42t42-18h397v60H140v480h680v-139h60v139q0 24-18 42t-42 18H652l48 47v73H260Zm367-226L434-539l42-42 121 120v-379h60v379l121-120 42 42-193 193Z"
+            />
+          </svg>
+        </div>
+        <!-- update informations -->
+        <div class="updater-body-update-info">
+          <p>A new version of Robotics Academy Desktop Available.</p>
+          <p>Do you want to download version <span id="update-version">2.0.1</span> ?</p>
+          <p>Version on your system <span id="current-version">2.0.0</span></p>
+        </div>
+      </div>
+      <!-- button -->
+      <div class="buttons">
+        <!-- yes -->
+        <div class="button buttons-yes" id="button-yes">Yes</div>
+        <!-- no -->
+        <div class="button buttons-no" id="button-no">No</div>
+      </div>
+      <!-- footer -->
+      <div class="footer">
+        <!--  -->
+        <div></div>
+        <!-- change log link -->
+        <div class="footer-change-log" id="change-log">change log</div>
+        <!-- powered by -->
+        <div class="powered">
+          <span class="powered-by">Powered by</span>
+          <span class="orginzationText">JdeRobot</span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      //func
+      async function closeWindowFunc() {
+        try {
+          window.api.updaterWindowClose()
+        } catch (err) {
+          console.log(err)
+        }
+      }
+      // element to close window
+      const closeButton = document.getElementById('close-window')
+      const noButton = document.getElementById('button-no')
+      closeButton.addEventListener('click', closeWindowFunc)
+      noButton.addEventListener('click', closeWindowFunc)
+
+      // element to open link
+      const openLink = async () => {
+        try {
+          let url = `https://github.com/JdeRobot/RoboticsAcademy-Desktop/releases/`
+          const version = document.getElementById('update-version')
+
+          if (version && version.textContent.length > 0) {
+            url += `tag/${version.textContent}`
+          }
+
+          window.api.updaterWindowOpenLink(url)
+        } catch (err) {
+          console.log(err)
+        }
+      }
+      //  elements link
+      const yesButton = document.getElementById('button-yes')
+      const changeLog = document.getElementById('change-log')
+      yesButton.addEventListener('click', openLink)
+      changeLog.addEventListener('click', openLink)
+    </script>
+  </body>
+</html>

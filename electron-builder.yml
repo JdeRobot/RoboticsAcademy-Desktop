@@ -7,6 +7,7 @@ buildDependenciesFromSource: true
 
 extraResources:
   - './splashscreen.html'
+  - './updaterScreen.html'
   - 'resources/**'
   - './roboticsacademy.db'
 files:
@@ -66,7 +67,11 @@ appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
 publish:
-  provider: generic
-  url:
+  provider: github
+  owner: JdeRobot
+  repo: RoboticsAcademy-Desktop
+  releaseType: release
+  private: false
+
 electronDownload:
   mirror:
