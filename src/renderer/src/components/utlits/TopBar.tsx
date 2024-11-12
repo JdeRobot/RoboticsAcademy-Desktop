@@ -1,10 +1,10 @@
+import { Dispatch, FC, SetStateAction, useState } from 'react'
 import {
   WindowMinIcon,
   WindowMaximizeIcon,
   WindowCloseIcon,
   WindowUnMaximizeIcon
 } from '@renderer/assets/icons/Icons'
-import { Dispatch, FC, SetStateAction, useState } from 'react'
 import PropTypes from 'prop-types'
 import { ResponseStatus } from '@renderer/utils/enums'
 import { Logo } from '@renderer/assets'

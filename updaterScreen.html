@@ -12,8 +12,8 @@
         position: absolute;
         top: 0;
         left: 0;
-        height: 100%;
-        width: 100%;
+        width: 500px;
+        height: 250px;
         overflow: hidden !important;
         margin: 0;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
@@ -53,9 +53,16 @@
         }
       }
 
+      .draggable {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-app-region: drag;
+      }
+
       /* start */
       .updater-container {
         height: 100%;
+        width: 100%;
         display: flex;
         flex-direction: column;
         justify-content: start;
@@ -64,28 +71,33 @@
       }
       /* header */
       .header {
-        width: 100%;
-        height: 2.5rem;
+        width: 500px;
+        height: 2rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0px 12px;
+        padding: 0px 0px;
         background-color: #d9d9d9;
         box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.2);
       }
-      .header > .header-logo {
-        margin-left: 12px;
-        height: 2rem;
-        width: 2rem;
+      .header-logo-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
       }
-      .header > .header-title {
-        font-size: 16px;
+      .header > .header-logo-title > .header-logo {
+        margin-left: 12px;
+        height: 1.5rem;
+        width: 1.5rem;
+      }
+      .header > .header-logo-title > .header-title {
+        font-size: 14px;
         font-weight: 500;
         opacity: 80%;
-        margin-left: -60px;
       }
       .header > .header-close {
-        padding: 7px 20px;
+        padding: 2px 8px 3px 8px;
         fill: #333;
         cursor: pointer;
         transition-duration: 300ms;
@@ -162,6 +174,7 @@
         color: rgba(0, 51, 255, 0.89);
         font-size: 12px;
         margin-left: 84px;
+        cursor: pointer;
       }
       .footer > .powered {
         display: flex;
@@ -196,8 +209,10 @@
     <div class="updater-container">
       <!-- header -->
       <div class="header">
-        <img src="./resources/icons/icon.png" alt="jdeRobot" class="header-logo" />
-        <span class="header-title">Robotics Academy Desktop Update Available</span>
+        <div class="header-logo-title draggable">
+          <img src="./resources/icons/icon.png" alt="jdeRobot" class="header-logo" />
+          <span class="header-title">Robotics Academy Desktop Update Available</span>
+        </div>
         <div class="header-close" id="close-window">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -230,7 +245,7 @@
         <!-- update informations -->
         <div class="updater-body-update-info">
           <p>A new version of Robotics Academy Desktop Available.</p>
-          <p>Do you want to download version 2.0.1 ?</p>
+          <p>Do you want to download version <span id="update-version">2.0.1</span> ?</p>
           <p>Version on your system <span id="current-version">2.0.0</span></p>
         </div>
       </div>
@@ -246,7 +261,7 @@
         <!--  -->
         <div></div>
         <!-- change log link -->
-        <div class="footer-change-log">change log</div>
+        <div class="footer-change-log" id="change-log">change log</div>
         <!-- powered by -->
         <div class="powered">
           <span class="powered-by">Powered by</span>
@@ -271,14 +286,25 @@
       noButton.addEventListener('click', closeWindowFunc)
 
       // element to open link
-      const yesButton = document.getElementById('button-yes')
-      yesButton.addEventListener('click', async () => {
+      const openLink = async () => {
         try {
-          window.api.updaterWindowOpenLink('https://google.com')
+          let url = `https://github.com/JdeRobot/RoboticsAcademy-Desktop/releases/`
+          const version = document.getElementById('update-version')
+
+          if (version && version.textContent.length > 0) {
+            url += `tag/${version.textContent}`
+          }
+
+          window.api.updaterWindowOpenLink(url)
         } catch (err) {
           console.log(err)
         }
-      })
+      }
+      //  elements link
+      const yesButton = document.getElementById('button-yes')
+      const changeLog = document.getElementById('change-log')
+      yesButton.addEventListener('click', openLink)
+      changeLog.addEventListener('click', openLink)
     </script>
   </body>
 </html>
