@@ -1,7 +1,14 @@
 import { PortsInterface } from './../renderer/src/utils/interfaces'
 import { ElectronAPI } from '@electron-toolkit/preload'
-import { AllCommandConfigureInterface, DatabaseFetching } from './../main/interfaces'
+import {
+  AllCommandConfigureInterface,
+  DatabaseFetching,
+  ResponeInterface
+} from './../main/interfaces'
 interface ApiInterface {
+  // Util
+  getAppVersion: () => Promise<ResponeInterface>
+  // Docker
   checkDockerAvailability: () => Promise<ResponeInterface>
   checkDockerRADIAvailability: () => Promise<ResponeInterface>
   startDockerRADIContainer: () => Promise<ResponeInterface>
@@ -31,10 +38,14 @@ interface ApiInterface {
   ) => Promise<DatabaseFetching<ResponseStatus, null, string[]>>
   //! DELETE
   deleteCommandConfig: (id: number) => Promise<DatabaseFetching<ResponseStatus, null, string[]>>
+
+  // updater-window
+  updaterWindowOpenLink: (url: string) => void
+  updaterWindowClose: () => void
 }
+
 declare global {
   interface Window {
-    electron: ElectronAPI
     api: ApiInterface
   }
 }

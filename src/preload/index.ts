@@ -9,6 +9,9 @@ import {
 
 // Custom APIs for renderer
 const api = {
+  // Utils
+  getAppVersion: (): Promise<ResponeInterface> => ipcRenderer.invoke('app:APP_VERSION'),
+  // Docker
   checkDockerAvailability: (): Promise<ResponeInterface> =>
     ipcRenderer.invoke('docker:CHECK_AVAILABILITY'),
   checkDockerRADIAvailability: (): Promise<ResponeInterface> =>
@@ -48,7 +51,11 @@ const api = {
     ipcRenderer.invoke('database:UPDATE_COMMAND_UTILS', id, image),
   //! DELETE
   deleteCommandConfig: (id: number): Promise<DatabaseFetching<ResponseStatus, null, string[]>> =>
-    ipcRenderer.invoke('database:DELETE_COMMAND_CONFIG', id)
+    ipcRenderer.invoke('database:DELETE_COMMAND_CONFIG', id),
+
+  // Updater Window
+  updaterWindowOpenLink: (url: string) => ipcRenderer.invoke('updater:OPEN_LINK', url),
+  updaterWindowClose: () => ipcRenderer.invoke('updater:CLOSE_WINDOW')
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to
@@ -56,14 +63,12 @@ const api = {
 // just add to the DOM global.
 if (process.contextIsolated) {
   try {
-    contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
   } catch (error) {
     console.error(error)
   }
 } else {
   // @ts-ignore (define in dts)
-  window.electron = electronAPI
   // @ts-ignore (define in dts)
   window.api = api
 }

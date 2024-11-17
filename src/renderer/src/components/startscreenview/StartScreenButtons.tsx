@@ -4,8 +4,9 @@ import { RightArrowIcon, BackIcon, PowerIcon, GameConsoleIcon, PlayIcon } from '
 import Loader from '../utlits/Loader'
 import ButtonWrapper from '../buttons/ButtonWrapper'
 import styles from '../../assets/styles/styles'
-import { ActionEnums, ButtonEnums, ScreenStateEnums } from '@renderer/utils/enums'
+import { ActionEnums, ButtonEnums, ResponseStatus, ScreenStateEnums } from '@renderer/utils/enums'
 import { ReducerActionTypes } from '@renderer/utils/types'
+import { ResponeInterface } from '@renderer/utils/interfaces'
 interface StartScrrenButtonsInterface {
   buttonState: string
   dispatch: Dispatch<ReducerActionTypes>
@@ -27,9 +28,9 @@ const StartScreenButtons: FC<StartScrrenButtonsInterface> = ({
 
     setIsStopping(true)
     try {
-      const res: { status: boolean; msg: string[] } = await window.api.stopDockerRADIContainer()
+      const res: ResponeInterface = await window.api.stopDockerRADIContainer()
 
-      if (res.status) {
+      if (res.status == ResponseStatus.SUCCESS) {
         dispatch({
           type: ActionEnums.CHANGE_SCREEN,
           payload: {
